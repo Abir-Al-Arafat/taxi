@@ -1,10 +1,8 @@
 import { Router } from "express";
-// import { accountRouter } from "../modules/account/account.route";
-// import { transactionRouter } from "../modules/transaction/transaction.route";
+import { authRouter } from "../modules/auth/auth.route";
 
 const router = Router();
 
-// router.use("/accounts", accountRouter);
-// router.use("/transactions", transactionRouter);
+router.use("/auth", authRouter);
 
 export { router as apiRouter };
