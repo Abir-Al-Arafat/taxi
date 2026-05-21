@@ -309,7 +309,7 @@ export class AuthService {
     return createHash("sha256").update(token).digest("hex");
   }
 
-  private createExpiryFromDuration(duration: string): Date {
+  private createExpiryFromDuration(duration: any): Date {
     // Supports simple durations like '30d', '15m', '2h', '45s'
     const m = duration.match(/^(\d+)([smhd])$/);
     if (!m) {
