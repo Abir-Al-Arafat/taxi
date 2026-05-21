@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import { AppError } from "../core/errors/AppError";
-
+import { SignOptions } from "jsonwebtoken";
 dotenv.config();
 
 class Env {
@@ -11,8 +11,8 @@ class Env {
   public readonly emailHostPass: string;
   public readonly jwtAccessSecret: string;
   public readonly jwtRefreshSecret: string;
-  public readonly jwtAccessExpiresIn: string;
-  public readonly jwtRefreshExpiresIn: string;
+  public readonly jwtAccessExpiresIn: Required<SignOptions>["expiresIn"];
+  public readonly jwtRefreshExpiresIn: Required<SignOptions>["expiresIn"];
 
   constructor() {
     this.nodeEnv = process.env.NODE_ENV || "development";
@@ -58,8 +58,10 @@ class Env {
     this.emailHostPass = process.env.EMAIL_HOST_PASS;
     this.jwtAccessSecret = process.env.JWT_ACCESS_SECRET;
     this.jwtRefreshSecret = process.env.JWT_REFRESH_SECRET;
-    this.jwtAccessExpiresIn = process.env.JWT_ACCESS_EXPIRES_IN || "15m";
-    this.jwtRefreshExpiresIn = process.env.JWT_REFRESH_EXPIRES_IN || "30d";
+    this.jwtAccessExpiresIn = (process.env.JWT_ACCESS_EXPIRES_IN ||
+      "15m") as Required<SignOptions>["expiresIn"];
+    this.jwtRefreshExpiresIn = (process.env.JWT_REFRESH_EXPIRES_IN ||
+      "30d") as Required<SignOptions>["expiresIn"];
   }
 }
 
