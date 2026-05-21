@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../../core/utils/asyncHandler";
 import { ResponseBuilder } from "../../core/utils/apiResponse";
+import { jwtExpiresInToMs } from "../../shared/utilities/time.util";
 import { AuthService } from "./auth.service";
 import { JwtService } from "../../shared/services/jwt.service";
 import { env } from "../../config/env";
@@ -53,25 +54,8 @@ export class AuthController {
       // Persist hashed refresh token
       await this.authService.saveRefreshToken(user.id, refreshToken);
 
-      // compute maxAge from env.jwtRefreshExpiresIn (simple parser)
-      const maxAge = (() => {
-        const m = env.jwtRefreshExpiresIn.match(/^(\d+)([smhd])$/);
-        if (!m) return 30 * 24 * 60 * 60 * 1000;
-        const value = Number(m[1]);
-        const unit = m[2];
-        switch (unit) {
-          case "s":
-            return value * 1000;
-          case "m":
-            return value * 60 * 1000;
-          case "h":
-            return value * 60 * 60 * 1000;
-          case "d":
-            return value * 24 * 60 * 60 * 1000;
-          default:
-            return value * 24 * 60 * 60 * 1000;
-        }
-      })();
+      // Compute maxAge
+      const maxAge = jwtExpiresInToMs(env.jwtRefreshExpiresIn);
 
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
