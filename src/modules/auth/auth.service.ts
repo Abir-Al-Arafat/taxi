@@ -51,6 +51,29 @@ export class AuthService {
     );
   }
 
+  async refresh(
+    userId: string,
+    refreshToken: string,
+  ): Promise<AuthUserResponse> {
+    const user = await this.authRepository.findByIdWithRefreshSecret(userId);
+
+    if (!user) {
+      throw new AppError("User not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    this.assertTokenIsValid(
+      user.refreshTokenHash,
+      user.refreshTokenExpiresAt,
+      refreshToken,
+    );
+
+    return this.mapUserToResponse(user);
+  }
+
+  async logout(userId: string): Promise<void> {
+    await this.authRepository.clearRefreshToken(userId);
+  }
+
   async signup(request: SignupRequest): Promise<AuthUserResponse> {
     const email = this.normalizeEmail(request.email);
     const phoneNumber = this.normalizePhoneNumber(request.phoneNumber);

@@ -60,6 +60,24 @@ export class AuthRepository extends BaseRepository<AuthUserDocument> {
     );
   }
 
+  findByIdWithRefreshSecret(userId: string) {
+    return this.model
+      .findById(userId)
+      .select("+refreshTokenHash +refreshTokenExpiresAt");
+  }
+
+  clearRefreshToken(userId: string) {
+    return this.updateOne(
+      { _id: userId },
+      {
+        $unset: {
+          refreshTokenHash: "",
+          refreshTokenExpiresAt: "",
+        },
+      },
+    );
+  }
+
   private isDuplicateKeyError(
     error: unknown,
   ): error is { code: number; keyPattern: Record<string, unknown> } {

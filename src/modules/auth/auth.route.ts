@@ -1,5 +1,6 @@
 import { Router } from "express";
 import multer from "multer";
+import { authenticate } from "../../middlewares/auth.middleware";
 import { AuthController } from "./auth.controller";
 import {
   forgotPasswordValidation,
@@ -57,5 +58,7 @@ router.post(
   handleValidationErrors,
   authController.resetPassword,
 );
+router.post("/refresh", authenticate, authController.refresh);
+router.post("/logout", authenticate, authController.logout);
 
 export { router as authRouter };
