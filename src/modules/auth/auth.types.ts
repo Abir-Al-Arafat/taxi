@@ -3,6 +3,7 @@ export type AuthRole = "rider" | "driver";
 export type AuthGender = "male" | "female" | "other";
 
 export type AuthOtpChannel = "email" | "phone";
+export type VerifyOtpPurpose = "signup" | "forgot-password";
 
 export interface AuthLocationInput {
   lat: number;
@@ -36,6 +37,11 @@ export interface AuthUserResponse {
   updatedAt: Date;
 }
 
+export interface VerifyOtpResponse {
+  message: string;
+  user?: AuthUserResponse;
+}
+
 export interface SignupRequest {
   firstName: string;
   lastName: string;
@@ -64,11 +70,11 @@ export interface ResendOtpRequest {
 export interface VerifyOtpRequest {
   phoneNumber: string;
   otp: string;
+  purpose: VerifyOtpPurpose;
 }
 
 export interface ResetPasswordRequest {
   phoneNumber: string;
-  otp: string;
   password: string;
   confirmPassword: string;
 }

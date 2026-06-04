@@ -34,6 +34,7 @@ router.post(
 );
 router.post(
   "/forgot-password",
+  upload.none(),
   forgotPasswordValidation,
   handleValidationErrors,
   authController.forgotPassword,
@@ -54,6 +55,7 @@ router.post(
 );
 router.post(
   "/reset-password",
+  upload.none(),
   resetPasswordValidation,
   handleValidationErrors,
   authController.resetPassword,

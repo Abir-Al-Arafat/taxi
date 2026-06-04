@@ -17,6 +17,7 @@ export interface AuthUserDocument extends Document {
   verificationTokenExpiresAt?: Date;
   passwordResetTokenHash?: string;
   passwordResetTokenExpiresAt?: Date;
+  passwordResetTokenVerifiedAt?: Date;
   refreshTokenHash?: string;
   refreshTokenExpiresAt?: Date;
   verifiedAt?: Date;
@@ -101,6 +102,9 @@ const authUserSchema = new Schema<AuthUserDocument>(
       select: false,
     },
     passwordResetTokenExpiresAt: {
+      type: Date,
+    },
+    passwordResetTokenVerifiedAt: {
       type: Date,
     },
     refreshTokenHash: {

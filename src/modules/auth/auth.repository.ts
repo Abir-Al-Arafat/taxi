@@ -42,7 +42,9 @@ export class AuthRepository extends BaseRepository<AuthUserDocument> {
   findByPhoneNumberWithSecrets(phoneNumber: string) {
     return this.model
       .findOne({ phoneNumber })
-      .select("+passwordHash +verificationTokenHash +passwordResetTokenHash");
+      .select(
+        "+passwordHash +verificationTokenHash +passwordResetTokenHash +passwordResetTokenVerifiedAt",
+      );
   }
 
   findByEmail(email: string) {

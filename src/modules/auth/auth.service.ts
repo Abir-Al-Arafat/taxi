@@ -26,6 +26,7 @@ import type {
   ResetPasswordRequest,
   ResendOtpRequest,
   SignupRequest,
+  VerifyOtpResponse,
   VerifyOtpRequest,
 } from "./auth.types";
 import type { AuthUserDocument } from "./user.schema";
@@ -91,10 +92,8 @@ export class AuthService {
     }
 
     const passwordHash = this.hashPassword(request.password);
-    const verificationOtp = this.generateOtp();
-    const verificationTokenHash = this.hashToken(verificationOtp);
-    const verificationTokenExpiresAt = this.createExpirationDate();
     const locationAddress = this.normalizeLocationAddress(request.location);
+    const verificationChallenge = this.createOtpChallenge();
     const createPayload: Parameters<AuthRepository["createUser"]>[0] = {
       firstName: request.firstName.trim(),
       lastName: request.lastName.trim(),
@@ -105,8 +104,8 @@ export class AuthService {
       role: request.role,
       passwordHash,
       isVerified: false,
-      verificationTokenHash,
-      verificationTokenExpiresAt,
+      verificationTokenHash: verificationChallenge.tokenHash,
+      verificationTokenExpiresAt: verificationChallenge.expiresAt,
     };
 
     if (typeof locationAddress !== "undefined") {
@@ -115,7 +114,7 @@ export class AuthService {
 
     const user = await this.authRepository.createUser(createPayload);
 
-    await this.sendVerificationMessage(user, verificationOtp);
+    await this.sendVerificationMessage(user, verificationChallenge.otp);
 
     return this.mapUserToResponse(user);
   }
@@ -154,28 +153,26 @@ export class AuthService {
 
     if (!user) {
       return {
-        message:
-          "If an account exists for this phone number, a reset code has been sent",
+        message: "User does not exist.",
       };
     }
 
-    const resetOtp = this.generateOtp();
-    const passwordResetTokenHash = this.hashToken(resetOtp);
-    const passwordResetTokenExpiresAt = this.createExpirationDate();
-
-    await this.authRepository.updateOne(
-      { _id: user._id },
-      {
-        passwordResetTokenHash,
-        passwordResetTokenExpiresAt,
+    await this.storeOtpChallengeAndNotify({
+      userId: user._id,
+      tokenHashField: "passwordResetTokenHash",
+      expiresAtField: "passwordResetTokenExpiresAt",
+      extraUpdate: {
+        $unset: {
+          passwordResetTokenVerifiedAt: "",
+        },
       },
-    );
-
-    await this.sendPasswordResetMessage(user, resetOtp);
+      sendMessage: async (otp) => {
+        await this.sendPasswordResetMessage(user, otp);
+      },
+    });
 
     return {
-      message:
-        "If an account exists for this phone number, a reset code has been sent",
+      message: "a reset code has been sent",
     };
   }
 
@@ -184,33 +181,30 @@ export class AuthService {
     const user = await this.authRepository.findByPhoneNumber(phoneNumber);
 
     if (!user) {
-      throw new AppError("User not found", HTTP_STATUS.NOT_FOUND);
+      return {
+        message: "User does not exist",
+      };
     }
 
     if (user.isVerified) {
       throw new AppError("Account is already verified", HTTP_STATUS.CONFLICT);
     }
 
-    const verificationOtp = this.generateOtp();
-    const verificationTokenHash = this.hashToken(verificationOtp);
-    const verificationTokenExpiresAt = this.createExpirationDate();
-
-    await this.authRepository.updateOne(
-      { _id: user._id },
-      {
-        verificationTokenHash,
-        verificationTokenExpiresAt,
+    await this.storeOtpChallengeAndNotify({
+      userId: user._id,
+      tokenHashField: "verificationTokenHash",
+      expiresAtField: "verificationTokenExpiresAt",
+      sendMessage: async (otp) => {
+        await this.sendVerificationMessage(user, otp);
       },
-    );
-
-    await this.sendVerificationMessage(user, verificationOtp);
+    });
 
     return {
-      message: "Verification code resent successfully",
+      message: "A verification code has been sent",
     };
   }
 
-  async verifyOtp(request: VerifyOtpRequest): Promise<AuthUserResponse> {
+  async verifyOtp(request: VerifyOtpRequest): Promise<VerifyOtpResponse> {
     const phoneNumber = this.normalizePhoneNumber(request.phoneNumber);
     const user =
       await this.authRepository.findByPhoneNumberWithSecrets(phoneNumber);
@@ -219,9 +213,43 @@ export class AuthService {
       throw new AppError("User not found", HTTP_STATUS.NOT_FOUND);
     }
 
+    if (request.purpose === "signup") {
+      this.assertTokenIsValid(
+        user.verificationTokenHash,
+        user.verificationTokenExpiresAt,
+        request.otp,
+      );
+
+      const updatedUser = await this.authRepository.updateOne(
+        { _id: user._id },
+        {
+          $set: {
+            isVerified: true,
+            verifiedAt: new Date(),
+          },
+          $unset: {
+            verificationTokenHash: "",
+            verificationTokenExpiresAt: "",
+          },
+        },
+      );
+
+      if (!updatedUser) {
+        throw new AppError(
+          "Failed to verify account",
+          HTTP_STATUS.INTERNAL_SERVER_ERROR,
+        );
+      }
+
+      return {
+        message: "Account verified successfully",
+        user: this.mapUserToResponse(updatedUser),
+      };
+    }
+
     this.assertTokenIsValid(
-      user.verificationTokenHash,
-      user.verificationTokenExpiresAt,
+      user.passwordResetTokenHash,
+      user.passwordResetTokenExpiresAt,
       request.otp,
     );
 
@@ -229,24 +257,26 @@ export class AuthService {
       { _id: user._id },
       {
         $set: {
-          isVerified: true,
-          verifiedAt: new Date(),
+          passwordResetTokenVerifiedAt: new Date(),
         },
         $unset: {
-          verificationTokenHash: "",
-          verificationTokenExpiresAt: "",
+          passwordResetTokenHash: "",
+          passwordResetTokenExpiresAt: "",
         },
       },
     );
 
     if (!updatedUser) {
       throw new AppError(
-        "Failed to verify account",
+        "Failed to verify reset code",
         HTTP_STATUS.INTERNAL_SERVER_ERROR,
       );
     }
 
-    return this.mapUserToResponse(updatedUser);
+    return {
+      message:
+        "Reset code verified successfully. You can now reset your password.",
+    };
   }
 
   async resetPassword(
@@ -260,11 +290,12 @@ export class AuthService {
       throw new AppError("User not found", HTTP_STATUS.NOT_FOUND);
     }
 
-    this.assertTokenIsValid(
-      user.passwordResetTokenHash,
-      user.passwordResetTokenExpiresAt,
-      request.otp,
-    );
+    if (!user.passwordResetTokenVerifiedAt) {
+      throw new AppError(
+        "Please verify the reset code before resetting your password",
+        HTTP_STATUS.FORBIDDEN,
+      );
+    }
 
     const passwordHash = this.hashPassword(request.password);
 
@@ -277,6 +308,7 @@ export class AuthService {
         $unset: {
           passwordResetTokenHash: "",
           passwordResetTokenExpiresAt: "",
+          passwordResetTokenVerifiedAt: "",
         },
       },
     );
@@ -322,6 +354,44 @@ export class AuthService {
 
   private generateOtp(): string {
     return String(randomInt(1000, 10000));
+  }
+
+  private createOtpChallenge(): {
+    otp: string;
+    tokenHash: string;
+    expiresAt: Date;
+  } {
+    const otp = this.generateOtp();
+
+    return {
+      otp,
+      tokenHash: this.hashToken(otp),
+      expiresAt: this.createExpirationDate(),
+    };
+  }
+
+  private async storeOtpChallengeAndNotify(options: {
+    userId: AuthUserDocument["_id"];
+    tokenHashField: "verificationTokenHash" | "passwordResetTokenHash";
+    expiresAtField:
+      | "verificationTokenExpiresAt"
+      | "passwordResetTokenExpiresAt";
+    extraUpdate?: Record<string, unknown>;
+    sendMessage: (otp: string) => Promise<void>;
+  }): Promise<void> {
+    const challenge = this.createOtpChallenge();
+    const updatePayload: Record<string, unknown> = {
+      [options.tokenHashField]: challenge.tokenHash,
+      [options.expiresAtField]: challenge.expiresAt,
+    };
+
+    if (options.extraUpdate) {
+      Object.assign(updatePayload, options.extraUpdate);
+    }
+
+    await this.authRepository.updateOne({ _id: options.userId }, updatePayload);
+
+    await options.sendMessage(challenge.otp);
   }
 
   private createExpirationDate(): Date {

@@ -5,6 +5,7 @@ import { AppError } from "../../core/errors/AppError";
 
 const allowedGenders = ["male", "female", "other"] as const;
 const allowedRoles = ["rider", "driver"] as const;
+const allowedVerifyOtpPurposes = ["signup", "forgot-password"] as const;
 
 const trimAndRequire = (fieldName: string, message: string) =>
   body(fieldName).trim().notEmpty().withMessage(message);
@@ -170,12 +171,15 @@ export const resendOtpValidation = [
 
 export const verifyOtpValidation = [
   trimAndRequire("phoneNumber", "Phone number is required"),
+  body("purpose")
+    .trim()
+    .isIn([...allowedVerifyOtpPurposes])
+    .withMessage("Purpose must be signup or forgot-password"),
   validateOtpFormat("otp"),
 ];
 
 export const resetPasswordValidation = [
   trimAndRequire("phoneNumber", "Phone number is required"),
-  validateOtpFormat("otp"),
   trimAndRequire("password", "Password is required"),
   trimAndRequire("confirmPassword", "Confirm password is required"),
   body("confirmPassword").custom((value, { req }) => {
