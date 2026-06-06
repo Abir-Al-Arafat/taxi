@@ -162,10 +162,15 @@ All responses follow this structure:
 ```typescript
 interface ApiResponse<T> {
   success: boolean;
+  status: number;
   message: string;
   data?: T; // Only on success
 }
 ```
+
+- The `status` value must come from `src/constants/statusCodes.ts`.
+- The HTTP response status and the response body `status` must always match.
+- Do not hardcode numeric HTTP codes in controllers, services, or middleware.
 
 ### ✅ **Success Response Examples**
 
@@ -173,6 +178,7 @@ interface ApiResponse<T> {
 // Single resource
 {
   "success": true,
+  "status": 200,
   "message": "User created successfully",
   "data": { "id": "123", "name": "John" }
 }
@@ -180,12 +186,14 @@ interface ApiResponse<T> {
 // Message-only
 {
   "success": true,
+  "status": 200,
   "message": "Server is running"
 }
 
 // List with pagination (future)
 {
   "success": true,
+  "status": 200,
   "message": "Users retrieved",
   "data": {
     "items": [...],
@@ -201,11 +209,13 @@ interface ApiResponse<T> {
 ```json
 {
   "success": false,
+  "status": 404,
   "message": "User not found"
 }
 
 {
   "success": false,
+  "status": 409,
   "message": "Email already registered"
 }
 ```

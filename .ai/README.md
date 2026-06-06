@@ -149,7 +149,17 @@ This folder contains comprehensive documentation that AI assistants use to under
 
 ---
 
-### 11. **refactoring-opportunities.md**
+### 11. **examples/golden-module/** - PRIMARY IMPLEMENTATION REFERENCE
+
+- Definitive module pattern based on the real auth implementation
+- Controller, service, route, validation, model, error-handling, and response examples
+- Feature blueprint and checklist for building consistent modules
+
+**Use when**: Starting any new backend feature, matching architecture, or checking implementation standards
+
+---
+
+### 12. **refactoring-opportunities.md**
 
 - Current architecture strengths
 - Identified technical debt
@@ -169,7 +179,8 @@ This folder contains comprehensive documentation that AI assistants use to under
 1. **Understand the project**: Read [project-overview.md](./project-overview.md)
 2. **Understand the structure**: Read [folder-structure.md](./folder-structure.md)
 3. **Learn the rules**: Read [backend-rules.md](./backend-rules.md)
-4. **Understand your task**: Is it a new feature? Go to [feature-implementation-guide.md](./feature-implementation-guide.md)
+4. **Use the reference module**: Read [golden-module](./examples/golden-module/README.md)
+5. **Understand your task**: Is it a new feature? Go to [feature-implementation-guide.md](./feature-implementation-guide.md)
 
 ### Building a New Feature?
 
@@ -178,7 +189,7 @@ Follow this flow:
 1. **Design**: Use design phase in [feature-implementation-guide.md](./feature-implementation-guide.md#phase-1-design--planning)
 2. **Data layer**: Follow [database-patterns.md](./database-patterns.md) for schema
 3. **API design**: Use [api-patterns.md](./api-patterns.md)
-4. **Implementation**: Use [feature-implementation-guide.md](./feature-implementation-guide.md) step-by-step
+4. **Implementation**: Use [golden-module](./examples/golden-module/README.md) as the template
 5. **Validation**: Check [backend-rules.md](./backend-rules.md) architecture validation section
 
 ### Implementing Error Handling?
@@ -239,6 +250,7 @@ Before implementing any feature:
 
 - [ ] Read project-overview.md (understand the project)
 - [ ] Read backend-rules.md (understand the rules)
+- [ ] Read examples/golden-module (use the reference module)
 - [ ] Read feature-implementation-guide.md (understand the process)
 - [ ] Design your feature (endpoints, data model, dependencies)
 - [ ] Check module-map.md (understand existing modules)
@@ -278,10 +290,11 @@ Before implementing any feature:
 ```
 "Before implementing [feature], refer to:
 1. .ai/project-overview.md for context
-2. .ai/feature-implementation-guide.md for process
-3. .ai/backend-rules.md for rules
-4. .ai/api-patterns.md for API design
-5. Existing code in src/ for patterns"
+2. .ai/examples/golden-module/ for the reference module
+3. .ai/feature-implementation-guide.md for process
+4. .ai/backend-rules.md for rules
+5. .ai/api-patterns.md for API design
+6. Existing code in src/ for patterns"
 ```
 
 ### For Code Review:
@@ -354,6 +367,7 @@ All .ai documentation follows these standards:
 ├── reusable-components.md           (UTILITIES)
 ├── module-map.md                    (DEPENDENCIES)
 ├── feature-implementation-guide.md  (HOW-TO)
+├── examples/golden-module/          (PRIMARY MODULE REFERENCE)
 ├── refactoring-opportunities.md     (IMPROVEMENTS)
 └── README.md                        (THIS FILE)
 ```

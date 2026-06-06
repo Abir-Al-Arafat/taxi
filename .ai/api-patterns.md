@@ -46,9 +46,10 @@
                      │
 ┌────────────────────▼──────────────────────────┐
 │ Response to Client                            │
-│ 200 { success: true, data: {...} }           │
+│ 200 { success: true, status: 200, data: {...} }│
 │ or                                            │
-│ 400/404/500 { success: false, message: "..." }│
+│ 400/404/500 { success: false, status: 404,     │
+│ message: "..." }                              │
 └─────────────────────────────────────────────────┘
 ```
 
@@ -88,7 +89,13 @@ class UserController {
     // 3. Format response
     res
       .status(HTTP_STATUS.CREATED)
-      .json(ResponseBuilder.success("User created successfully", user));
+      .json(
+        ResponseBuilder.success(
+          "User created successfully",
+          user,
+          HTTP_STATUS.CREATED,
+        ),
+      );
   });
 
   /**
@@ -106,7 +113,13 @@ class UserController {
 
     res
       .status(HTTP_STATUS.OK)
-      .json(ResponseBuilder.success("User retrieved successfully", user));
+      .json(
+        ResponseBuilder.success(
+          "User retrieved successfully",
+          user,
+          HTTP_STATUS.OK,
+        ),
+      );
   });
 }
 
@@ -348,7 +361,9 @@ app.use(express.json());
 
 // 5. Routes
 app.get("/", (req, res) => {
-  res.json(ResponseBuilder.success("Server running"));
+  res.json(
+    ResponseBuilder.success("Server running", undefined, HTTP_STATUS.OK),
+  );
 });
 app.use("/api/v1", apiRouter);
 
@@ -431,7 +446,9 @@ class UserController {
       phone,
     });
 
-    res.status(201).json(ResponseBuilder.success("Created", user));
+    res
+      .status(HTTP_STATUS.CREATED)
+      .json(ResponseBuilder.success("Created", user, HTTP_STATUS.CREATED));
   });
 
   private isValidEmail(email: string): boolean {
@@ -549,7 +566,7 @@ async getRides(req: Request, res: Response) {
     search: String(search),
   });
 
-  res.json(ResponseBuilder.success("Rides retrieved", rides));
+  res.json(ResponseBuilder.success("Rides retrieved", rides, HTTP_STATUS.OK));
 }
 
 // Service
@@ -621,7 +638,7 @@ getUserById = asyncHandler(async (req: Request, res: Response) => {
   }
 
   const user = await this.userService.getUserById(userId);
-  res.json(ResponseBuilder.success("User retrieved", user));
+  res.json(ResponseBuilder.success("User retrieved", user, HTTP_STATUS.OK));
 });
 ```
 
