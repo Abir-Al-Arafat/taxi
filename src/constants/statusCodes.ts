@@ -62,6 +62,8 @@ const HTTP_STATUS = {
   LOOP_DETECTED: 508,
   NOT_EXTENDED: 510,
   NETWORK_AUTHENTICATION_REQUIRED: 511,
-};
+} as const;
+
+export type HttpStatus = (typeof HTTP_STATUS)[keyof typeof HTTP_STATUS];
 
 export default HTTP_STATUS;
