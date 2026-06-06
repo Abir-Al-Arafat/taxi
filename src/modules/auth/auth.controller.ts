@@ -30,11 +30,12 @@ export class AuthController {
       const user = await this.authService.signup(req.body);
 
       res
-        .status(201)
+        .status(HTTP_STATUS.CREATED)
         .json(
           ResponseBuilder.success(
             "Account created successfully. Verification code sent to email.",
             user,
+            HTTP_STATUS.CREATED,
           ),
         );
     },
@@ -68,9 +69,13 @@ export class AuthController {
       });
 
       res
-        .status(200)
+        .status(HTTP_STATUS.OK)
         .json(
-          ResponseBuilder.success("Login successful", { user, accessToken }),
+          ResponseBuilder.success(
+            "Login successful",
+            { user, accessToken },
+            HTTP_STATUS.OK,
+          ),
         );
     },
   );
@@ -82,7 +87,11 @@ export class AuthController {
     ): Promise<void> => {
       const result = await this.authService.forgotPassword(req.body);
 
-      res.status(200).json(ResponseBuilder.success(result.message));
+      res
+        .status(HTTP_STATUS.OK)
+        .json(
+          ResponseBuilder.success(result.message, undefined, HTTP_STATUS.OK),
+        );
     },
   );
 
@@ -93,7 +102,11 @@ export class AuthController {
     ): Promise<void> => {
       const result = await this.authService.resendOtp(req.body);
 
-      res.status(200).json(ResponseBuilder.success(result.message));
+      res
+        .status(HTTP_STATUS.OK)
+        .json(
+          ResponseBuilder.success(result.message, undefined, HTTP_STATUS.OK),
+        );
     },
   );
 
@@ -105,8 +118,10 @@ export class AuthController {
       const result = await this.authService.verifyOtp(req.body);
 
       res
-        .status(200)
-        .json(ResponseBuilder.success(result.message, result.user));
+        .status(HTTP_STATUS.OK)
+        .json(
+          ResponseBuilder.success(result.message, result.user, HTTP_STATUS.OK),
+        );
     },
   );
 
@@ -117,7 +132,11 @@ export class AuthController {
     ): Promise<void> => {
       const result = await this.authService.resetPassword(req.body);
 
-      res.status(200).json(ResponseBuilder.success(result.message));
+      res
+        .status(HTTP_STATUS.OK)
+        .json(
+          ResponseBuilder.success(result.message, undefined, HTTP_STATUS.OK),
+        );
     },
   );
 
@@ -144,12 +163,15 @@ export class AuthController {
       role: user.role,
     });
 
-    res.status(200).json(
-      ResponseBuilder.success("Token refreshed successfully", {
-        user,
-        accessToken,
-      }),
-    );
+    res
+      .status(HTTP_STATUS.OK)
+      .json(
+        ResponseBuilder.success(
+          "Token refreshed successfully",
+          { user, accessToken },
+          HTTP_STATUS.OK,
+        ),
+      );
   });
 
   logout = asyncHandler(async (req: Request, res: Response): Promise<void> => {
@@ -164,6 +186,14 @@ export class AuthController {
 
     res.clearCookie("refreshToken");
 
-    res.status(200).json(ResponseBuilder.success("Logged out successfully"));
+    res
+      .status(HTTP_STATUS.OK)
+      .json(
+        ResponseBuilder.success(
+          "Logged out successfully",
+          undefined,
+          HTTP_STATUS.OK,
+        ),
+      );
   });
 }
