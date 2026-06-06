@@ -104,6 +104,7 @@ export class AuthService {
       role: request.role,
       passwordHash,
       isVerified: false,
+      profileCompleted: request.role !== "driver",
       verificationTokenHash: verificationChallenge.tokenHash,
       verificationTokenExpiresAt: verificationChallenge.expiresAt,
     };
@@ -539,6 +540,9 @@ export class AuthService {
       gender: user.gender,
       role: user.role,
       isVerified: user.isVerified,
+      profileCompleted: user.profileCompleted,
+      profileCompletionRequired:
+        user.role === "driver" && !user.profileCompleted,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };

@@ -35,6 +35,8 @@ export interface AuthUserResponse {
   isVerified: boolean;
   createdAt: Date;
   updatedAt: Date;
+  profileCompleted: boolean;
+  profileCompletionRequired: boolean;
 }
 
 export interface VerifyOtpResponse {
@@ -92,4 +94,6 @@ export interface AuthUserView {
   isVerified: boolean;
   createdAt: Date;
   updatedAt: Date;
+  profileCompleted: boolean;
+  profileCompletionRequired: boolean;
 }

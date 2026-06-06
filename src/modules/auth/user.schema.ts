@@ -23,6 +23,7 @@ export interface AuthUserDocument extends Document {
   verifiedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
+  profileCompleted: boolean;
 }
 
 const authUserSchema = new Schema<AuthUserDocument>(
@@ -90,6 +91,13 @@ const authUserSchema = new Schema<AuthUserDocument>(
       default: false,
       index: true,
     },
+    profileCompleted: {
+      type: Boolean,
+      default(this: AuthUserDocument) {
+        return this.role !== "driver";
+      },
+      index: true,
+    },
     verificationTokenHash: {
       type: String,
       select: false,
@@ -126,6 +134,7 @@ const authUserSchema = new Schema<AuthUserDocument>(
 authUserSchema.index({ verificationTokenHash: 1 });
 authUserSchema.index({ passwordResetTokenHash: 1 });
 authUserSchema.index({ refreshTokenHash: 1 });
+authUserSchema.index({ profileCompleted: 1 });
 authUserSchema.index({ location: "2dsphere" });
 
 const AuthUserModel = model<AuthUserDocument>("User", authUserSchema);
