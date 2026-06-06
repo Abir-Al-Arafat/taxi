@@ -134,6 +134,49 @@ Catches all errors and formats responses globally.
 
 Catches unmapped routes (404).
 
+### Upload Middleware
+
+**Location**: `src/middlewares/upload.middleware.ts`
+
+Reusable file upload middleware with configurable validation.
+
+**Supporting Files**:
+- Types: `src/shared/types/upload.types.ts`
+- Validators: `src/shared/validators/upload.validator.ts`
+- Constants: `src/constants/upload.constants.ts`
+
+**Usage**:
+
+```typescript
+import { createUploadMiddleware } from "../middlewares/upload.middleware";
+
+// Custom configuration
+const uploadAvatar = createUploadMiddleware({
+  fieldName: "avatar",
+  maxFileSize: 2 * 1024 * 1024, // 2MB
+  allowedMimeTypes: ["image/jpeg", "image/png"],
+  uploadDir: "uploads/avatars",
+  multiple: false,
+});
+
+// Pre-configured helpers
+import { uploadSingleImage, uploadMultipleImages } from "../middlewares/upload.middleware";
+
+router.post("/avatar", uploadSingleImage("photo"), controller.uploadAvatar);
+router.post("/gallery", uploadMultipleImages("images", 10), controller.uploadGallery);
+```
+
+**Features**:
+- Single and multiple file upload support
+- File type validation via MIME types
+- File size validation
+- Custom upload directories
+- Configurable file limits
+- Pre-configured helpers for common use cases (images, documents)
+- Integration with existing error handling (AppError)
+
+**Documentation**: See `.ai/examples/upload-middleware-usage.md` for comprehensive examples.
+
 ---
 
 ## Future Reusable Components
