@@ -1,0 +1,326 @@
+import mongoose from "mongoose";
+import HTTP_STATUS from "../../constants/statusCodes";
+import { AppError } from "../../core/errors/AppError";
+import { AuthRepository } from "../auth/auth.repository";
+import type { AuthUserDocument } from "../auth/user.schema";
+import { DriverProfileRepository } from "./driver-profile.repository";
+import type { DriverProfileDocument } from "./driver-profile.schema";
+import type {
+  CompleteDriverProfileRequest,
+  DriverProfileResponse,
+  DriverProfileStatusResponse,
+  UpdateDriverProfileRequest,
+} from "./driver-profile.types";
+
+export class DriverProfileService {
+  constructor(
+    private readonly driverProfileRepository = new DriverProfileRepository(),
+    private readonly authRepository = new AuthRepository(),
+  ) {}
+
+  async getStatus(userId: string): Promise<DriverProfileStatusResponse> {
+    const user = await this.assertDriverAccount(userId);
+    const profile = await this.driverProfileRepository.findByUserId(userId);
+
+    return this.mapProfileStatus(user, profile);
+  }
+
+  async getMyProfile(userId: string): Promise<DriverProfileResponse> {
+    await this.assertDriverAccount(userId, true);
+
+    const profile = await this.driverProfileRepository.findByUserId(userId);
+
+    if (!profile) {
+      throw new AppError("Driver profile not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    return this.mapProfileToResponse(profile);
+  }
+
+  async completeProfile(
+    userId: string,
+    request: CompleteDriverProfileRequest,
+  ): Promise<DriverProfileStatusResponse> {
+    const user = await this.assertDriverAccount(userId);
+
+    if (user.profileCompleted) {
+      throw new AppError(
+        "Driver profile is already completed",
+        HTTP_STATUS.CONFLICT,
+      );
+    }
+
+    const session = await mongoose.startSession();
+
+    try {
+      session.startTransaction();
+
+      const profilePayload = this.normalizeCompleteRequest(request);
+      const profile = await this.driverProfileRepository.upsertProfileByUserId(
+        userId,
+        {
+          ...profilePayload,
+          profileCompleted: true,
+          completedAt: new Date(),
+        },
+        session,
+      );
+
+      if (!profile) {
+        throw new AppError(
+          "Failed to complete driver profile",
+          HTTP_STATUS.INTERNAL_SERVER_ERROR,
+        );
+      }
+
+      const updatedUser = await this.authRepository.updateOne(
+        { _id: userId },
+        {
+          $set: {
+            profileCompleted: true,
+          },
+        },
+        session,
+      );
+
+      if (!updatedUser) {
+        throw new AppError(
+          "Failed to update driver profile status",
+          HTTP_STATUS.INTERNAL_SERVER_ERROR,
+        );
+      }
+
+      await session.commitTransaction();
+
+      return this.mapProfileStatus(updatedUser, profile);
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+    }
+  }
+
+  async updateMyProfile(
+    userId: string,
+    request: UpdateDriverProfileRequest,
+  ): Promise<DriverProfileStatusResponse> {
+    const user = await this.assertDriverAccount(userId, true);
+    const existingProfile =
+      await this.driverProfileRepository.findByUserId(userId);
+
+    if (!existingProfile) {
+      throw new AppError("Driver profile not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    const updatePayload = this.normalizeUpdateRequest(request);
+
+    if (Object.keys(updatePayload).length === 0) {
+      throw new AppError(
+        "At least one profile field is required",
+        HTTP_STATUS.BAD_REQUEST,
+      );
+    }
+
+    const session = await mongoose.startSession();
+
+    try {
+      session.startTransaction();
+
+      const profile = await this.driverProfileRepository.updateProfileByUserId(
+        userId,
+        updatePayload,
+        session,
+      );
+
+      if (!profile) {
+        throw new AppError(
+          "Failed to update driver profile",
+          HTTP_STATUS.INTERNAL_SERVER_ERROR,
+        );
+      }
+
+      await session.commitTransaction();
+
+      return this.mapProfileStatus(user, profile);
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+    }
+  }
+
+  private async assertDriverAccount(
+    userId: string,
+    requireCompletedProfile = false,
+  ): Promise<AuthUserDocument> {
+    const user = await this.authRepository.findById(userId);
+
+    if (!user) {
+      throw new AppError("User not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    if (user.role !== "driver") {
+      throw new AppError(
+        "Only drivers can access this resource",
+        HTTP_STATUS.FORBIDDEN,
+      );
+    }
+
+    if (!user.isVerified) {
+      throw new AppError(
+        "Driver account must be verified first",
+        HTTP_STATUS.FORBIDDEN,
+      );
+    }
+
+    if (requireCompletedProfile && !user.profileCompleted) {
+      throw new AppError(
+        "Driver profile completion is required before accessing this resource",
+        HTTP_STATUS.FORBIDDEN,
+      );
+    }
+
+    return user;
+  }
+
+  private normalizeCompleteRequest(
+    request: CompleteDriverProfileRequest,
+  ): Partial<DriverProfileDocument> {
+    return {
+      dateOfBirth: this.parseDate(request.dateOfBirth),
+      gender: request.gender,
+      nidOrPassport: request.nidOrPassport.trim(),
+      profileImage: request.profileImage.trim(),
+      drivingLicenseImages: this.normalizeStringArray(
+        request.drivingLicenseImages,
+      ),
+      vehicleRegistrationDocumentImages: this.normalizeStringArray(
+        request.vehicleRegistrationDocumentImages,
+      ),
+      vehicleType: request.vehicleType,
+      carCompany: request.carCompany.trim(),
+      model: request.model.trim(),
+      year: request.year,
+      color: request.color.trim(),
+      plateNumber: request.plateNumber.trim().toUpperCase(),
+    };
+  }
+
+  private normalizeUpdateRequest(
+    request: UpdateDriverProfileRequest,
+  ): Partial<DriverProfileDocument> {
+    const updatePayload: Partial<DriverProfileDocument> = {};
+
+    if (typeof request.dateOfBirth !== "undefined") {
+      updatePayload.dateOfBirth = this.parseDate(request.dateOfBirth);
+    }
+
+    if (typeof request.gender !== "undefined") {
+      updatePayload.gender = request.gender;
+    }
+
+    if (typeof request.nidOrPassport !== "undefined") {
+      updatePayload.nidOrPassport = request.nidOrPassport.trim();
+    }
+
+    if (typeof request.profileImage !== "undefined") {
+      updatePayload.profileImage = request.profileImage.trim();
+    }
+
+    if (typeof request.drivingLicenseImages !== "undefined") {
+      updatePayload.drivingLicenseImages = this.normalizeStringArray(
+        request.drivingLicenseImages,
+      );
+    }
+
+    if (typeof request.vehicleRegistrationDocumentImages !== "undefined") {
+      updatePayload.vehicleRegistrationDocumentImages =
+        this.normalizeStringArray(request.vehicleRegistrationDocumentImages);
+    }
+
+    if (typeof request.vehicleType !== "undefined") {
+      updatePayload.vehicleType = request.vehicleType;
+    }
+
+    if (typeof request.carCompany !== "undefined") {
+      updatePayload.carCompany = request.carCompany.trim();
+    }
+
+    if (typeof request.model !== "undefined") {
+      updatePayload.model = request.model.trim();
+    }
+
+    if (typeof request.year !== "undefined") {
+      updatePayload.year = request.year;
+    }
+
+    if (typeof request.color !== "undefined") {
+      updatePayload.color = request.color.trim();
+    }
+
+    if (typeof request.plateNumber !== "undefined") {
+      updatePayload.plateNumber = request.plateNumber.trim().toUpperCase();
+    }
+
+    return updatePayload;
+  }
+
+  private normalizeStringArray(values: string[]): string[] {
+    return values
+      .map((value) => value.trim())
+      .filter((value) => value.length > 0);
+  }
+
+  private parseDate(value: string): Date {
+    const parsedDate = new Date(value);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+      throw new AppError(
+        "Date of birth must be a valid date",
+        HTTP_STATUS.BAD_REQUEST,
+      );
+    }
+
+    return parsedDate;
+  }
+
+  private mapProfileStatus(
+    user: AuthUserDocument,
+    profile: DriverProfileDocument | null,
+  ): DriverProfileStatusResponse {
+    return {
+      profile: profile ? this.mapProfileToResponse(profile) : null,
+      profileCompleted: user.profileCompleted,
+      profileCompletionRequired:
+        user.role === "driver" && !user.profileCompleted,
+    };
+  }
+
+  private mapProfileToResponse(
+    profile: DriverProfileDocument,
+  ): DriverProfileResponse {
+    return {
+      id: profile._id.toString(),
+      userId: profile.userId.toString(),
+      dateOfBirth: profile.dateOfBirth,
+      gender: profile.gender,
+      nidOrPassport: profile.nidOrPassport,
+      profileImage: profile.profileImage,
+      drivingLicenseImages: profile.drivingLicenseImages,
+      vehicleRegistrationDocumentImages:
+        profile.vehicleRegistrationDocumentImages,
+      vehicleType: profile.vehicleType,
+      carCompany: profile.carCompany,
+      model: profile.model,
+      year: profile.year,
+      color: profile.color,
+      plateNumber: profile.plateNumber,
+      profileCompleted: profile.profileCompleted,
+      completedAt: profile.completedAt,
+      createdAt: profile.createdAt,
+      updatedAt: profile.updatedAt,
+    };
+  }
+}
