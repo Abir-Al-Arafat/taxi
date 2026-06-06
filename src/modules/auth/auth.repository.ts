@@ -39,6 +39,10 @@ export class AuthRepository extends BaseRepository<AuthUserDocument> {
     return this.model.findOne({ phoneNumber });
   }
 
+  findById(userId: string) {
+    return this.model.findById(userId);
+  }
+
   findByPhoneNumberWithSecrets(phoneNumber: string) {
     return this.model
       .findOne({ phoneNumber })
