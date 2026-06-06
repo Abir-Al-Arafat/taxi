@@ -1,5 +1,5 @@
 import { Router } from "express";
-import multer from "multer";
+import path from "path";
 import { authenticate } from "../../middlewares/auth.middleware";
 import { DriverProfileController } from "./driver-profile.controller";
 import {
@@ -12,10 +12,55 @@ import {
   requireCompletedDriverProfile,
   requireDriverRole,
 } from "./driver-profile.middleware";
+import {
+  driverProfileUploadsDirectory,
+  ensureDirectoryExists,
+} from "../../shared/utilities/file.util";
+import {
+  createMultiFieldUploadMiddleware,
+  type FieldConfig,
+} from "../../middlewares/upload.middleware";
+import { IMAGE_MIME_TYPES } from "../../constants/upload.constants";
 
 const router = Router();
-const upload = multer();
+ensureDirectoryExists(driverProfileUploadsDirectory);
+
 const driverProfileController = new DriverProfileController();
+
+// Custom filename function that sanitizes filenames
+const customFilename = (
+  _req: Express.Request,
+  file: Express.Multer.File,
+  callback: (error: Error | null, filename: string) => void,
+): void => {
+  const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+  const extension = path.extname(file.originalname);
+  const safeBaseName = path
+    .basename(file.originalname, extension)
+    .replace(/[^a-zA-Z0-9_-]/g, "_");
+
+  callback(null, `${safeBaseName}-${uniqueSuffix}${extension}`);
+};
+
+// Configure multi-field upload middleware
+const driverProfileUploadFields = createMultiFieldUploadMiddleware(
+  [
+    { name: "nidOrPassport", maxCount: 1, allowedMimeTypes: IMAGE_MIME_TYPES },
+    { name: "profileImage", maxCount: 1, allowedMimeTypes: IMAGE_MIME_TYPES },
+    {
+      name: "drivingLicenseImages",
+      maxCount: 10,
+      allowedMimeTypes: IMAGE_MIME_TYPES,
+    },
+    {
+      name: "vehicleRegistrationDocumentImages",
+      maxCount: 10,
+      allowedMimeTypes: IMAGE_MIME_TYPES,
+    },
+  ],
+  driverProfileUploadsDirectory,
+  customFilename,
+);
 
 router.get(
   "/status",
@@ -36,7 +81,7 @@ router.post(
   "/complete",
   authenticate,
   requireDriverRole,
-  upload.none(),
+  driverProfileUploadFields,
   normalizeDriverProfilePayload,
   completeDriverProfileValidation,
   handleValidationErrors,
@@ -48,7 +93,7 @@ router.patch(
   authenticate,
   requireDriverRole,
   requireCompletedDriverProfile,
-  upload.none(),
+  driverProfileUploadFields,
   normalizeDriverProfilePayload,
   updateDriverProfileValidation,
   handleValidationErrors,

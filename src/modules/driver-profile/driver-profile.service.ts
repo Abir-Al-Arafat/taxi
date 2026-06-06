@@ -49,7 +49,6 @@ export class DriverProfileService {
         HTTP_STATUS.CONFLICT,
       );
     }
-
     const session = await mongoose.startSession();
 
     try {
@@ -191,8 +190,14 @@ export class DriverProfileService {
     return {
       dateOfBirth: this.parseDate(request.dateOfBirth),
       gender: request.gender,
-      nidOrPassport: request.nidOrPassport.trim(),
-      profileImage: request.profileImage.trim(),
+      nidOrPassport: this.normalizeRequiredString(
+        request.nidOrPassport,
+        "NID/passport is required",
+      ),
+      profileImage: this.normalizeRequiredString(
+        request.profileImage,
+        "Profile image is required",
+      ),
       drivingLicenseImages: this.normalizeStringArray(
         request.drivingLicenseImages,
       ),
@@ -200,11 +205,23 @@ export class DriverProfileService {
         request.vehicleRegistrationDocumentImages,
       ),
       vehicleType: request.vehicleType,
-      carCompany: request.carCompany.trim(),
-      model: request.model.trim(),
+      carCompany: this.normalizeRequiredString(
+        request.carCompany,
+        "Car company is required",
+      ),
+      model: this.normalizeRequiredString(
+        request.model,
+        "Vehicle model is required",
+      ),
       year: request.year,
-      color: request.color.trim(),
-      plateNumber: request.plateNumber.trim().toUpperCase(),
+      color: this.normalizeRequiredString(
+        request.color,
+        "Vehicle color is required",
+      ),
+      plateNumber: this.normalizeRequiredString(
+        request.plateNumber,
+        "Plate number is required",
+      ).toUpperCase(),
     };
   }
 
@@ -267,10 +284,43 @@ export class DriverProfileService {
     return updatePayload;
   }
 
-  private normalizeStringArray(values: string[]): string[] {
-    return values
-      .map((value) => value.trim())
-      .filter((value) => value.length > 0);
+  private normalizeStringArray(
+    values: string[] | string | undefined,
+  ): string[] {
+    if (Array.isArray(values)) {
+      return values
+        .map((value) => value.trim())
+        .filter((value) => value.length > 0);
+    }
+
+    if (typeof values === "string") {
+      const trimmedValue = values.trim();
+
+      if (trimmedValue.length === 0) {
+        return [];
+      }
+
+      return [trimmedValue];
+    }
+
+    return [];
+  }
+
+  private normalizeRequiredString(
+    value: string | undefined,
+    message: string,
+  ): string {
+    if (typeof value !== "string") {
+      throw new AppError(message, HTTP_STATUS.BAD_REQUEST);
+    }
+
+    const trimmedValue = value.trim();
+
+    if (trimmedValue.length === 0) {
+      throw new AppError(message, HTTP_STATUS.BAD_REQUEST);
+    }
+
+    return trimmedValue;
   }
 
   private parseDate(value: string): Date {

@@ -2,7 +2,7 @@ import { model, Schema, type Document, type Types } from "mongoose";
 import type { AuthGender } from "../auth/auth.types";
 import type { DriverVehicleType } from "./driver-profile.types";
 
-export interface DriverProfileDocument extends Document {
+export interface DriverProfileDocument extends Omit<Document, "model"> {
   _id: Types.ObjectId;
   userId: Types.ObjectId;
   dateOfBirth: Date;

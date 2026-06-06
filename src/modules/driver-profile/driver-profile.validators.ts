@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import { body, validationResult } from "express-validator";
 import HTTP_STATUS from "../../constants/statusCodes";
 import { AppError } from "../../core/errors/AppError";
+import { toPublicRelativePath } from "../../shared/utilities/file.util";
 
 const allowedGenders = ["male", "female", "other"] as const;
 const allowedVehicleTypes = ["taxi", "normal car"] as const;
@@ -32,6 +33,43 @@ const normalizeArrayValue = (value: unknown): string[] | undefined => {
   }
 
   return [value.trim()].filter(Boolean);
+};
+
+const fileToStoredPath = (file: Express.Multer.File): string => {
+  if (!file.path) {
+    throw new AppError(
+      "Uploaded file path is missing",
+      HTTP_STATUS.INTERNAL_SERVER_ERROR,
+    );
+  }
+
+  return toPublicRelativePath(file.path);
+};
+
+const normalizeUploadedFile = (
+  files: Record<string, Express.Multer.File[]> | undefined,
+  fieldName: string,
+): string | undefined => {
+  const file = files?.[fieldName]?.[0];
+
+  if (!file) {
+    return undefined;
+  }
+
+  return fileToStoredPath(file);
+};
+
+const normalizeUploadedFileArray = (
+  files: Record<string, Express.Multer.File[]> | undefined,
+  fieldName: string,
+): string[] | undefined => {
+  const fileList = files?.[fieldName];
+
+  if (!fileList || fileList.length === 0) {
+    return undefined;
+  }
+
+  return fileList.map(fileToStoredPath);
 };
 
 const validateDateOfBirth = (isUpdate: boolean) =>
@@ -219,6 +257,29 @@ export const normalizeDriverProfilePayload = (
   _res: Response,
   next: NextFunction,
 ): void => {
+  const files = req.files as Record<string, Express.Multer.File[]> | undefined;
+
+  const singleFileFields = ["nidOrPassport", "profileImage"] as const;
+  for (const fieldName of singleFileFields) {
+    const normalizedFile = normalizeUploadedFile(files, fieldName);
+
+    if (typeof normalizedFile !== "undefined") {
+      req.body[fieldName] = normalizedFile;
+    }
+  }
+
+  const arrayFileFields = [
+    "drivingLicenseImages",
+    "vehicleRegistrationDocumentImages",
+  ] as const;
+  for (const fieldName of arrayFileFields) {
+    const normalizedFiles = normalizeUploadedFileArray(files, fieldName);
+
+    if (typeof normalizedFiles !== "undefined") {
+      req.body[fieldName] = normalizedFiles;
+    }
+  }
+
   const fieldsToNormalize = [
     "drivingLicenseImages",
     "vehicleRegistrationDocumentImages",

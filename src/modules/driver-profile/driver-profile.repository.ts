@@ -22,7 +22,7 @@ export class DriverProfileRepository extends BaseRepository<DriverProfileDocumen
     session?: mongoose.ClientSession,
   ): Promise<DriverProfileDocument | null> {
     try {
-      return this.model.findOneAndUpdate(
+      const updateQuery = this.model.updateOne(
         { userId },
         {
           $set: {
@@ -31,13 +31,25 @@ export class DriverProfileRepository extends BaseRepository<DriverProfileDocumen
           },
         },
         {
-          new: true,
           upsert: true,
           runValidators: true,
           setDefaultsOnInsert: true,
-          session,
         },
       );
+
+      if (session) {
+        updateQuery.session(session);
+      }
+
+      await updateQuery;
+
+      const findQuery = this.model.findOne({ userId });
+
+      if (session) {
+        findQuery.session(session);
+      }
+
+      return findQuery;
     } catch (error) {
       this.handleDatabaseError(error);
     }
@@ -49,7 +61,7 @@ export class DriverProfileRepository extends BaseRepository<DriverProfileDocumen
     session?: mongoose.ClientSession,
   ): Promise<DriverProfileDocument | null> {
     try {
-      return this.model.findOneAndUpdate(
+      const updateQuery = this.model.updateOne(
         { userId },
         {
           $set: {
@@ -57,11 +69,23 @@ export class DriverProfileRepository extends BaseRepository<DriverProfileDocumen
           },
         },
         {
-          new: true,
           runValidators: true,
-          session,
         },
       );
+
+      if (session) {
+        updateQuery.session(session);
+      }
+
+      await updateQuery;
+
+      const findQuery = this.model.findOne({ userId });
+
+      if (session) {
+        findQuery.session(session);
+      }
+
+      return findQuery;
     } catch (error) {
       this.handleDatabaseError(error);
     }

@@ -48,7 +48,7 @@ export interface DriverProfileResponse {
   color: string;
   plateNumber: string;
   profileCompleted: boolean;
-  completedAt?: Date;
+  completedAt?: Date | undefined;
   createdAt: Date;
   updatedAt: Date;
 }
