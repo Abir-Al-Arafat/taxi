@@ -13,12 +13,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.static(path.resolve(process.cwd(), "public")));
+app.use("/public", express.static(path.join(process.cwd(), "public")));
 
 app.get("/", (_req: Request, res: Response) => {
   res
     .status(HTTP_STATUS.OK)
-    .json(ResponseBuilder.success("Server is running", undefined, HTTP_STATUS.OK));
+    .json(
+      ResponseBuilder.success("Server is running", undefined, HTTP_STATUS.OK),
+    );
 });
 
 app.use("/api/v1", apiRouter);
