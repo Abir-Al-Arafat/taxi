@@ -11,6 +11,7 @@ import {
 import {
   requireCompletedDriverProfile,
   requireDriverRole,
+  uploadDriverDocuments,
 } from "./driver-profile.middleware";
 import {
   driverProfileUploadsDirectory,
@@ -81,7 +82,8 @@ router.post(
   "/complete",
   authenticate,
   requireDriverRole,
-  driverProfileUploadFields,
+  uploadDriverDocuments,
+  // driverProfileUploadFields,
   normalizeDriverProfilePayload,
   completeDriverProfileValidation,
   handleValidationErrors,
@@ -93,7 +95,8 @@ router.patch(
   authenticate,
   requireDriverRole,
   requireCompletedDriverProfile,
-  driverProfileUploadFields,
+  uploadDriverDocuments,
+  // driverProfileUploadFields,
   normalizeDriverProfilePayload,
   updateDriverProfileValidation,
   handleValidationErrors,

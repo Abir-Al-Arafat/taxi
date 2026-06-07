@@ -11,6 +11,7 @@ import type {
   DriverProfileStatusResponse,
   UpdateDriverProfileRequest,
 } from "./driver-profile.types";
+import { deleteFile } from "../../shared/utilities/file.util";
 
 export class DriverProfileService {
   constructor(
@@ -125,6 +126,41 @@ export class DriverProfileService {
 
     try {
       session.startTransaction();
+
+      if (!existingProfile) {
+        throw new AppError("Driver profile not found", HTTP_STATUS.NOT_FOUND);
+      }
+
+      // 2. Identify and delete old single files if new ones are uploaded
+      console.log("request.profileImage", request.profileImage);
+      console.log("existingProfile.profileImage", existingProfile.profileImage);
+
+      if (request.profileImage && existingProfile.profileImage) {
+        deleteFile(existingProfile.profileImage);
+      }
+
+      if (request.nidOrPassport && existingProfile.nidOrPassport) {
+        deleteFile(existingProfile.nidOrPassport);
+      }
+
+      // 3. Identify and delete old array files (multi-file uploads)
+      if (
+        request.drivingLicenseImages &&
+        existingProfile.drivingLicenseImages
+      ) {
+        existingProfile.drivingLicenseImages.forEach((oldImg: string) =>
+          deleteFile(oldImg),
+        );
+      }
+
+      if (
+        request.vehicleRegistrationDocumentImages &&
+        existingProfile.vehicleRegistrationDocumentImages
+      ) {
+        existingProfile.vehicleRegistrationDocumentImages.forEach(
+          (oldImg: string) => deleteFile(oldImg),
+        );
+      }
 
       const profile = await this.driverProfileRepository.updateProfileByUserId(
         userId,
