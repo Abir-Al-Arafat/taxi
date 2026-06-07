@@ -1,7 +1,7 @@
 import { model, Schema, type Document, type Types } from "mongoose";
 import type { AuthGender, AuthLocationPoint, AuthRole } from "./auth.types";
 
-export interface AuthUserDocument extends Document {
+export interface UserDocument extends Document {
   _id: Types.ObjectId;
   firstName: string;
   lastName: string;
@@ -24,9 +24,10 @@ export interface AuthUserDocument extends Document {
   createdAt: Date;
   updatedAt: Date;
   profileCompleted: boolean;
+  adminApproved: "pending" | "approved" | "declined";
 }
 
-const authUserSchema = new Schema<AuthUserDocument>(
+const authUserSchema = new Schema<UserDocument>(
   {
     firstName: {
       type: String,
@@ -93,10 +94,15 @@ const authUserSchema = new Schema<AuthUserDocument>(
     },
     profileCompleted: {
       type: Boolean,
-      default(this: AuthUserDocument) {
+      default(this: UserDocument) {
         return this.role !== "driver";
       },
       index: true,
+    },
+    adminApproved: {
+      type: String,
+      enum: ["pending", "approved", "declined"],
+      default: "pending",
     },
     verificationTokenHash: {
       type: String,
@@ -137,6 +143,6 @@ authUserSchema.index({ refreshTokenHash: 1 });
 authUserSchema.index({ profileCompleted: 1 });
 authUserSchema.index({ location: "2dsphere" });
 
-const AuthUserModel = model<AuthUserDocument>("User", authUserSchema);
+const AuthUserModel = model<UserDocument>("User", authUserSchema);
 
 export { AuthUserModel };

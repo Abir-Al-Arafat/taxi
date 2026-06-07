@@ -29,7 +29,7 @@ import type {
   VerifyOtpResponse,
   VerifyOtpRequest,
 } from "./auth.types";
-import type { AuthUserDocument } from "./user.schema";
+import type { UserDocument } from "./user.schema";
 import { env } from "../../config/env";
 
 const OTP_EXPIRATION_MINUTES = 10;
@@ -372,7 +372,7 @@ export class AuthService {
   }
 
   private async storeOtpChallengeAndNotify(options: {
-    userId: AuthUserDocument["_id"];
+    userId: UserDocument["_id"];
     tokenHashField: "verificationTokenHash" | "passwordResetTokenHash";
     expiresAtField:
       | "verificationTokenExpiresAt"
@@ -485,7 +485,7 @@ export class AuthService {
   }
 
   private async sendVerificationMessage(
-    user: AuthUserDocument,
+    user: UserDocument,
     otp: string,
   ): Promise<void> {
     const userView = this.mapUserToView(user);
@@ -507,7 +507,7 @@ export class AuthService {
   }
 
   private async sendPasswordResetMessage(
-    user: AuthUserDocument,
+    user: UserDocument,
     otp: string,
   ): Promise<void> {
     const userView = this.mapUserToView(user);
@@ -528,7 +528,7 @@ export class AuthService {
     }
   }
 
-  private mapUserToView(user: AuthUserDocument): AuthUserView {
+  private mapUserToView(user: UserDocument): AuthUserView {
     return {
       id: user._id.toString(),
       firstName: user.firstName,
@@ -559,7 +559,7 @@ export class AuthService {
     };
   }
 
-  private mapUserToResponse(user: AuthUserDocument): AuthUserResponse {
+  private mapUserToResponse(user: UserDocument): AuthUserResponse {
     return this.mapUserToView(user);
   }
 }
