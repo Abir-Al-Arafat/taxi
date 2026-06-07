@@ -252,54 +252,92 @@ const buildProfileValidation = (isUpdate: boolean) => {
 export const completeDriverProfileValidation = buildProfileValidation(false);
 export const updateDriverProfileValidation = buildProfileValidation(true);
 
+// export const normalizeDriverProfilePayload = (
+//   req: Request,
+//   _res: Response,
+//   next: NextFunction,
+// ): void => {
+//   const files = req.files as Record<string, Express.Multer.File[]> | undefined;
+
+//   const singleFileFields = ["nidOrPassport", "profileImage"] as const;
+//   for (const fieldName of singleFileFields) {
+//     const normalizedFile = normalizeUploadedFile(files, fieldName);
+
+//     if (typeof normalizedFile !== "undefined") {
+//       req.body[fieldName] = normalizedFile;
+//     }
+//   }
+
+//   const arrayFileFields = [
+//     "drivingLicenseImages",
+//     "vehicleRegistrationDocumentImages",
+//   ] as const;
+//   for (const fieldName of arrayFileFields) {
+//     const normalizedFiles = normalizeUploadedFileArray(files, fieldName);
+
+//     if (typeof normalizedFiles !== "undefined") {
+//       req.body[fieldName] = normalizedFiles;
+//     }
+//   }
+
+//   const fieldsToNormalize = [
+//     "drivingLicenseImages",
+//     "vehicleRegistrationDocumentImages",
+//   ] as const;
+
+//   for (const fieldName of fieldsToNormalize) {
+//     const normalizedValue = normalizeArrayValue(req.body[fieldName]);
+
+//     if (typeof normalizedValue !== "undefined") {
+//       req.body[fieldName] = normalizedValue;
+//     }
+//   }
+
+//   if (typeof req.body.year !== "undefined") {
+//     req.body.year = Number(req.body.year);
+//   }
+
+//   next();
+// };
+
 export const normalizeDriverProfilePayload = (
   req: Request,
   _res: Response,
   next: NextFunction,
 ): void => {
-  const files = req.files as Record<string, Express.Multer.File[]> | undefined;
-
-  const singleFileFields = ["nidOrPassport", "profileImage"] as const;
-  for (const fieldName of singleFileFields) {
-    const normalizedFile = normalizeUploadedFile(files, fieldName);
-
-    if (typeof normalizedFile !== "undefined") {
-      req.body[fieldName] = normalizedFile;
-    }
+  // If no files were uploaded, fall through to validation directly
+  if (!req.files) {
+    next();
+    return;
   }
 
-  const arrayFileFields = [
-    "drivingLicenseImages",
-    "vehicleRegistrationDocumentImages",
-  ] as const;
-  for (const fieldName of arrayFileFields) {
-    const normalizedFiles = normalizeUploadedFileArray(files, fieldName);
+  const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+  const baseUploadPath = "public/uploads/driver-docs"; // Force public directory prefix here
 
-    if (typeof normalizedFiles !== "undefined") {
-      req.body[fieldName] = normalizedFiles;
-    }
+  // 1. Process Single Fields safely
+  if (files["profileImage"]?.[0]) {
+    req.body.profileImage = `${baseUploadPath}/${files["profileImage"][0].filename}`;
   }
 
-  const fieldsToNormalize = [
-    "drivingLicenseImages",
-    "vehicleRegistrationDocumentImages",
-  ] as const;
-
-  for (const fieldName of fieldsToNormalize) {
-    const normalizedValue = normalizeArrayValue(req.body[fieldName]);
-
-    if (typeof normalizedValue !== "undefined") {
-      req.body[fieldName] = normalizedValue;
-    }
+  if (files["nidOrPassport"]?.[0]) {
+    req.body.nidOrPassport = `${baseUploadPath}/${files["nidOrPassport"][0].filename}`;
   }
 
-  if (typeof req.body.year !== "undefined") {
-    req.body.year = Number(req.body.year);
+  // 2. Process Multi-File Array Fields cleanly
+  if (files["drivingLicenseImages"]) {
+    req.body.drivingLicenseImages = files["drivingLicenseImages"].map(
+      (file) => `${baseUploadPath}/${file.filename}`,
+    );
+  }
+
+  if (files["vehicleRegistrationDocumentImages"]) {
+    req.body.vehicleRegistrationDocumentImages = files[
+      "vehicleRegistrationDocumentImages"
+    ].map((file) => `${baseUploadPath}/${file.filename}`);
   }
 
   next();
 };
-
 export const handleValidationErrors = (
   req: Request,
   _res: Response,
