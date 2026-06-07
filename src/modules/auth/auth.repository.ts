@@ -2,18 +2,16 @@ import mongoose from "mongoose";
 import { AppError } from "../../core/errors/AppError";
 import HTTP_STATUS from "../../constants/statusCodes";
 import { BaseRepository } from "../../repositories/base.repository";
-import { AuthUserModel, type AuthUserDocument } from "./user.schema";
+import { UserModel, type UserDocument } from "./user.schema";
 
-export class AuthRepository extends BaseRepository<AuthUserDocument> {
+export class AuthRepository extends BaseRepository<UserDocument> {
   constructor() {
-    super(AuthUserModel);
+    super(UserModel);
   }
 
-  async createUser(
-    payload: Partial<AuthUserDocument>,
-  ): Promise<AuthUserDocument> {
+  async createUser(payload: Partial<UserDocument>): Promise<UserDocument> {
     try {
-      return (await super.create(payload)) as AuthUserDocument;
+      return (await super.create(payload)) as UserDocument;
     } catch (error) {
       if (error instanceof mongoose.Error.ValidationError) {
         const messages = Object.values(error.errors)

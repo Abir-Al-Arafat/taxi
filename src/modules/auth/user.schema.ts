@@ -143,6 +143,6 @@ authUserSchema.index({ refreshTokenHash: 1 });
 authUserSchema.index({ profileCompleted: 1 });
 authUserSchema.index({ location: "2dsphere" });
 
-const AuthUserModel = model<UserDocument>("User", authUserSchema);
+const UserModel = model<UserDocument>("User", authUserSchema);
 
-export { AuthUserModel };
+export { UserModel };
