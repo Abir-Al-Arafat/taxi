@@ -145,11 +145,24 @@ export class AuthController {
 
     const refreshToken = authReq.cookies?.refreshToken as string | undefined;
 
-    const userId = authReq.user?.userId as string | undefined;
-
     if (!refreshToken) {
       throw new AppError("Refresh token not found", HTTP_STATUS.UNAUTHORIZED);
     }
+
+    let decodedRefresh: { sub: string };
+
+    try {
+      // 1. Verify the refresh token
+      // Passing true or the appropriate parameter for refresh verification based on  jwtService setup
+      decodedRefresh = this.jwtService.verify<{ sub: string }>(
+        refreshToken as string,
+        true,
+      );
+    } catch (error) {
+      throw new AppError("Invalid refresh token", HTTP_STATUS.UNAUTHORIZED);
+    }
+
+    const userId = decodedRefresh.sub; // Extracts the user identity directly from the refresh payload
 
     if (!userId) {
       throw new AppError("User not authenticated", HTTP_STATUS.UNAUTHORIZED);

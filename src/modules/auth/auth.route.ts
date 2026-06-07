@@ -60,7 +60,7 @@ router.post(
   handleValidationErrors,
   authController.resetPassword,
 );
-router.post("/refresh", authenticate, authController.refresh);
+router.post("/refresh", authController.refresh);
 router.post("/logout", authenticate, authController.logout);
 
 export { router as authRouter };
