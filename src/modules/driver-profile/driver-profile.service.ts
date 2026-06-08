@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import HTTP_STATUS from "../../constants/statusCodes";
 import { AppError } from "../../core/errors/AppError";
 import { AuthRepository } from "../auth/auth.repository";
-import type { AuthUserDocument } from "../auth/user.schema";
+import type { UserDocument } from "../auth/user.schema";
 import { DriverProfileRepository } from "./driver-profile.repository";
 import type { DriverProfileDocument } from "./driver-profile.schema";
 import type {
@@ -189,7 +189,7 @@ export class DriverProfileService {
   private async assertDriverAccount(
     userId: string,
     requireCompletedProfile = false,
-  ): Promise<AuthUserDocument> {
+  ): Promise<UserDocument> {
     const user = await this.authRepository.findById(userId);
 
     if (!user) {
@@ -373,7 +373,7 @@ export class DriverProfileService {
   }
 
   private mapProfileStatus(
-    user: AuthUserDocument,
+    user: UserDocument,
     profile: DriverProfileDocument | null,
   ): DriverProfileStatusResponse {
     return {
