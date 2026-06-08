@@ -18,6 +18,11 @@ router.use(authenticate, requireAdminRole);
 router.get("/list", controller.getAllDrivers);
 
 /**
+ * GET /api/v1/driver-approval/:driverId
+ */
+router.get("/list/:driverId", controller.getDriverById);
+
+/**
  * POST /api/v1/driver-approval/review/:driverId
  * Payload: { "action": "accept" } or { "action": "decline" }
  */

@@ -1,26 +1,26 @@
-// src/modules/driver-approval/driver-approval.service.ts
-import { DriverApprovalRepository } from "./driver-approval.repository";
-import { DriverProfileRepository } from "../driver-profile/driver-profile.repository";
+import {
+  DriverApprovalRepository,
+  IDriverApprovalQueryParams,
+} from "./driver-approval.repository";
 import { AuthRepository } from "../auth/auth.repository";
 import { AppError } from "../../core/errors/AppError";
 import HTTP_STATUS from "../../constants/statusCodes";
 
 export class DriverApprovalService {
   private driverApprovalRepository = new DriverApprovalRepository();
-  private driverProfileRepository = new DriverProfileRepository();
   private authRepository = new AuthRepository();
-  async listDrivers(queryFilters: { completed?: string; status?: string }) {
-    const filterParams: { profileCompleted?: boolean; adminApproved?: string } =
-      {};
+  async listDrivers(queryParams: IDriverApprovalQueryParams) {
+    // Simply forward query inputs directly down to the updated repository pipeline
+    return this.driverApprovalRepository.findDriversWithProfiles(queryParams);
+  }
 
-    if (queryFilters.completed !== undefined) {
-      filterParams.profileCompleted = queryFilters.completed === "true";
+  async driverById(id: string) {
+    const driver = await this.driverApprovalRepository.findDriverById(id);
+    console.log("Driver fetched by ID:", driver);
+    if (!driver) {
+      throw new AppError("Driver not found", HTTP_STATUS.NOT_FOUND);
     }
-    if (queryFilters.status !== undefined) {
-      filterParams.adminApproved = queryFilters.status;
-    }
-
-    return this.driverApprovalRepository.findDriversWithProfiles(filterParams);
+    return driver;
   }
 
   async processApproval(driverId: string, action: "accept" | "decline") {

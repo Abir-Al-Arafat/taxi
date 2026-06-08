@@ -10,20 +10,35 @@ export class DriverApprovalController {
 
   getAllDrivers = asyncHandler(
     async (req: Request, res: Response): Promise<void> => {
-      const completed = req.query.profileCompleted as string | undefined;
-      const status = req.query.adminApproved as string | undefined;
+      // Collect search, pagination and explicit filters directly out of req.query
+      const result = await this.driverApprovalService.listDrivers(req.query);
 
-      const drivers = await this.driverApprovalService.listDrivers({
-        completed: completed as string,
-        status: status as string,
-      });
+      res.status(HTTP_STATUS.OK).json(
+        ResponseBuilder.success(
+          "Drivers fetched successfully for evaluation",
+          {
+            drivers: result.items, // Maps array results cleanly
+            pagination: result.pagination, // Returns meta parameters
+          },
+          HTTP_STATUS.OK,
+        ),
+      );
+    },
+  );
+
+  getDriverById = asyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const { driverId } = req.params;
+      const driver = await this.driverApprovalService.driverById(
+        driverId as string,
+      );
 
       res
         .status(HTTP_STATUS.OK)
         .json(
           ResponseBuilder.success(
-            "Drivers fetched successfully for evaluation",
-            { drivers },
+            "Driver details retrieved successfully",
+            driver,
             HTTP_STATUS.OK,
           ),
         );
