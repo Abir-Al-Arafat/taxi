@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 import { BaseRepository } from "../../repositories/base.repository";
-import { UserModel, UserDocument } from "../auth/user.schema";
+import { UserModel, UserDocument } from "../user/user.schema";
 import type {
   IPaginationParams,
   IPaginatedResult,

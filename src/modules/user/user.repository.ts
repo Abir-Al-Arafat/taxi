@@ -4,7 +4,7 @@ import HTTP_STATUS from "../../constants/statusCodes";
 import { BaseRepository } from "../../repositories/base.repository";
 import { UserModel, type UserDocument } from "../user/user.schema";
 
-export class AuthRepository extends BaseRepository<UserDocument> {
+export class UserRepository extends BaseRepository<UserDocument> {
   constructor() {
     super(UserModel);
   }

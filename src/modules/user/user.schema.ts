@@ -1,5 +1,9 @@
 import { model, Schema, type Document, type Types } from "mongoose";
-import type { AuthGender, AuthLocationPoint, AuthRole } from "./auth.types";
+import type {
+  AuthGender,
+  AuthLocationPoint,
+  AuthRole,
+} from "../auth/auth.types";
 
 export interface UserDocument extends Document {
   _id: Types.ObjectId;

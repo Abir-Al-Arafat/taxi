@@ -29,7 +29,7 @@ import type {
   VerifyOtpResponse,
   VerifyOtpRequest,
 } from "./auth.types";
-import type { UserDocument } from "./user.schema";
+import type { UserDocument } from "../user/user.schema";
 import { env } from "../../config/env";
 
 const OTP_EXPIRATION_MINUTES = 10;
