@@ -305,35 +305,38 @@ export const normalizeDriverProfilePayload = (
   _res: Response,
   next: NextFunction,
 ): void => {
-  // If no files were uploaded, fall through to validation directly
   if (!req.files) {
     next();
     return;
   }
 
   const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-  const baseUploadPath = "public/uploads/driver-docs"; // Force public directory prefix here
 
-  // 1. Process Single Fields safely
+  // Base directories matching our physical layout
+  const docUploadPath = "public/uploads/driver-docs";
+  const avatarUploadPath = "public/uploads/profile-pictures"; // New separate path
+
+  // 1. Normalize Single Fields
   if (files["profilePicture"]?.[0]) {
-    req.body.profilePicture = `${baseUploadPath}/${files["profilePicture"][0].filename}`;
+    // Routes perfectly into profile-pictures directory
+    req.body.profilePicture = `${avatarUploadPath}/${files["profilePicture"][0].filename}`;
   }
 
   if (files["nidOrPassport"]?.[0]) {
-    req.body.nidOrPassport = `${baseUploadPath}/${files["nidOrPassport"][0].filename}`;
+    req.body.nidOrPassport = `${docUploadPath}/${files["nidOrPassport"][0].filename}`;
   }
 
-  // 2. Process Multi-File Array Fields cleanly
+  // 2. Normalize Array Fields (Remain exactly the same)
   if (files["drivingLicenseImages"]) {
     req.body.drivingLicenseImages = files["drivingLicenseImages"].map(
-      (file) => `${baseUploadPath}/${file.filename}`,
+      (file) => `${docUploadPath}/${file.filename}`,
     );
   }
 
   if (files["vehicleRegistrationDocumentImages"]) {
     req.body.vehicleRegistrationDocumentImages = files[
       "vehicleRegistrationDocumentImages"
-    ].map((file) => `${baseUploadPath}/${file.filename}`);
+    ].map((file) => `${docUploadPath}/${file.filename}`);
   }
 
   next();

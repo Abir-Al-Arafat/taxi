@@ -57,4 +57,5 @@ export interface DriverProfileStatusResponse {
   profile: DriverProfileResponse | null;
   profileCompleted: boolean;
   profileCompletionRequired: boolean;
+  profilePicture?: string;
 }

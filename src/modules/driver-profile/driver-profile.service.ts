@@ -124,6 +124,8 @@ export class DriverProfileService {
       );
     }
 
+    console.log("Update payload after normalization:", updatePayload);
+
     const session = await mongoose.startSession();
 
     try {
@@ -166,6 +168,18 @@ export class DriverProfileService {
         throw new AppError(
           "Failed to update driver profile",
           HTTP_STATUS.INTERNAL_SERVER_ERROR,
+        );
+      }
+
+      if (updatePayload.profilePicture) {
+        await this.authRepository.updateOne(
+          { _id: userId },
+          {
+            $set: {
+              profilePicture: updatePayload.profilePicture,
+            },
+          },
+          session,
         );
       }
 
@@ -257,7 +271,7 @@ export class DriverProfileService {
     request: UpdateDriverProfileRequest,
   ): Partial<DriverProfileDocument> {
     const updatePayload: Partial<DriverProfileDocument> = {};
-
+    console.log("normalizeUpdateRequest");
     if (typeof request.dateOfBirth !== "undefined") {
       updatePayload.dateOfBirth = parseDate(request.dateOfBirth);
     }
@@ -339,6 +353,7 @@ export class DriverProfileService {
       profileCompleted: user.profileCompleted,
       profileCompletionRequired:
         user.role === "driver" && !user.profileCompleted,
+      profilePicture: user.profilePicture as string,
     };
   }
 

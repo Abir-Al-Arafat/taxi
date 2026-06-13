@@ -10,7 +10,10 @@ import {
   DEFAULT_UPLOAD_DIR,
   IMAGE_MIME_TYPES,
 } from "../constants/upload.constants";
-import type { UploadOptions, UploadRequest } from "../shared/types/upload.types";
+import type {
+  UploadOptions,
+  UploadRequest,
+} from "../shared/types/upload.types";
 import {
   validateFileCount,
   validateFileSize,
@@ -172,10 +175,7 @@ export const validateUploadedFile =
           });
         }
       } else if (required) {
-        throw new AppError(
-          "File upload is required",
-          HTTP_STATUS.BAD_REQUEST,
-        );
+        throw new AppError("File upload is required", HTTP_STATUS.BAD_REQUEST);
       }
 
       next();
@@ -203,78 +203,85 @@ export const validateUploadedFile =
  */
 export const createMultiFieldUploadMiddleware = (
   fields: FieldConfig[],
-  uploadDir: string = DEFAULT_UPLOAD_DIR,
-  filename?: (
+  defaultUploadDir: string, // fallback folder
+  filenameCustomizer?: (
     req: Request,
     file: Express.Multer.File,
     cb: (error: Error | null, filename: string) => void,
   ) => void,
 ) => {
-  // Ensure upload directory exists
-  const absoluteUploadDir = path.resolve(uploadDir);
-  if (!fs.existsSync(absoluteUploadDir)) {
-    fs.mkdirSync(absoluteUploadDir, { recursive: true });
-  }
-
-  // Configure multer storage
+  console.log("createMultiFieldUploadMiddleware");
   const storage = multer.diskStorage({
-    destination: (_req, _file, cb) => {
+    destination: (_req, file, cb) => {
+      // 1. Check if the incoming file field is the profile picture
+      let targetDir = defaultUploadDir;
+      if (
+        file.fieldname === "profileImage" ||
+        file.fieldname === "profilePicture"
+      ) {
+        targetDir = "public/uploads/profile-pictures";
+      }
+
+      // 2. Ensure the specific target folder exists on disk dynamically
+      const absoluteUploadDir = path.resolve(targetDir);
+      if (!fs.existsSync(absoluteUploadDir)) {
+        fs.mkdirSync(absoluteUploadDir, { recursive: true });
+      }
+
       cb(null, absoluteUploadDir);
     },
-    filename: filename
-      ? filename
-      : (_req, file, cb) => {
-          const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-          const ext = path.extname(file.originalname);
-          cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
-        },
-  });
-
-  // Calculate overall limits
-  const totalMaxFiles = fields.reduce(
-    (sum, field) => sum + (field.maxCount || 1),
-    0,
-  );
-  const overallMaxFileSize = Math.max(
-    ...fields.map((field) => field.maxFileSize || DEFAULT_MAX_FILE_SIZE),
-  );
-
-  // Configure multer
-  const upload = multer({
-    storage,
-    limits: {
-      fileSize: overallMaxFileSize,
-      files: totalMaxFiles,
-    },
-    fileFilter: (
-      _req: Request,
-      file: Express.Multer.File,
-      cb: multer.FileFilterCallback,
-    ) => {
-      try {
-        // Find the field configuration for this file
-        const fieldConfig = fields.find((f) => f.name === file.fieldname);
-
-        if (fieldConfig && fieldConfig.allowedMimeTypes) {
-          validateMimeType(file.mimetype, fieldConfig.allowedMimeTypes);
-        }
-
-        cb(null, true);
-      } catch (error) {
-        if (error instanceof AppError) {
-          cb(error);
-        } else {
-          cb(new AppError("File validation failed", HTTP_STATUS.BAD_REQUEST));
-        }
+    filename: (req, file, cb) => {
+      if (filenameCustomizer) {
+        filenameCustomizer(req, file, cb);
+      } else {
+        const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+        cb(
+          null,
+          `${file.fieldname}-${uniqueSuffix}${path.extname(file.originalname)}`,
+        );
       }
     },
   });
 
-  // Convert fields to multer format
-  const multerFields = fields.map((field) => ({
-    name: field.name,
-    maxCount: field.maxCount || 1,
-  }));
+  // Keep filter validation mappings exactly the same
+  const fileFilter = (
+    _req: Request,
+    file: Express.Multer.File,
+    cb: multer.FileFilterCallback,
+  ) => {
+    const config = fields.find((f) => f.name === file.fieldname);
+    if (!config) {
+      cb(new multer.MulterError("LIMIT_UNEXPECTED_FILE", file.fieldname));
+      return;
+    }
 
-  return upload.fields(multerFields);
+    if (
+      config.allowedMimeTypes &&
+      !config.allowedMimeTypes.includes(file.mimetype)
+    ) {
+      cb(
+        new AppError(
+          `Invalid file type for field ${file.fieldname}`,
+          HTTP_STATUS.BAD_REQUEST,
+        ),
+      );
+      return;
+    }
+
+    cb(null, true);
+  };
+
+  const upload = multer({
+    storage,
+    fileFilter,
+    limits: {
+      fileSize: Math.max(
+        ...fields.map((f) => f.maxFileSize || 5 * 1024 * 1024),
+      ),
+    },
+  });
+
+  return upload.fields(
+    fields.map((f) => ({ name: f.name, maxCount: f.maxCount })),
+  );
 };
