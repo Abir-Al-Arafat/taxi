@@ -37,6 +37,12 @@ export class UserController {
   getUserById = asyncHandler(
     async (req: Request, res: Response): Promise<void> => {
       const userId = req.params.id;
+      if (!userId) {
+        throw new AppError(
+          "User ID parameter is required",
+          HTTP_STATUS.BAD_REQUEST,
+        );
+      }
       const user = await this.userService.getUserById(userId as string);
 
       res
@@ -44,6 +50,29 @@ export class UserController {
         .json(
           ResponseBuilder.success(
             "User retrieved successfully",
+            user,
+            HTTP_STATUS.OK,
+          ),
+        );
+    },
+  );
+
+  getMyDetails = asyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const authReq = req as AuthenticatedRequest;
+      const userId = authReq.user?.userId;
+
+      if (!userId) {
+        throw new AppError("User not authenticated", HTTP_STATUS.UNAUTHORIZED);
+      }
+
+      const user = await this.userService.getUserById(userId);
+
+      res
+        .status(HTTP_STATUS.OK)
+        .json(
+          ResponseBuilder.success(
+            "User details retrieved successfully",
             user,
             HTTP_STATUS.OK,
           ),

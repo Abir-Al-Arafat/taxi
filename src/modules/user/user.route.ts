@@ -11,6 +11,8 @@ const userController = new UserController();
 
 router.get("/", userController.getAllUsers);
 
+router.get("/me", authenticate, userController.getMyDetails);
+
 router.get("/:id", userController.getUserById);
 
 router.patch(
