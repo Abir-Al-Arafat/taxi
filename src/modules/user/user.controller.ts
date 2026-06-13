@@ -76,4 +76,47 @@ export class UserController {
         );
     },
   );
+
+  changePassword = asyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const authReq = req as AuthenticatedRequest;
+      const userId = authReq.user?.userId;
+
+      if (!userId) {
+        throw new AppError("User not authenticated", HTTP_STATUS.UNAUTHORIZED);
+      }
+
+      const { currentPassword, newPassword, confirmPassword } = req.body;
+
+      if (!currentPassword || !newPassword || !confirmPassword) {
+        throw new AppError(
+          "Current password, new password, and confirm password are required",
+          HTTP_STATUS.BAD_REQUEST,
+        );
+      }
+
+      if (newPassword !== confirmPassword) {
+        throw new AppError(
+          "New password and confirm password do not match",
+          HTTP_STATUS.BAD_REQUEST,
+        );
+      }
+
+      const updatedUser = await this.userService.changePassword(
+        userId,
+        currentPassword,
+        newPassword,
+      );
+
+      res
+        .status(HTTP_STATUS.OK)
+        .json(
+          ResponseBuilder.success(
+            "Password changed successfully",
+            updatedUser,
+            HTTP_STATUS.OK,
+          ),
+        );
+    },
+  );
 }

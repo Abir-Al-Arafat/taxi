@@ -21,4 +21,11 @@ router.patch(
   userController.updateMyDetails,
 );
 
+router.patch(
+  "/me/password",
+  authenticate,
+  upload.none(),
+  userController.changePassword,
+);
+
 export { router as userRouter };

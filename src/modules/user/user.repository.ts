@@ -2,10 +2,12 @@ import mongoose from "mongoose";
 import { AppError } from "../../core/errors/AppError";
 import HTTP_STATUS from "../../constants/statusCodes";
 import { BaseRepository } from "../../repositories/base.repository";
+import { AuthService } from "../auth/auth.service";
 import { UserModel, type UserDocument } from "../user/user.schema";
 import type { UpdateProfileDetails } from "./user.interface";
 
 export class UserRepository extends BaseRepository<UserDocument> {
+  private authService = new AuthService();
   constructor() {
     super(UserModel);
   }
@@ -59,6 +61,71 @@ export class UserRepository extends BaseRepository<UserDocument> {
       await updateQuery;
 
       const findQuery: any = this.model.findOne({ userId });
+
+      if (session) {
+        findQuery.session(session);
+      }
+
+      return findQuery;
+    } catch (error) {
+      this.handleDatabaseError(error);
+    }
+  }
+
+  async changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+    session?: mongoose.ClientSession,
+  ): Promise<UserDocument | null> {
+    try {
+      const user = await this.model
+        .findOne({ _id: userId })
+        .select("+passwordHash");
+
+      if (!user) {
+        throw new AppError("User not found", HTTP_STATUS.NOT_FOUND);
+      }
+
+      if (!user.passwordHash) {
+        throw new AppError(
+          "User does not have a password set",
+          HTTP_STATUS.BAD_REQUEST,
+        );
+      }
+
+      console.log(`user.passwordHash: ${user.passwordHash}`);
+      console.log(
+        `this.authService.hashPassword(currentPassword): ${this.authService.hashPassword(currentPassword)}`,
+      );
+
+      if (
+        !this.authService.verifyPassword(currentPassword, user.passwordHash)
+      ) {
+        throw new AppError(
+          "Current password is incorrect",
+          HTTP_STATUS.UNAUTHORIZED,
+        );
+      }
+      const updateQuery = this.model.updateOne(
+        { _id: userId },
+        {
+          $set: {
+            passwordHash: this.authService.hashPassword(newPassword),
+          },
+        },
+        {
+          runValidators: true,
+        },
+      );
+
+      if (session) {
+        updateQuery.session(session);
+      }
+
+      await updateQuery;
+
+      const findQuery = this.model.findOne({ _id: userId });
 
       if (session) {
         findQuery.session(session);

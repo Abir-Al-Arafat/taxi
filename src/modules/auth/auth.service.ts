@@ -451,7 +451,7 @@ export class AuthService {
     return new Date(Date.now() + ms);
   }
 
-  private hashPassword(password: string): string {
+  hashPassword(password: string): string {
     const salt = randomBytes(PASSWORD_SALT_BYTES).toString("hex");
     const derivedKey = scryptSync(
       password,
@@ -462,10 +462,7 @@ export class AuthService {
     return `${salt}:${derivedKey}`;
   }
 
-  private verifyPassword(
-    password: string,
-    storedPasswordHash: string,
-  ): boolean {
+  verifyPassword(password: string, storedPasswordHash: string): boolean {
     const [salt, key] = storedPasswordHash.split(":");
 
     if (!salt || !key) {

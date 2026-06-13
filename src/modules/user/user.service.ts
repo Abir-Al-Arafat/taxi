@@ -40,6 +40,24 @@ export class UserService {
     return this.mapUserToResponse(user);
   }
 
+  async changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<AuthUserResponse> {
+    const updatedUser = await this.userRepository.changePassword(
+      userId,
+      currentPassword,
+      newPassword,
+    );
+
+    if (!updatedUser) {
+      throw new AppError("User not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    return this.mapUserToResponse(updatedUser);
+  }
+
   async updateMyDetails(
     userId: string,
     updatePayload: UserDocument,
