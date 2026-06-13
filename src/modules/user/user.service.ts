@@ -1,7 +1,13 @@
 import HTTP_STATUS from "../../constants/statusCodes";
 import { AppError } from "../../core/errors/AppError";
 import { UserRepository } from "./user.repository";
-
+import type {
+  CompleteDriverProfileRequest,
+  DriverProfileResponse,
+  DriverProfileStatusResponse,
+  UpdateDriverProfileRequest,
+} from "../driver-profile/driver-profile.types";
+import type { DriverProfileDocument } from "../driver-profile/driver-profile.schema";
 import type {
   AuthUserResponse,
   AuthLocationInput,
@@ -10,6 +16,10 @@ import type {
   AuthUserView,
 } from "../auth/auth.types";
 import type { UserDocument } from "../user/user.schema";
+import { parseDate } from "../../shared/utilities/date.util";
+import { normalizeStringArray } from "../../shared/utilities/upload.util";
+import { deleteFile } from "../../shared/utilities/file.util";
+import type { UpdateProfileDetails } from "./user.interface";
 
 export class UserService {
   constructor(private readonly userRepository = new UserRepository()) {}
@@ -28,6 +38,81 @@ export class UserService {
     }
 
     return this.mapUserToResponse(user);
+  }
+
+  async updateMyDetails(
+    userId: string,
+    updatePayload: UserDocument,
+  ): Promise<AuthUserResponse> {
+    if (Object.keys(updatePayload).length === 0) {
+      throw new AppError(
+        "At least one profile field is required",
+        HTTP_STATUS.BAD_REQUEST,
+      );
+    }
+
+    const existingUser: any = await this.userRepository.findById(userId);
+
+    if (!existingUser) {
+      throw new AppError("User not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    const updateData: Partial<UserDocument> = {};
+
+    if (updatePayload.firstName) {
+      updateData.firstName = updatePayload.firstName.trim();
+    }
+
+    if (updatePayload.lastName) {
+      updateData.lastName = updatePayload.lastName.trim();
+    }
+
+    // if (updatePayload.email) {
+    //   updateData.email = this.normalizeEmail(updatePayload.email);
+    // }
+
+    // if (updatePayload.phoneNumber) {
+    //   updateData.phoneNumber = this.normalizePhoneNumber(
+    //     updatePayload.phoneNumber,
+    //   );
+    // }
+
+    if (updatePayload.gender) {
+      updateData.gender = updatePayload.gender;
+    }
+
+    if (updatePayload.location) {
+      updateData.location = this.normalizeLocation(
+        updatePayload.location as any,
+      );
+      updateData.locationAddress = this.normalizeLocationAddress(
+        updatePayload.location as any,
+      ) as string;
+    }
+
+    if (updatePayload.profilePicture && existingUser.profilePicture) {
+      deleteFile(existingUser.profilePicture);
+    }
+    console.log(
+      "🚀 updatePayload.profilePicture:",
+      updatePayload.profilePicture,
+    );
+
+    if (updatePayload.profilePicture) {
+      updateData.profilePicture = updatePayload.profilePicture.trim();
+    }
+    console.log("🚀 updateData.profilePicture:", updateData.profilePicture);
+    const updatedUser = await this.userRepository.updateOne(
+      { _id: userId },
+      updateData,
+      { new: true },
+    );
+
+    if (!updatedUser) {
+      throw new AppError("User not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    return this.mapUserToResponse(updatedUser);
   }
 
   private normalizeEmail(email: string): string {
@@ -62,6 +147,7 @@ export class UserService {
       id: user._id.toString(),
       firstName: user.firstName,
       lastName: user.lastName,
+      profilePicture: user.profilePicture ?? "",
       fullName: `${user.firstName} ${user.lastName}`,
       phoneNumber: user.phoneNumber,
       email: user.email,
@@ -90,5 +176,65 @@ export class UserService {
 
   private mapUserToResponse(user: UserDocument): AuthUserResponse {
     return this.mapUserToView(user);
+  }
+
+  private normalizeUpdateRequest(
+    request: UpdateDriverProfileRequest,
+  ): Partial<DriverProfileDocument> {
+    const updatePayload: Partial<DriverProfileDocument> = {};
+
+    if (typeof request.dateOfBirth !== "undefined") {
+      updatePayload.dateOfBirth = parseDate(request.dateOfBirth);
+    }
+
+    if (typeof request.gender !== "undefined") {
+      updatePayload.gender = request.gender;
+    }
+
+    if (typeof request.nidOrPassport !== "undefined") {
+      updatePayload.nidOrPassport = request.nidOrPassport.trim();
+    }
+
+    if (typeof request.profileImage !== "undefined") {
+      updatePayload.profileImage = request.profileImage.trim();
+    }
+
+    if (typeof request.drivingLicenseImages !== "undefined") {
+      updatePayload.drivingLicenseImages = normalizeStringArray(
+        request.drivingLicenseImages,
+      );
+    }
+
+    if (typeof request.vehicleRegistrationDocumentImages !== "undefined") {
+      updatePayload.vehicleRegistrationDocumentImages = normalizeStringArray(
+        request.vehicleRegistrationDocumentImages,
+      );
+    }
+
+    if (typeof request.vehicleType !== "undefined") {
+      updatePayload.vehicleType = request.vehicleType;
+    }
+
+    if (typeof request.carCompany !== "undefined") {
+      updatePayload.carCompany = request.carCompany.trim();
+    }
+
+    if (typeof request.model !== "undefined") {
+      updatePayload.model = request.model.trim();
+    }
+
+    if (typeof request.year !== "undefined") {
+      updatePayload.year = request.year;
+    }
+
+    if (typeof request.color !== "undefined") {
+      updatePayload.color = request.color.trim();
+    }
+
+    if (typeof request.plateNumber !== "undefined") {
+      updatePayload.plateNumber = request.plateNumber.trim().toUpperCase();
+    }
+
+    return updatePayload;
   }
 }

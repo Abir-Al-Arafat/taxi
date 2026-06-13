@@ -12,6 +12,8 @@ import type {
   UpdateDriverProfileRequest,
 } from "./driver-profile.types";
 import { deleteFile } from "../../shared/utilities/file.util";
+import { parseDate } from "../../shared/utilities/date.util";
+import { normalizeStringArray } from "../../shared/utilities/upload.util";
 
 export class DriverProfileService {
   constructor(
@@ -127,14 +129,6 @@ export class DriverProfileService {
     try {
       session.startTransaction();
 
-      if (!existingProfile) {
-        throw new AppError("Driver profile not found", HTTP_STATUS.NOT_FOUND);
-      }
-
-      // 2. Identify and delete old single files if new ones are uploaded
-      console.log("request.profileImage", request.profileImage);
-      console.log("existingProfile.profileImage", existingProfile.profileImage);
-
       if (request.profileImage && existingProfile.profileImage) {
         deleteFile(existingProfile.profileImage);
       }
@@ -224,7 +218,7 @@ export class DriverProfileService {
     request: CompleteDriverProfileRequest,
   ): Partial<DriverProfileDocument> {
     return {
-      dateOfBirth: this.parseDate(request.dateOfBirth),
+      dateOfBirth: parseDate(request.dateOfBirth),
       gender: request.gender,
       nidOrPassport: this.normalizeRequiredString(
         request.nidOrPassport,
@@ -234,10 +228,8 @@ export class DriverProfileService {
         request.profileImage,
         "Profile image is required",
       ),
-      drivingLicenseImages: this.normalizeStringArray(
-        request.drivingLicenseImages,
-      ),
-      vehicleRegistrationDocumentImages: this.normalizeStringArray(
+      drivingLicenseImages: normalizeStringArray(request.drivingLicenseImages),
+      vehicleRegistrationDocumentImages: normalizeStringArray(
         request.vehicleRegistrationDocumentImages,
       ),
       vehicleType: request.vehicleType,
@@ -267,7 +259,7 @@ export class DriverProfileService {
     const updatePayload: Partial<DriverProfileDocument> = {};
 
     if (typeof request.dateOfBirth !== "undefined") {
-      updatePayload.dateOfBirth = this.parseDate(request.dateOfBirth);
+      updatePayload.dateOfBirth = parseDate(request.dateOfBirth);
     }
 
     if (typeof request.gender !== "undefined") {
@@ -283,14 +275,15 @@ export class DriverProfileService {
     }
 
     if (typeof request.drivingLicenseImages !== "undefined") {
-      updatePayload.drivingLicenseImages = this.normalizeStringArray(
+      updatePayload.drivingLicenseImages = normalizeStringArray(
         request.drivingLicenseImages,
       );
     }
 
     if (typeof request.vehicleRegistrationDocumentImages !== "undefined") {
-      updatePayload.vehicleRegistrationDocumentImages =
-        this.normalizeStringArray(request.vehicleRegistrationDocumentImages);
+      updatePayload.vehicleRegistrationDocumentImages = normalizeStringArray(
+        request.vehicleRegistrationDocumentImages,
+      );
     }
 
     if (typeof request.vehicleType !== "undefined") {
@@ -320,28 +313,6 @@ export class DriverProfileService {
     return updatePayload;
   }
 
-  private normalizeStringArray(
-    values: string[] | string | undefined,
-  ): string[] {
-    if (Array.isArray(values)) {
-      return values
-        .map((value) => value.trim())
-        .filter((value) => value.length > 0);
-    }
-
-    if (typeof values === "string") {
-      const trimmedValue = values.trim();
-
-      if (trimmedValue.length === 0) {
-        return [];
-      }
-
-      return [trimmedValue];
-    }
-
-    return [];
-  }
-
   private normalizeRequiredString(
     value: string | undefined,
     message: string,
@@ -357,19 +328,6 @@ export class DriverProfileService {
     }
 
     return trimmedValue;
-  }
-
-  private parseDate(value: string): Date {
-    const parsedDate = new Date(value);
-
-    if (Number.isNaN(parsedDate.getTime())) {
-      throw new AppError(
-        "Date of birth must be a valid date",
-        HTTP_STATUS.BAD_REQUEST,
-      );
-    }
-
-    return parsedDate;
   }
 
   private mapProfileStatus(

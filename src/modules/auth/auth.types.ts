@@ -85,6 +85,7 @@ export interface AuthUserView {
   id: string;
   firstName: string;
   lastName: string;
+  profilePicture?: string;
   fullName: string;
   phoneNumber: string;
   email: string;

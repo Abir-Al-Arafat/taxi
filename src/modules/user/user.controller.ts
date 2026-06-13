@@ -50,4 +50,30 @@ export class UserController {
         );
     },
   );
+
+  updateMyDetails = asyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const authReq = req as AuthenticatedRequest;
+      const userId = authReq.user?.userId;
+
+      if (!userId) {
+        throw new AppError("User not authenticated", HTTP_STATUS.UNAUTHORIZED);
+      }
+
+      const updatedUser = await this.userService.updateMyDetails(
+        userId,
+        req.body,
+      );
+
+      res
+        .status(HTTP_STATUS.OK)
+        .json(
+          ResponseBuilder.success(
+            "User details updated successfully",
+            updatedUser,
+            HTTP_STATUS.OK,
+          ),
+        );
+    },
+  );
 }

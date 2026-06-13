@@ -21,7 +21,9 @@ export const toPublicRelativePath = (absolutePath: string): string =>
  */
 export const deleteFile = (filePath: string | undefined | null): void => {
   if (!filePath) return;
-
+  console.log(
+    `[FileUtil] Received request to delete file at path: ${filePath}`,
+  );
   try {
     // If the path doesn't start with 'public/', prepend it automatically
     let normalizedPath = filePath;

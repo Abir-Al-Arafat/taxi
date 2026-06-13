@@ -29,6 +29,7 @@ export interface UserDocument extends Document {
   updatedAt: Date;
   profileCompleted: boolean;
   adminApproved: "pending" | "approved" | "declined";
+  profilePicture?: string;
 }
 
 const authUserSchema = new Schema<UserDocument>(
@@ -102,6 +103,10 @@ const authUserSchema = new Schema<UserDocument>(
         return this.role !== "driver";
       },
       index: true,
+    },
+    profilePicture: {
+      type: String,
+      trim: true,
     },
     adminApproved: {
       type: String,
