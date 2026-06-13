@@ -59,7 +59,7 @@ class Env {
     this.jwtAccessSecret = process.env.JWT_ACCESS_SECRET;
     this.jwtRefreshSecret = process.env.JWT_REFRESH_SECRET;
     this.jwtAccessExpiresIn = (process.env.JWT_ACCESS_EXPIRES_IN ||
-      "15m") as Required<SignOptions>["expiresIn"];
+      "7d") as Required<SignOptions>["expiresIn"];
     this.jwtRefreshExpiresIn = (process.env.JWT_REFRESH_EXPIRES_IN ||
       "30d") as Required<SignOptions>["expiresIn"];
   }

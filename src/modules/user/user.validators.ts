@@ -12,8 +12,6 @@ export const normalizeUserProfilePayload = (
 
   const files = req.files as { [fieldname: string]: Express.Multer.File[] };
   const baseUploadPath = "public/uploads/profile-pictures"; // Force public directory prefix here
-  console.log("files", files);
-  console.log("files profilePicture [0]", files["profilePicture"]?.[0]);
   // 1. Process Single Fields safely
   if (files["profilePicture"]?.[0]) {
     req.body.profilePicture = `${baseUploadPath}/${files["profilePicture"][0].filename}`;

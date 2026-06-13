@@ -35,7 +35,6 @@ export abstract class BaseRepository<T> {
     data: any,
     options: QueryOptions = {},
   ): Promise<T | null> {
-    console.log("BaseRepository updateOne called with data:", data);
     return this.model
       .findOneAndUpdate(filter, data, { new: true, ...options })
       .exec();

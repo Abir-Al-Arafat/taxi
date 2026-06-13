@@ -90,6 +90,10 @@ export class UserService {
       ) as string;
     }
 
+    if (updatePayload.locationAddress) {
+      updateData.locationAddress = updatePayload.locationAddress.trim();
+    }
+
     if (updatePayload.profilePicture && existingUser.profilePicture) {
       deleteFile(existingUser.profilePicture);
     }
