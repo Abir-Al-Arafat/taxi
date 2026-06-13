@@ -129,8 +129,8 @@ export class DriverProfileService {
     try {
       session.startTransaction();
 
-      if (request.profileImage && existingProfile.profileImage) {
-        deleteFile(existingProfile.profileImage);
+      if (request.profilePicture && existingProfile.profilePicture) {
+        deleteFile(existingProfile.profilePicture);
       }
 
       if (request.nidOrPassport && existingProfile.nidOrPassport) {
@@ -224,8 +224,8 @@ export class DriverProfileService {
         request.nidOrPassport,
         "NID/passport is required",
       ),
-      profileImage: this.normalizeRequiredString(
-        request.profileImage,
+      profilePicture: this.normalizeRequiredString(
+        request.profilePicture,
         "Profile image is required",
       ),
       drivingLicenseImages: normalizeStringArray(request.drivingLicenseImages),
@@ -270,8 +270,8 @@ export class DriverProfileService {
       updatePayload.nidOrPassport = request.nidOrPassport.trim();
     }
 
-    if (typeof request.profileImage !== "undefined") {
-      updatePayload.profileImage = request.profileImage.trim();
+    if (typeof request.profilePicture !== "undefined") {
+      updatePayload.profilePicture = request.profilePicture.trim();
     }
 
     if (typeof request.drivingLicenseImages !== "undefined") {
@@ -351,7 +351,7 @@ export class DriverProfileService {
       dateOfBirth: profile.dateOfBirth,
       gender: profile.gender,
       nidOrPassport: profile.nidOrPassport,
-      profileImage: profile.profileImage,
+      profilePicture: profile.profilePicture as string,
       drivingLicenseImages: profile.drivingLicenseImages,
       vehicleRegistrationDocumentImages:
         profile.vehicleRegistrationDocumentImages,

@@ -8,7 +8,6 @@ export interface DriverProfileDocument extends Omit<Document, "model"> {
   dateOfBirth: Date;
   gender: AuthGender;
   nidOrPassport: string;
-  profileImage: string;
   drivingLicenseImages: string[];
   vehicleRegistrationDocumentImages: string[];
   vehicleType: DriverVehicleType;
@@ -21,6 +20,7 @@ export interface DriverProfileDocument extends Omit<Document, "model"> {
   completedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
+  profilePicture?: string;
 }
 
 const driverProfileSchema = new Schema<DriverProfileDocument>(
@@ -42,11 +42,6 @@ const driverProfileSchema = new Schema<DriverProfileDocument>(
       enum: ["male", "female", "other"],
     },
     nidOrPassport: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    profileImage: {
       type: String,
       required: true,
       trim: true,

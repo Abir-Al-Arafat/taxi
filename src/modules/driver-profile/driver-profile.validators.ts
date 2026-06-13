@@ -160,7 +160,7 @@ const validateVehicleFields = (isUpdate: boolean) => [
             "dateOfBirth",
             "gender",
             "nidOrPassport",
-            "profileImage",
+            "profilePicture",
             "drivingLicenseImages",
             "vehicleRegistrationDocumentImages",
             "vehicleType",
@@ -208,11 +208,11 @@ const buildProfileValidation = (isUpdate: boolean) => {
         .trim()
         .notEmpty()
         .withMessage("NID/passport is required"),
-      body("profileImage")
+      body("profilePicture")
         .optional({ values: "falsy" })
         .trim()
         .notEmpty()
-        .withMessage("Profile image is required"),
+        .withMessage("Profile picture is required"),
       validateStringArray(
         "drivingLicenseImages",
         "Driving license images are required",
@@ -234,7 +234,7 @@ const buildProfileValidation = (isUpdate: boolean) => {
       .isIn([...allowedGenders])
       .withMessage("Gender must be male, female, or other"),
     trimAndRequire("nidOrPassport", "NID/passport is required"),
-    trimAndRequire("profileImage", "Profile image is required"),
+    trimAndRequire("profilePicture", "Profile picture is required"),
     validateStringArray(
       "drivingLicenseImages",
       "Driving license images are required",
@@ -315,8 +315,8 @@ export const normalizeDriverProfilePayload = (
   const baseUploadPath = "public/uploads/driver-docs"; // Force public directory prefix here
 
   // 1. Process Single Fields safely
-  if (files["profileImage"]?.[0]) {
-    req.body.profileImage = `${baseUploadPath}/${files["profileImage"][0].filename}`;
+  if (files["profilePicture"]?.[0]) {
+    req.body.profilePicture = `${baseUploadPath}/${files["profilePicture"][0].filename}`;
   }
 
   if (files["nidOrPassport"]?.[0]) {

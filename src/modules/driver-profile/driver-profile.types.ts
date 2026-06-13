@@ -6,7 +6,7 @@ export interface CompleteDriverProfileRequest {
   dateOfBirth: string;
   gender: AuthGender;
   nidOrPassport: string;
-  profileImage: string;
+  profilePicture: string;
   drivingLicenseImages: string[];
   vehicleRegistrationDocumentImages: string[];
   vehicleType: DriverVehicleType;
@@ -21,7 +21,7 @@ export interface UpdateDriverProfileRequest {
   dateOfBirth?: string;
   gender?: AuthGender;
   nidOrPassport?: string;
-  profileImage?: string;
+  profilePicture?: string;
   drivingLicenseImages?: string[];
   vehicleRegistrationDocumentImages?: string[];
   vehicleType?: DriverVehicleType;
@@ -38,7 +38,7 @@ export interface DriverProfileResponse {
   dateOfBirth: Date;
   gender: AuthGender;
   nidOrPassport: string;
-  profileImage: string;
+  profilePicture: string;
   drivingLicenseImages: string[];
   vehicleRegistrationDocumentImages: string[];
   vehicleType: DriverVehicleType;

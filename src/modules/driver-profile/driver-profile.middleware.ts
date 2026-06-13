@@ -78,7 +78,7 @@ export const requireCompletedDriverProfile = async (
 // 1. Keep field allocations enclosed in the domain middleware file
 const driverProfileUploadFields: FieldConfig[] = [
   { name: "nidOrPassport", maxCount: 1, allowedMimeTypes: IMAGE_MIME_TYPES },
-  { name: "profileImage", maxCount: 1, allowedMimeTypes: IMAGE_MIME_TYPES },
+  { name: "profilePicture", maxCount: 1, allowedMimeTypes: IMAGE_MIME_TYPES },
   {
     name: "drivingLicenseImages",
     maxCount: 10,

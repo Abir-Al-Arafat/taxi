@@ -8,6 +8,7 @@ import type {
   UpdateDriverProfileRequest,
 } from "../driver-profile/driver-profile.types";
 import type { DriverProfileDocument } from "../driver-profile/driver-profile.schema";
+
 import type {
   AuthUserResponse,
   AuthLocationInput,
@@ -202,59 +203,19 @@ export class UserService {
 
   private normalizeUpdateRequest(
     request: UpdateDriverProfileRequest,
-  ): Partial<DriverProfileDocument> {
-    const updatePayload: Partial<DriverProfileDocument> = {};
+  ): Partial<UserDocument> {
+    const updatePayload: Partial<UserDocument> = {};
 
-    if (typeof request.dateOfBirth !== "undefined") {
-      updatePayload.dateOfBirth = parseDate(request.dateOfBirth);
-    }
+    // if (typeof request.dateOfBirth !== "undefined") {
+    //   updatePayload.dateOfBirth = parseDate(request.dateOfBirth);
+    // }
 
     if (typeof request.gender !== "undefined") {
       updatePayload.gender = request.gender;
     }
 
-    if (typeof request.nidOrPassport !== "undefined") {
-      updatePayload.nidOrPassport = request.nidOrPassport.trim();
-    }
-
-    if (typeof request.profileImage !== "undefined") {
-      updatePayload.profileImage = request.profileImage.trim();
-    }
-
-    if (typeof request.drivingLicenseImages !== "undefined") {
-      updatePayload.drivingLicenseImages = normalizeStringArray(
-        request.drivingLicenseImages,
-      );
-    }
-
-    if (typeof request.vehicleRegistrationDocumentImages !== "undefined") {
-      updatePayload.vehicleRegistrationDocumentImages = normalizeStringArray(
-        request.vehicleRegistrationDocumentImages,
-      );
-    }
-
-    if (typeof request.vehicleType !== "undefined") {
-      updatePayload.vehicleType = request.vehicleType;
-    }
-
-    if (typeof request.carCompany !== "undefined") {
-      updatePayload.carCompany = request.carCompany.trim();
-    }
-
-    if (typeof request.model !== "undefined") {
-      updatePayload.model = request.model.trim();
-    }
-
-    if (typeof request.year !== "undefined") {
-      updatePayload.year = request.year;
-    }
-
-    if (typeof request.color !== "undefined") {
-      updatePayload.color = request.color.trim();
-    }
-
-    if (typeof request.plateNumber !== "undefined") {
-      updatePayload.plateNumber = request.plateNumber.trim().toUpperCase();
+    if (typeof request.profilePicture !== "undefined") {
+      updatePayload.profilePicture = request.profilePicture.trim();
     }
 
     return updatePayload;

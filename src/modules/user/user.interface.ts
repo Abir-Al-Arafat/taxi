@@ -11,7 +11,7 @@ export interface UpdateProfileDetails {
   dateOfBirth?: string;
   gender?: Gender;
   nidOrPassport?: string;
-  profileImage?: string;
+  profilePicture?: string;
   drivingLicenseImages?: string[];
   vehicleRegistrationDocumentImages?: string[];
   vehicleType?: DriverVehicleType;
