@@ -19,15 +19,16 @@ export class UserController {
   constructor(private readonly userService = new UserService()) {}
 
   getAllUsers = asyncHandler(
-    async (_req: Request, res: Response): Promise<void> => {
-      const users = await this.userService.getAllUsers();
+    async (req: Request, res: Response): Promise<void> => {
+      // 1. Passing URL query parameters down to the service layer
+      const result = await this.userService.getAllUsers(req.query);
 
       res
         .status(HTTP_STATUS.OK)
         .json(
           ResponseBuilder.success(
             "Users retrieved successfully",
-            users,
+            result,
             HTTP_STATUS.OK,
           ),
         );

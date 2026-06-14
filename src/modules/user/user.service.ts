@@ -7,7 +7,10 @@ import type {
   DriverProfileStatusResponse,
   UpdateDriverProfileRequest,
 } from "../driver-profile/driver-profile.types";
-import type { DriverProfileDocument } from "../driver-profile/driver-profile.schema";
+import type {
+  IPaginationParams,
+  IPaginatedResult,
+} from "../../shared/types/pagination.types";
 
 import type {
   AuthUserResponse,
@@ -20,15 +23,49 @@ import type { UserDocument } from "../user/user.schema";
 import { parseDate } from "../../shared/utilities/date.util";
 import { normalizeStringArray } from "../../shared/utilities/upload.util";
 import { deleteFile } from "../../shared/utilities/file.util";
-import type { UpdateProfileDetails } from "./user.interface";
 
 export class UserService {
   constructor(private readonly userRepository = new UserRepository()) {}
 
-  async getAllUsers(): Promise<AuthUserResponse[]> {
-    const users = await this.userRepository.findMany();
+  async getAllUsers(query: any): Promise<IPaginatedResult<AuthUserResponse>> {
+    // 1. Extract standard pagination & search parameters
+    const paginationParams: IPaginationParams = {
+      page: query.page,
+      limit: query.limit,
+      sort: query.sort,
+      search: query.search,
+    };
 
-    return users.map((user) => this.mapUserToResponse(user));
+    // 2. Build explicit database filters from query parameters
+    const filters: Record<string, any> = {};
+
+    if (query.role) {
+      filters.role = query.role;
+    }
+
+    if (query.isVerified !== undefined) {
+      filters.isVerified = query.isVerified === "true";
+    }
+
+    if (query.gender) {
+      filters.gender = query.gender;
+    }
+
+    // 3. Define which fields the ?search= parameter should scan
+    const searchableFields = ["firstName", "lastName", "email", "phoneNumber"];
+
+    // 4. Execute the global paginated query engine from BaseRepository
+    const result = await this.userRepository.findPaginated(
+      paginationParams,
+      filters,
+      searchableFields,
+    );
+
+    // 5. Map the raw Mongoose documents to clean DTO response layout
+    return {
+      items: result.items.map((user) => this.mapUserToResponse(user)),
+      pagination: result.pagination,
+    };
   }
 
   async getUserById(userId: string): Promise<AuthUserResponse> {
