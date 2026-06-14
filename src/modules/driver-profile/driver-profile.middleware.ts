@@ -36,7 +36,6 @@ export const requireCompletedDriverProfile = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    console.log("requireCompletedDriverProfile");
     const userId = req.user?.userId;
 
     if (!userId) {
@@ -98,7 +97,6 @@ const customDriverFilename = (
   file: Express.Multer.File,
   cb: (error: Error | null, filename: string) => void,
 ) => {
-  console.log("customDriverFilename invoked for file:");
   const userId = (req as AuthenticatedRequest).user?.userId || "anonymous";
   const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e4)}`;
   const ext = path.extname(file.originalname);

@@ -103,27 +103,6 @@ export class DriverProfileController {
         throw new AppError("User not authenticated", HTTP_STATUS.UNAUTHORIZED);
       }
 
-      // Check if both text payload changes and file modifications are completely empty
-      const hasBodyKeys = Object.keys(req.body || {}).length > 0;
-      const hasUploadedFiles = req.files && Object.keys(req.files).length > 0;
-
-      if (!hasBodyKeys && !hasUploadedFiles) {
-        // Fetch their current profile to return it directly without modifications
-        const currentProfile =
-          await this.driverProfileService.getMyProfile(userId);
-
-        res.status(HTTP_STATUS.OK).json(
-          ResponseBuilder.success(
-            "No updates were provided.",
-            {
-              profile: currentProfile,
-            },
-            HTTP_STATUS.OK,
-          ),
-        );
-        return;
-      }
-
       const profile = await this.driverProfileService.updateMyProfile(
         userId,
         req.body,

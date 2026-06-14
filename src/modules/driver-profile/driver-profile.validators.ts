@@ -2,7 +2,6 @@ import type { NextFunction, Request, Response } from "express";
 import { body, validationResult } from "express-validator";
 import HTTP_STATUS from "../../constants/statusCodes";
 import { AppError } from "../../core/errors/AppError";
-import { toPublicRelativePath } from "../../shared/utilities/file.util";
 
 const allowedGenders = ["male", "female", "other"] as const;
 const allowedVehicleTypes = ["taxi", "normal car"] as const;
@@ -10,78 +9,19 @@ const allowedVehicleTypes = ["taxi", "normal car"] as const;
 const trimAndRequire = (fieldName: string, message: string) =>
   body(fieldName).trim().notEmpty().withMessage(message);
 
-const normalizeArrayValue = (value: unknown): string[] | undefined => {
-  if (Array.isArray(value)) {
-    return value.map((item) => String(item).trim()).filter(Boolean);
-  }
-
-  if (typeof value !== "string" || value.trim().length === 0) {
-    return undefined;
-  }
-
-  try {
-    const parsedValue = JSON.parse(value) as unknown;
-
-    if (Array.isArray(parsedValue)) {
-      return parsedValue.map((item) => String(item).trim()).filter(Boolean);
-    }
-  } catch {
-    return value
-      .split(",")
-      .map((item) => item.trim())
-      .filter(Boolean);
-  }
-
-  return [value.trim()].filter(Boolean);
-};
-
-const fileToStoredPath = (file: Express.Multer.File): string => {
-  if (!file.path) {
-    throw new AppError(
-      "Uploaded file path is missing",
-      HTTP_STATUS.INTERNAL_SERVER_ERROR,
-    );
-  }
-
-  return toPublicRelativePath(file.path);
-};
-
-const normalizeUploadedFile = (
-  files: Record<string, Express.Multer.File[]> | undefined,
-  fieldName: string,
-): string | undefined => {
-  const file = files?.[fieldName]?.[0];
-
-  if (!file) {
-    return undefined;
-  }
-
-  return fileToStoredPath(file);
-};
-
-const normalizeUploadedFileArray = (
-  files: Record<string, Express.Multer.File[]> | undefined,
-  fieldName: string,
-): string[] | undefined => {
-  const fileList = files?.[fieldName];
-
-  if (!fileList || fileList.length === 0) {
-    return undefined;
-  }
-
-  return fileList.map(fileToStoredPath);
-};
-
 const validateDateOfBirth = (isUpdate: boolean) =>
   body("dateOfBirth")
-    .optional({ values: "falsy" })
+    .optional({ checkFalsy: true })
     .custom((value) => {
+      if (isUpdate && (value === undefined || value === null || value === "")) {
+        return true;
+      }
+
       if (!isUpdate && typeof value !== "string") {
         throw new Error("Date of birth is required");
       }
 
       const parsedDate = new Date(value);
-
       if (Number.isNaN(parsedDate.getTime())) {
         throw new Error("Date of birth must be a valid date");
       }
@@ -92,11 +32,15 @@ const validateDateOfBirth = (isUpdate: boolean) =>
 const validateStringArray = (
   fieldName: string,
   message: string,
-  _isUpdate: boolean,
+  isUpdate: boolean,
 ) =>
   body(fieldName)
-    .optional({ values: "falsy" })
+    .optional({ checkFalsy: true })
     .custom((value) => {
+      if (isUpdate && (value === undefined || value === null || value === "")) {
+        return true;
+      }
+
       if (!Array.isArray(value) || value.length === 0) {
         throw new Error(message);
       }
@@ -114,23 +58,24 @@ const validateStringArray = (
 
 const validateVehicleFields = (isUpdate: boolean) => [
   body("vehicleType")
-    .optional({ values: "falsy" })
+    .optional({ checkFalsy: true })
     .trim()
     .isIn([...allowedVehicleTypes])
     .withMessage("Vehicle type must be taxi or normal car"),
   body("carCompany")
-    .optional({ values: "falsy" })
+    .optional({ checkFalsy: true })
     .trim()
     .notEmpty()
     .withMessage("Car company is required"),
   body("model")
-    .optional({ values: "falsy" })
+    .optional({ checkFalsy: true })
     .trim()
     .notEmpty()
     .withMessage("Vehicle model is required"),
   body("year")
-    .optional({ values: "falsy" })
+    .optional({ checkFalsy: true })
     .custom((value) => {
+      if (value === undefined || value === null || value === "") return true;
       const parsedYear = Number(value);
 
       if (!Number.isInteger(parsedYear)) {
@@ -144,54 +89,15 @@ const validateVehicleFields = (isUpdate: boolean) => [
       return true;
     }),
   body("color")
-    .optional({ values: "falsy" })
+    .optional({ checkFalsy: true })
     .trim()
     .notEmpty()
     .withMessage("Vehicle color is required"),
   body("plateNumber")
-    .optional({ values: "falsy" })
+    .optional({ checkFalsy: true })
     .trim()
     .notEmpty()
     .withMessage("Plate number is required"),
-  ...(isUpdate
-    ? [
-        body().custom((_, { req }) => {
-          const fields = [
-            "dateOfBirth",
-            "gender",
-            "nidOrPassport",
-            "profilePicture",
-            "drivingLicenseImages",
-            "vehicleRegistrationDocumentImages",
-            "vehicleType",
-            "carCompany",
-            "model",
-            "year",
-            "color",
-            "plateNumber",
-          ];
-
-          const hasAnyField = fields.some((field) => {
-            const fieldValue = req.body[field];
-
-            if (Array.isArray(fieldValue)) {
-              return fieldValue.length > 0;
-            }
-
-            return (
-              typeof fieldValue !== "undefined" &&
-              String(fieldValue).trim().length > 0
-            );
-          });
-
-          if (!hasAnyField) {
-            throw new Error("At least one profile field is required");
-          }
-
-          return true;
-        }),
-      ]
-    : []),
 ];
 
 const buildProfileValidation = (isUpdate: boolean) => {
@@ -199,17 +105,17 @@ const buildProfileValidation = (isUpdate: boolean) => {
     return [
       validateDateOfBirth(true),
       body("gender")
-        .optional({ values: "falsy" })
+        .optional({ checkFalsy: true })
         .trim()
         .isIn([...allowedGenders])
         .withMessage("Gender must be male, female, or other"),
       body("nidOrPassport")
-        .optional({ values: "falsy" })
+        .optional({ checkFalsy: true })
         .trim()
         .notEmpty()
         .withMessage("NID/passport is required"),
       body("profilePicture")
-        .optional({ values: "falsy" })
+        .optional({ checkFalsy: true })
         .trim()
         .notEmpty()
         .withMessage("Profile picture is required"),
@@ -224,6 +130,44 @@ const buildProfileValidation = (isUpdate: boolean) => {
         true,
       ),
       ...validateVehicleFields(true),
+
+      // EXPLICIT GUARD: Catch empty bodies on update routes gracefully
+      body().custom((_, { req }) => {
+        const fields = [
+          "dateOfBirth",
+          "gender",
+          "nidOrPassport",
+          "profilePicture",
+          "drivingLicenseImages",
+          "vehicleRegistrationDocumentImages",
+          "vehicleType",
+          "carCompany",
+          "model",
+          "year",
+          "color",
+          "plateNumber",
+        ];
+
+        const hasAnyField = fields.some((field) => {
+          const fieldValue = req.body?.[field];
+
+          if (Array.isArray(fieldValue)) {
+            return fieldValue.length > 0;
+          }
+
+          return (
+            fieldValue !== undefined &&
+            fieldValue !== null &&
+            String(fieldValue).trim().length > 0
+          );
+        });
+
+        if (!hasAnyField) {
+          throw new Error("No Data provided for update");
+        }
+
+        return true;
+      }),
     ];
   }
 
@@ -252,73 +196,34 @@ const buildProfileValidation = (isUpdate: boolean) => {
 export const completeDriverProfileValidation = buildProfileValidation(false);
 export const updateDriverProfileValidation = buildProfileValidation(true);
 
-// export const normalizeDriverProfilePayload = (
-//   req: Request,
-//   _res: Response,
-//   next: NextFunction,
-// ): void => {
-//   const files = req.files as Record<string, Express.Multer.File[]> | undefined;
-
-//   const singleFileFields = ["nidOrPassport", "profileImage"] as const;
-//   for (const fieldName of singleFileFields) {
-//     const normalizedFile = normalizeUploadedFile(files, fieldName);
-
-//     if (typeof normalizedFile !== "undefined") {
-//       req.body[fieldName] = normalizedFile;
-//     }
-//   }
-
-//   const arrayFileFields = [
-//     "drivingLicenseImages",
-//     "vehicleRegistrationDocumentImages",
-//   ] as const;
-//   for (const fieldName of arrayFileFields) {
-//     const normalizedFiles = normalizeUploadedFileArray(files, fieldName);
-
-//     if (typeof normalizedFiles !== "undefined") {
-//       req.body[fieldName] = normalizedFiles;
-//     }
-//   }
-
-//   const fieldsToNormalize = [
-//     "drivingLicenseImages",
-//     "vehicleRegistrationDocumentImages",
-//   ] as const;
-
-//   for (const fieldName of fieldsToNormalize) {
-//     const normalizedValue = normalizeArrayValue(req.body[fieldName]);
-
-//     if (typeof normalizedValue !== "undefined") {
-//       req.body[fieldName] = normalizedValue;
-//     }
-//   }
-
-//   if (typeof req.body.year !== "undefined") {
-//     req.body.year = Number(req.body.year);
-//   }
-
-//   next();
-// };
-
 export const normalizeDriverProfilePayload = (
   req: Request,
   _res: Response,
   next: NextFunction,
 ): void => {
+  if (
+    req.body &&
+    typeof req.body.data === "string" &&
+    req.body.data.trim() !== ""
+  ) {
+    try {
+      const parsedData = JSON.parse(req.body.data);
+      req.body = { ...req.body, ...parsedData };
+    } catch (error) {
+      req.body.dataParseError = true;
+    }
+  }
+
   if (!req.files) {
     next();
     return;
   }
 
   const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-
-  // Base directories matching our physical layout
   const docUploadPath = "public/uploads/driver-docs";
-  const avatarUploadPath = "public/uploads/profile-pictures"; // New separate path
+  const avatarUploadPath = "public/uploads/profile-pictures";
 
-  // 1. Normalize Single Fields
   if (files["profilePicture"]?.[0]) {
-    // Routes perfectly into profile-pictures directory
     req.body.profilePicture = `${avatarUploadPath}/${files["profilePicture"][0].filename}`;
   }
 
@@ -326,7 +231,6 @@ export const normalizeDriverProfilePayload = (
     req.body.nidOrPassport = `${docUploadPath}/${files["nidOrPassport"][0].filename}`;
   }
 
-  // 2. Normalize Array Fields (Remain exactly the same)
   if (files["drivingLicenseImages"]) {
     req.body.drivingLicenseImages = files["drivingLicenseImages"].map(
       (file) => `${docUploadPath}/${file.filename}`,
@@ -341,13 +245,14 @@ export const normalizeDriverProfilePayload = (
 
   next();
 };
+
 export const handleValidationErrors = (
   req: Request,
   _res: Response,
   next: NextFunction,
 ): void => {
   const errors = validationResult(req);
-
+  console.log("Validation errors details:", errors.array());
   if (!errors.isEmpty()) {
     next(
       new AppError(

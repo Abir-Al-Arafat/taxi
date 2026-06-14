@@ -79,6 +79,7 @@ export class DriverProfileService {
         { _id: userId },
         {
           $set: {
+            profilePicture: profilePayload.profilePicture,
             profileCompleted: true,
           },
         },
@@ -115,6 +116,12 @@ export class DriverProfileService {
       throw new AppError("Driver profile not found", HTTP_STATUS.NOT_FOUND);
     }
 
+    const existingUser = await this.authRepository.findById(userId);
+
+    if (!existingUser) {
+      throw new AppError("User not found", HTTP_STATUS.NOT_FOUND);
+    }
+
     const updatePayload = this.normalizeUpdateRequest(request);
 
     if (Object.keys(updatePayload).length === 0) {
@@ -124,15 +131,13 @@ export class DriverProfileService {
       );
     }
 
-    console.log("Update payload after normalization:", updatePayload);
-
     const session = await mongoose.startSession();
 
     try {
       session.startTransaction();
 
-      if (request.profilePicture && existingProfile.profilePicture) {
-        deleteFile(existingProfile.profilePicture);
+      if (request.profilePicture && existingUser.profilePicture) {
+        deleteFile(existingUser.profilePicture);
       }
 
       if (request.nidOrPassport && existingProfile.nidOrPassport) {
@@ -172,7 +177,7 @@ export class DriverProfileService {
       }
 
       if (updatePayload.profilePicture) {
-        await this.authRepository.updateOne(
+        const updatedUser = await this.authRepository.updateOne(
           { _id: userId },
           {
             $set: {
@@ -181,6 +186,13 @@ export class DriverProfileService {
           },
           session,
         );
+
+        if (!updatedUser) {
+          throw new AppError(
+            "Failed to update user profile picture",
+            HTTP_STATUS.INTERNAL_SERVER_ERROR,
+          );
+        }
       }
 
       await session.commitTransaction();

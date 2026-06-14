@@ -20,6 +20,7 @@ export const toPublicRelativePath = (absolutePath: string): string =>
  * @param filePath - Path to the file to be removed
  */
 export const deleteFile = (filePath: string | undefined | null): void => {
+  console.log(`[FileUtil] deleteFile called with path: ${filePath}`);
   if (!filePath) return;
   console.log(
     `[FileUtil] Received request to delete file at path: ${filePath}`,

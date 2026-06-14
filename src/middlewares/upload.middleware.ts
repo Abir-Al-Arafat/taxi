@@ -210,7 +210,6 @@ export const createMultiFieldUploadMiddleware = (
     cb: (error: Error | null, filename: string) => void,
   ) => void,
 ) => {
-  console.log("createMultiFieldUploadMiddleware");
   const storage = multer.diskStorage({
     destination: (_req, file, cb) => {
       // 1. Check if the incoming file field is the profile picture
