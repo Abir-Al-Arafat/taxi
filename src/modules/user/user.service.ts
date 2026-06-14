@@ -68,14 +68,34 @@ export class UserService {
     };
   }
 
-  async getUserById(userId: string): Promise<AuthUserResponse> {
-    const user = await this.userRepository.findById(userId);
+  async getUserById(
+    userId: string,
+    includeDriverProfile: boolean = false,
+  ): Promise<any> {
+    let user;
+
+    if (includeDriverProfile) {
+      user = await this.userRepository.findByIdWithDriverProfile(userId);
+    } else {
+      user = await this.userRepository.findById(userId);
+    }
 
     if (!user) {
       throw new AppError("User not found", HTTP_STATUS.NOT_FOUND);
     }
 
-    return this.mapUserToResponse(user);
+    // Use your existing mapping function
+    const userResponse = this.mapUserToResponse(user as UserDocument);
+
+    // If the driver profile was requested and it exists, attach it to the final response
+    if (includeDriverProfile && user.driverProfile) {
+      return {
+        ...userResponse,
+        driverProfile: user.driverProfile,
+      };
+    }
+
+    return userResponse;
   }
 
   async changePassword(

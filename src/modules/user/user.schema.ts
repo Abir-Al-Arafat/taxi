@@ -30,6 +30,7 @@ export interface UserDocument extends Document {
   profileCompleted: boolean;
   adminApproved: "pending" | "approved" | "declined";
   profilePicture?: string;
+  isBlocked: boolean;
 }
 
 const authUserSchema = new Schema<UserDocument>(
@@ -96,6 +97,10 @@ const authUserSchema = new Schema<UserDocument>(
       type: Boolean,
       default: false,
       index: true,
+    },
+    isBlocked: {
+      type: Boolean,
+      default: false,
     },
     profileCompleted: {
       type: Boolean,

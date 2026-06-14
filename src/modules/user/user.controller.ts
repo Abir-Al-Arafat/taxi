@@ -38,13 +38,22 @@ export class UserController {
   getUserById = asyncHandler(
     async (req: Request, res: Response): Promise<void> => {
       const userId = req.params.id;
+
+      // Parse the query parameter (e.g., ?includeDriverProfile=true)
+      const includeDriverProfile = req.query.includeDriverProfile === "true";
+
       if (!userId) {
         throw new AppError(
           "User ID parameter is required",
           HTTP_STATUS.BAD_REQUEST,
         );
       }
-      const user = await this.userService.getUserById(userId as string);
+
+      // Pass both the userId and the boolean flag to the service
+      const user = await this.userService.getUserById(
+        userId as string,
+        includeDriverProfile,
+      );
 
       res
         .status(HTTP_STATUS.OK)

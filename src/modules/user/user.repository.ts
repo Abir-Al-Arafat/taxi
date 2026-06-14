@@ -72,6 +72,36 @@ export class UserRepository extends BaseRepository<UserDocument> {
     }
   }
 
+  async findByIdWithDriverProfile(userId: string): Promise<any | null> {
+    const result = await this.model.aggregate([
+      { $match: { _id: new mongoose.Types.ObjectId(userId) } },
+      {
+        $lookup: {
+          from: "driverprofiles", // this should match MongoDB collection name (usually lowercase plural)
+          localField: "_id",
+          foreignField: "userId",
+          as: "driverProfile",
+        },
+      },
+      {
+        $unwind: {
+          path: "$driverProfile",
+          preserveNullAndEmptyArrays: true, // Returns the user even if they don't have a driver profile yet
+        },
+      },
+      {
+        $project: {
+          passwordHash: 0, // Exclude sensitive fields from the aggregation result
+          verificationTokenHash: 0,
+          passwordResetTokenHash: 0,
+          "driverProfile.__v": 0,
+        },
+      },
+    ]);
+
+    return result[0] || null;
+  }
+
   async changePassword(
     userId: string,
     currentPassword: string,
