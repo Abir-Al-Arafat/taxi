@@ -52,6 +52,7 @@ export abstract class BaseRepository<T> {
     targetFilter: Record<string, any> = {},
     searchableFields: string[] = [],
   ): Promise<IPaginatedResult<any>> {
+    console.log("findPaginated() called with params:", params);
     const page = Math.max(
       1,
       params.page ? parseInt(String(params.page), 10) : 1,
