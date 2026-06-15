@@ -180,11 +180,6 @@ export class UserRepository extends BaseRepository<UserDocument> {
         ],
         {
           new: true,
-          runValidators: true,
-          // This is the specific fix for  error
-          includeResultMetadata: false,
-          // For some versions of Mongoose, you may need to specify:
-          // @ts-ignore (if types complain)
           updatePipeline: true,
         },
       );
