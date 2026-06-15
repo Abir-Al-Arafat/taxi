@@ -4,6 +4,7 @@ import { authenticate } from "../../middlewares/auth.middleware";
 import { UserController } from "./user.controller";
 import { uploadUserData } from "./user.middleware";
 import { normalizeUserProfilePayload } from "./user.validators";
+import { requireAdminRole } from "../../middlewares/admin.middleware";
 
 const router = Router();
 const upload = multer();
@@ -28,6 +29,13 @@ router.patch(
   authenticate,
   upload.none(),
   userController.changePassword,
+);
+
+router.patch(
+  "/:id/toggle-block",
+  authenticate,
+  requireAdminRole,
+  userController.toggleBlockStatus,
 );
 
 export { router as userRouter };

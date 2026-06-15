@@ -167,6 +167,32 @@ export class UserRepository extends BaseRepository<UserDocument> {
     }
   }
 
+  async toggleBlockStatus(userId: string): Promise<UserDocument | null> {
+    try {
+      return await this.model.findOneAndUpdate(
+        { _id: userId },
+        [
+          {
+            $set: {
+              isBlocked: { $not: { $ifNull: ["$isBlocked", false] } },
+            },
+          },
+        ],
+        {
+          new: true,
+          runValidators: true,
+          // This is the specific fix for  error
+          includeResultMetadata: false,
+          // For some versions of Mongoose, you may need to specify:
+          // @ts-ignore (if types complain)
+          updatePipeline: true,
+        },
+      );
+    } catch (error) {
+      this.handleDatabaseError(error);
+    }
+  }
+
   private handleDatabaseError(error: unknown): never {
     if (error instanceof mongoose.Error.ValidationError) {
       const messages = Object.values(error.errors)

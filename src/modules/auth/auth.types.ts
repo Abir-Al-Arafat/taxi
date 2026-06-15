@@ -93,6 +93,7 @@ export interface AuthUserView {
   gender: AuthGender;
   role: AuthRole;
   isVerified: boolean;
+  isBlocked: boolean;
   createdAt: Date;
   updatedAt: Date;
   profileCompleted: boolean;

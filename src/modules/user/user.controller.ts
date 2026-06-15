@@ -158,4 +158,31 @@ export class UserController {
         );
     },
   );
+
+  toggleBlockStatus = asyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const userId = req.params.id;
+
+      if (!userId) {
+        throw new AppError(
+          "User ID parameter is required",
+          HTTP_STATUS.BAD_REQUEST,
+        );
+      }
+
+      const updatedUser = await this.userService.toggleBlockStatus(
+        userId as string,
+      );
+
+      res
+        .status(HTTP_STATUS.OK)
+        .json(
+          ResponseBuilder.success(
+            "User block status toggled successfully",
+            updatedUser,
+            HTTP_STATUS.OK,
+          ),
+        );
+    },
+  );
 }

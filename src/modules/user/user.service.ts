@@ -195,6 +195,16 @@ export class UserService {
     return this.mapUserToResponse(updatedUser);
   }
 
+  async toggleBlockStatus(userId: string): Promise<AuthUserResponse> {
+    const updatedUser = await this.userRepository.toggleBlockStatus(userId);
+
+    if (!updatedUser) {
+      throw new AppError("User not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    return this.mapUserToResponse(updatedUser);
+  }
+
   private normalizeEmail(email: string): string {
     return email.trim().toLowerCase();
   }
@@ -235,6 +245,7 @@ export class UserService {
       gender: user.gender,
       role: user.role,
       isVerified: user.isVerified,
+      isBlocked: user.isBlocked,
       profileCompleted: user.profileCompleted,
       profileCompletionRequired:
         user.role === "driver" && !user.profileCompleted,
