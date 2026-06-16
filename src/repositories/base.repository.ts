@@ -15,7 +15,9 @@ export abstract class BaseRepository<T> {
     return this.model.create(data);
   }
 
-  // Uses the model's native fallback type parameters to bypass direct named export lookups completely
+  async insertMany(docs: any[], options: any = {}): Promise<any[]> {
+    return this.model.insertMany(docs, options) as any;
+  }
   async findOne(
     filter: Record<string, any> = {},
     options: QueryOptions = {},
