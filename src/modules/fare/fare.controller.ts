@@ -27,7 +27,7 @@ export class FareController {
 
   getPricingRules = asyncHandler(
     async (_req: Request, res: Response): Promise<void> => {
-      const fares = await this.fareService.getAllFares();
+      const fares = await this.fareService.getAllFares(_req.query);
       res
         .status(HTTP_STATUS.OK)
         .json(

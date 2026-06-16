@@ -63,8 +63,12 @@ export class FareService {
     return newFare;
   }
 
-  async getAllFares() {
-    return this.fareRepository.findMany();
+  async getAllFares(query: any): Promise<IFareRule[]> {
+    const filters: any = {};
+    if (query.gender) {
+      filters.gender = query.gender;
+    }
+    return this.fareRepository.findMany(filters);
   }
 
   async updateFareConfig(gender: string, payload: Partial<IFareRule>) {
