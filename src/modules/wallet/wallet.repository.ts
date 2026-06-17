@@ -32,7 +32,7 @@ export class WalletRepository extends BaseRepository<IWallet> {
         },
       },
       { $unwind: { path: "$userDoc", preserveNullAndEmptyArrays: false } },
-      { $match: { "userDoc.role": "driver", ...filters } },
+      { $match: { ...filters } },
     ];
 
     if (searchRegex) {
@@ -95,7 +95,7 @@ export class WalletRepository extends BaseRepository<IWallet> {
           {
             $project: {
               _id: 1,
-              driver_id: "$userDoc._id",
+              userId: "$userDoc._id",
               name: {
                 $concat: ["$userDoc.firstName", " ", "$userDoc.lastName"],
               },

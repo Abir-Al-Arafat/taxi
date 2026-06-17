@@ -7,6 +7,10 @@ import { asyncHandler } from "../../core/utils/asyncHandler";
 import { ResponseBuilder } from "../../core/utils/apiResponse";
 import type { AuthenticatedRequest } from "../../middlewares/auth.middleware";
 import HTTP_STATUS from "../../constants/statusCodes";
+import type {
+  IPaginationParams,
+  IPaginatedResult,
+} from "../../shared/types/pagination.types";
 export class WalletController {
   private walletService = new WalletService();
   private voucherService = new VoucherService();
@@ -79,9 +83,19 @@ export class WalletController {
   );
 
   getWalletDashboard = asyncHandler(async (req: Request, res: Response) => {
+    const { page, limit, search, sort, ...filters }: any = req.query;
+
+    const paginationParams: IPaginationParams = {
+      page: page,
+      limit: limit,
+      search: search,
+      sort: sort,
+      ...filters,
+    };
+
     const data = await this.walletService.getAdminWalletDashboard(
-      req.query,
-      req.query,
+      paginationParams,
+      filters,
     );
     res
       .status(HTTP_STATUS.OK)
