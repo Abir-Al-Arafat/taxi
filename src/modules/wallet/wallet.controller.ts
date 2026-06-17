@@ -169,4 +169,46 @@ export class WalletController {
         );
     },
   );
+
+  getGlobalTransactions = asyncHandler(async (req: Request, res: Response) => {
+    // 1. Separate pagination tools from database filters
+    const { page, limit, search, sort, type, source, startDate, endDate }: any =
+      req.query;
+
+    const paginationParams: IPaginationParams = {
+      page: page,
+      limit: limit,
+      search: search,
+      sort: sort,
+    };
+
+    const filters: any = {};
+
+    // 2. Strict mapping for transaction specifics
+    if (type) filters.type = type;
+    if (source) filters.source = source;
+
+    // 3. Date Range Filtering Mapping
+    if (startDate || endDate) {
+      filters.createdAt = {};
+      if (startDate) filters.createdAt.$gte = new Date(startDate as string);
+      if (endDate) filters.createdAt.$lte = new Date(endDate as string);
+    }
+
+    // 4. Execute Service
+    const data = await this.walletService.getAdminGlobalTransactions(
+      paginationParams,
+      filters,
+    );
+
+    res
+      .status(HTTP_STATUS.OK)
+      .json(
+        ResponseBuilder.success(
+          "Global transactions retrieved successfully",
+          data,
+          HTTP_STATUS.OK,
+        ),
+      );
+  });
 }

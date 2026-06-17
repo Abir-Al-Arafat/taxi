@@ -24,6 +24,9 @@ const adminRouter = Router();
 adminRouter.use(authenticate, requireAdminRole);
 
 adminRouter.get("/dashboard", controller.getWalletDashboard);
+
+adminRouter.get("/transactions", controller.getGlobalTransactions);
+
 adminRouter.post(
   "/top-up",
   upload.none(),

@@ -2,7 +2,7 @@
 import { BaseRepository } from "../../repositories/base.repository";
 import { Wallet, WalletTransaction } from "./wallet.schema";
 import type { IWallet, IWalletTransaction } from "./wallet.interface";
-import { IPaginationParams } from "../../shared/types/pagination.types";
+import type { IPaginationParams } from "../../shared/types/pagination.types";
 
 export class WalletRepository extends BaseRepository<IWallet> {
   constructor() {
@@ -132,5 +132,102 @@ export class WalletRepository extends BaseRepository<IWallet> {
 export class WalletTransactionRepository extends BaseRepository<IWalletTransaction> {
   constructor() {
     super(WalletTransaction);
+  }
+
+  async getGlobalTransactionsList(
+    params: IPaginationParams,
+    filters: any = {},
+  ) {
+    const page = Math.max(1, parseInt(String(params.page || 1), 10));
+    const limit = Math.max(1, parseInt(String(params.limit || 10), 10));
+    const skip = (page - 1) * limit;
+
+    const searchRegex = params.search
+      ? new RegExp(String(params.search).trim(), "i")
+      : null;
+    const sortField = params.sort ? params.sort.replace("-", "") : "createdAt";
+    const sortDir = params.sort?.startsWith("-") ? -1 : 1;
+
+    const pipeline: any[] = [
+      // 1. Join User Collection to get name and phone
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "userDoc",
+        },
+      },
+      // Preserve transactions even if the user document is missing/deleted
+      { $unwind: { path: "$userDoc", preserveNullAndEmptyArrays: true } },
+    ];
+
+    // 2. Apply Dynamic Filters (e.g., type="CREDIT", source="VOUCHER")
+    if (Object.keys(filters).length > 0) {
+      pipeline.push({ $match: filters });
+    }
+
+    // 3. Apply Deep Search (Name, Phone, Description)
+    if (searchRegex) {
+      pipeline.push({
+        $match: {
+          $or: [
+            { "userDoc.firstName": searchRegex },
+            { "userDoc.lastName": searchRegex },
+            { "userDoc.phoneNumber": searchRegex },
+            { description: searchRegex },
+            { referenceId: searchRegex },
+          ],
+        },
+      });
+    }
+
+    // 4. Pagination and Projection (Formatting the exact output you requested)
+    pipeline.push({
+      $facet: {
+        metadata: [{ $count: "total" }],
+        data: [
+          { $sort: { [sortField]: sortDir } },
+          { $skip: skip },
+          { $limit: limit },
+          {
+            $project: {
+              _id: 1,
+              name: {
+                $trim: {
+                  input: {
+                    $concat: [
+                      { $ifNull: ["$userDoc.firstName", "Unknown"] },
+                      " ",
+                      { $ifNull: ["$userDoc.lastName", ""] },
+                    ],
+                  },
+                },
+              },
+              phone: { $ifNull: ["$userDoc.phoneNumber", "N/A"] },
+              type: 1,
+              source: 1,
+              amount: 1,
+              balance_after: "$balanceAfter",
+              description: 1,
+              date_time: "$createdAt",
+            },
+          },
+        ],
+      },
+    });
+
+    const result = await this.model.aggregate(pipeline);
+    const totalItems = result[0]?.metadata[0]?.total || 0;
+
+    return {
+      items: result[0]?.data || [],
+      pagination: {
+        totalItems,
+        totalPages: Math.ceil(totalItems / limit),
+        currentPage: page,
+        limit,
+      },
+    };
   }
 }

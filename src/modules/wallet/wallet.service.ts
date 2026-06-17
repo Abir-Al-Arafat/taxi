@@ -204,4 +204,11 @@ export class WalletService {
 
     return { updatedBalance: updatedWallet.balance, transaction };
   }
+
+  async getAdminGlobalTransactions(
+    params: IPaginationParams,
+    filters: any = {},
+  ) {
+    return this.txRepo.getGlobalTransactionsList(params, filters);
+  }
 }
