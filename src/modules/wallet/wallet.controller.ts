@@ -83,15 +83,29 @@ export class WalletController {
   );
 
   getWalletDashboard = asyncHandler(async (req: Request, res: Response) => {
-    const { page, limit, search, sort, ...filters }: any = req.query;
+    const { page, limit, search, sort, role, status }: any = req.query;
 
     const paginationParams: IPaginationParams = {
       page: page,
       limit: limit,
       search: search,
       sort: sort,
-      ...filters,
     };
+
+    // 2. Build the dynamic filters object securely
+    const filters: any = {};
+
+    // If the frontend explicitly wants to filter by wallet status
+    if (status) {
+      filters.status = status;
+    }
+
+    // If the frontend explicitly wants to filter by user role
+    // We map "role" to "userDoc.role" because of the $lookup join in the repository
+    if (role) {
+      // Use regex to make it case-insensitive (e.g. handles "Driver", "driver", "DRIVER")
+      filters["userDoc.role"] = { $regex: new RegExp(`^${role}$`, "i") };
+    }
 
     const data = await this.walletService.getAdminWalletDashboard(
       paginationParams,
