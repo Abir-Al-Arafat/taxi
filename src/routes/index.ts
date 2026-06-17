@@ -5,10 +5,8 @@ import { driverProfileRouter } from "../modules/driver-profile/driver-profile.ro
 import { driverApprovalRouter } from "../modules/driver-approval/driver-approval.route";
 import { savedPlaceRouter } from "../modules/saved-place/saved-place.route";
 import { fareRouter } from "../modules/fare/fare.route";
-import {
-  voucherAdminRouter,
-  walletTopUpRouter,
-} from "../modules/voucher/voucher.route";
+import { voucherRouter } from "../modules/voucher/voucher.route";
+import { walletRouter } from "../modules/wallet/wallet.route";
 
 const router = Router();
 
@@ -18,7 +16,6 @@ router.use("/fares", fareRouter);
 router.use("/saved-places", savedPlaceRouter);
 router.use("/driver-profile", driverProfileRouter);
 router.use("/driver-approval", driverApprovalRouter);
-router.use("/vouchers", voucherAdminRouter);
-router.use("/wallet", walletTopUpRouter); // Maps perfectly to POST /api/v1/wallet/top-up
-
+router.use("/vouchers", voucherRouter);
+router.use("/wallet", walletRouter);
 export { router as apiRouter };

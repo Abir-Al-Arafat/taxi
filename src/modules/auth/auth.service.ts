@@ -31,6 +31,7 @@ import type {
 } from "./auth.types";
 import type { UserDocument } from "../user/user.schema";
 import { env } from "../../config/env";
+import { AppEventBus } from "../../shared/events/app-events";
 
 const OTP_EXPIRATION_MINUTES = 10;
 const PASSWORD_SALT_BYTES = 16;
@@ -114,6 +115,8 @@ export class AuthService {
     }
 
     const user = await this.authRepository.createUser(createPayload);
+
+    AppEventBus.emit("USER_REGISTERED", { userId: user._id.toString() });
 
     await this.sendVerificationMessage(user, verificationChallenge.otp);
 
