@@ -168,10 +168,9 @@ export class WalletService {
 
     // 2, 3, 4, 5. ATOMIC DEDUCTION: The `{ balance: { $gte: amount } }` query completely eliminates
     // negative balance risks and concurrent double-spend race conditions at the database level.
-    const updatedWallet = await this.walletRepo.model.findOneAndUpdate(
+    const updatedWallet = await this.walletRepo.updateOne(
       { _id: wallet._id, status: "ACTIVE", balance: { $gte: amount } },
       { $inc: { balance: -amount } },
-      { returnDocument: "after" },
     );
 
     if (!updatedWallet) {

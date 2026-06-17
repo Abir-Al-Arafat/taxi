@@ -1,5 +1,6 @@
 // src/modules/wallet/wallet.route.ts
 import { Router } from "express";
+import multer from "multer";
 import { authenticate } from "../../middlewares/auth.middleware";
 import { requireAdminRole } from "../../middlewares/admin.middleware";
 import { WalletController } from "./wallet.controller";
@@ -13,6 +14,7 @@ import {
 } from "./wallet.validators";
 
 const router = Router();
+const upload = multer();
 const controller = new WalletController();
 
 // -----------------------------------------------------
@@ -24,12 +26,14 @@ adminRouter.use(authenticate, requireAdminRole);
 adminRouter.get("/dashboard", controller.getWalletDashboard);
 adminRouter.post(
   "/top-up",
+  upload.none(),
   adminWalletAdjustmentValidation,
   walletValidationErrors,
   controller.adminTopUp,
 );
 adminRouter.post(
   "/deduct",
+  upload.none(),
   adminWalletAdjustmentValidation,
   walletValidationErrors,
   controller.adminDeduct,
@@ -47,6 +51,7 @@ driverRouter.get("/balance", controller.getMyBalance);
 driverRouter.get("/transactions", controller.getMyTransactions);
 driverRouter.post(
   "/top-up",
+  upload.none(),
   redeemValidation,
   voucherValidationErrors,
   controller.topUpWithVoucher,
