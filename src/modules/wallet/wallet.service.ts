@@ -4,13 +4,15 @@ import {
   WalletRepository,
   WalletTransactionRepository,
 } from "./wallet.repository";
+import { UserRepository } from "../user/user.repository";
 import { AppError } from "../../core/errors/AppError";
 import HTTP_STATUS from "../../constants/statusCodes";
 import type { IPaginationParams } from "../../shared/types/pagination.types";
-import type { source } from "./wallet.interface";
+import type { TransactionSource } from "./wallet.interface";
 export class WalletService {
   private walletRepo = new WalletRepository();
   private txRepo = new WalletTransactionRepository();
+  private userRepo = new UserRepository();
 
   /**
    * Fetches a wallet, automatically generating one if it doesn't exist yet
@@ -49,7 +51,7 @@ export class WalletService {
   async addCredit(
     userId: string,
     amount: number,
-    source: source, // (or TransactionSource if you updated the name)
+    source: TransactionSource,
     referenceId?: string,
     description?: string,
   ) {
@@ -90,5 +92,117 @@ export class WalletService {
     await this.txRepo.create(txData);
 
     return updatedWallet;
+  }
+
+  async getAdminWalletDashboard(params: IPaginationParams, filters: any = {}) {
+    return this.walletRepo.getAdminDashboardList(params, filters);
+  }
+
+  async adminTopUpWallet(
+    adminId: string,
+    driverId: string,
+    amount: number,
+    description?: string,
+  ) {
+    // 1. Validate Driver Exists
+    const driver = await this.userRepo.findOne({
+      _id: driverId,
+      role: "driver",
+    });
+    if (!driver)
+      throw new AppError(
+        "Driver not found or invalid role",
+        HTTP_STATUS.NOT_FOUND,
+      );
+
+    // 2. Get/Create Wallet
+    const wallet = await this.getOrCreateWallet(driverId);
+
+    // 3 & 4 & 5. Atomic Update natively prevents concurrency collisions
+    const updatedWallet = await this.walletRepo.updateOne(
+      { _id: wallet._id, status: "ACTIVE" },
+      { $inc: { balance: amount } },
+    );
+
+    if (!updatedWallet)
+      throw new AppError(
+        "Wallet top-up failed. Wallet may be suspended.",
+        HTTP_STATUS.BAD_REQUEST,
+      );
+
+    // 6. Record transaction
+    const txData: any = {
+      walletId: wallet._id,
+      userId: wallet.userId,
+      adminId,
+      type: "CREDIT",
+      amount,
+      balanceAfter: updatedWallet.balance,
+      source: "ADMIN_ADJUSTMENT",
+    };
+    if (description) txData.description = description;
+
+    const transaction = await this.txRepo.create(txData);
+
+    return { updatedBalance: updatedWallet.balance, transaction };
+  }
+
+  async adminDeductWallet(
+    adminId: string,
+    driverId: string,
+    amount: number,
+    description?: string,
+  ) {
+    // 1. Validate Driver Exists
+    const driver = await this.userRepo.findOne({
+      _id: driverId,
+      role: "driver",
+    });
+    if (!driver)
+      throw new AppError(
+        "Driver not found or invalid role",
+        HTTP_STATUS.NOT_FOUND,
+      );
+
+    const wallet = await this.getOrCreateWallet(driverId);
+
+    // 2, 3, 4, 5. ATOMIC DEDUCTION: The `{ balance: { $gte: amount } }` query completely eliminates
+    // negative balance risks and concurrent double-spend race conditions at the database level.
+    const updatedWallet = await this.walletRepo.model.findOneAndUpdate(
+      { _id: wallet._id, status: "ACTIVE", balance: { $gte: amount } },
+      { $inc: { balance: -amount } },
+      { returnDocument: "after" },
+    );
+
+    if (!updatedWallet) {
+      // Differentiate between suspended wallet and insufficient funds
+      const current = await this.walletRepo.findOne({ _id: wallet._id });
+      if (current && current.balance < amount) {
+        throw new AppError(
+          `Insufficient balance. Current balance is ${current.balance} LYD.`,
+          HTTP_STATUS.BAD_REQUEST,
+        );
+      }
+      throw new AppError(
+        "Wallet deduction failed. Wallet may be suspended.",
+        HTTP_STATUS.BAD_REQUEST,
+      );
+    }
+
+    // 6. Record transaction
+    const txData: any = {
+      walletId: wallet._id,
+      userId: wallet.userId,
+      adminId,
+      type: "DEBIT",
+      amount,
+      balanceAfter: updatedWallet.balance,
+      source: "ADMIN_ADJUSTMENT",
+    };
+    if (description) txData.description = description;
+
+    const transaction = await this.txRepo.create(txData);
+
+    return { updatedBalance: updatedWallet.balance, transaction };
   }
 }

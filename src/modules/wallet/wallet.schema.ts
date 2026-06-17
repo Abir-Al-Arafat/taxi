@@ -31,6 +31,7 @@ const WalletTransactionSchema = new Schema<IWalletTransaction>(
       required: true,
       index: true,
     },
+    adminId: { type: Schema.Types.ObjectId, ref: "User" }, // NEW: Added to schema
     type: { type: String, enum: ["CREDIT", "DEBIT"], required: true },
     amount: { type: Number, required: true },
     balanceAfter: { type: Number, required: true },

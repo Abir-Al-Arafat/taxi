@@ -77,4 +77,68 @@ export class WalletController {
         );
     },
   );
+
+  getWalletDashboard = asyncHandler(async (req: Request, res: Response) => {
+    const data = await this.walletService.getAdminWalletDashboard(
+      req.query,
+      req.query,
+    );
+    res
+      .status(HTTP_STATUS.OK)
+      .json(
+        ResponseBuilder.success(
+          "Driver wallets retrieved",
+          data,
+          HTTP_STATUS.OK,
+        ),
+      );
+  });
+
+  adminTopUp = asyncHandler(
+    async (req: AuthenticatedRequest, res: Response) => {
+      const adminId = req.user!.userId;
+      const { driverId, amount, description } = req.body;
+
+      const result = await this.walletService.adminTopUpWallet(
+        adminId,
+        driverId,
+        amount,
+        description,
+      );
+
+      res
+        .status(HTTP_STATUS.OK)
+        .json(
+          ResponseBuilder.success(
+            "Wallet successfully topped up",
+            result,
+            HTTP_STATUS.OK,
+          ),
+        );
+    },
+  );
+
+  adminDeduct = asyncHandler(
+    async (req: AuthenticatedRequest, res: Response) => {
+      const adminId = req.user!.userId;
+      const { driverId, amount, description } = req.body;
+
+      const result = await this.walletService.adminDeductWallet(
+        adminId,
+        driverId,
+        amount,
+        description,
+      );
+
+      res
+        .status(HTTP_STATUS.OK)
+        .json(
+          ResponseBuilder.success(
+            "Wallet successfully deducted",
+            result,
+            HTTP_STATUS.OK,
+          ),
+        );
+    },
+  );
 }

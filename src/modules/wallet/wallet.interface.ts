@@ -1,7 +1,11 @@
 // src/modules/wallet/wallet.interface.ts
 import type { Document, Types } from "mongoose";
 
-export type source = "VOUCHER" | "PROMO" | "RIDE_PAYMENT" | "ADMIN_ADJUSTMENT";
+export type TransactionSource =
+  | "VOUCHER"
+  | "PROMO"
+  | "RIDE_PAYMENT"
+  | "ADMIN_ADJUSTMENT";
 
 export interface IWallet extends Document {
   userId: Types.ObjectId;
@@ -15,11 +19,12 @@ export interface IWallet extends Document {
 export interface IWalletTransaction extends Document {
   walletId: Types.ObjectId;
   userId: Types.ObjectId;
+  adminId?: Types.ObjectId; // NEW: Audit trail for admin actions
   type: "CREDIT" | "DEBIT";
   amount: number;
-  balanceAfter: number; // Snapshot of balance for ledger auditing
-  source: source;
-  referenceId?: string; // ID linking to the specific voucher/ride
+  balanceAfter: number;
+  source: TransactionSource;
+  referenceId?: string;
   description?: string;
   createdAt: Date;
   updatedAt: Date;

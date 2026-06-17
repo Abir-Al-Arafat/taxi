@@ -1,7 +1,7 @@
 // src/modules/wallet/wallet.events.ts
 import { AppEventBus } from "../../shared/events/app-events";
 import { WalletService } from "./wallet.service";
-import { source } from "./wallet.interface";
+import { TransactionSource } from "./wallet.interface";
 
 const walletService = new WalletService();
 
@@ -24,7 +24,7 @@ AppEventBus.on(
   async (payload: {
     driverId: string;
     amount: number;
-    source: source;
+    source: TransactionSource;
     referenceId: string;
   }) => {
     try {
