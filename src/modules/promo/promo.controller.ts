@@ -33,6 +33,21 @@ export class PromoController {
       );
   });
 
+  getPromoDetails = asyncHandler(async (req: Request, res: Response) => {
+    const data = await this.service.getAdminPromoDetails(
+      req.params.id as string,
+    );
+    res
+      .status(HTTP_STATUS.OK)
+      .json(
+        ResponseBuilder.success(
+          "Promo details retrieved",
+          data,
+          HTTP_STATUS.OK,
+        ),
+      );
+  });
+
   // User Controls
   getAvailablePromos = asyncHandler(
     async (req: AuthenticatedRequest, res: Response) => {

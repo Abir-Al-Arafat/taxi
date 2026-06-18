@@ -42,6 +42,19 @@ export class PromoService {
     return this.promoRepo.findPaginated(params, {}, []);
   }
 
+  async getAdminPromoDetails(promoId: string) {
+    const promo = await this.promoRepo.findOne({ _id: promoId });
+    if (!promo) {
+      throw new AppError("Promo code not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    const rules = await this.ruleRepo.findMany({ promoCodeId: promo._id });
+    return {
+      promo,
+      rules,
+    };
+  }
+
   // ==============================================
   // RULE ENGINE LOGIC
   // ==============================================
