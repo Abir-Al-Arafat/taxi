@@ -7,6 +7,7 @@ import { savedPlaceRouter } from "../modules/saved-place/saved-place.route";
 import { fareRouter } from "../modules/fare/fare.route";
 import { voucherRouter } from "../modules/voucher/voucher.route";
 import { walletRouter } from "../modules/wallet/wallet.route";
+import { promoRouter } from "../modules/promo/promo.route";
 
 const router = Router();
 
@@ -18,4 +19,5 @@ router.use("/driver-profile", driverProfileRouter);
 router.use("/driver-approval", driverApprovalRouter);
 router.use("/vouchers", voucherRouter);
 router.use("/wallet", walletRouter);
+router.use("/promos", promoRouter);
 export { router as apiRouter };
