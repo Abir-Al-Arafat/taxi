@@ -8,12 +8,13 @@ import { fareRouter } from "../modules/fare/fare.route";
 import { voucherRouter } from "../modules/voucher/voucher.route";
 import { walletRouter } from "../modules/wallet/wallet.route";
 import { promoRouter } from "../modules/promo/promo.route";
-
+import { rideRouter } from "../modules/ride/ride.route";
 const router = Router();
 
 router.use("/auth", authRouter);
 router.use("/users", userRouter);
 router.use("/fares", fareRouter);
+router.use("/rides", rideRouter);
 router.use("/saved-places", savedPlaceRouter);
 router.use("/driver-profile", driverProfileRouter);
 router.use("/driver-approval", driverApprovalRouter);

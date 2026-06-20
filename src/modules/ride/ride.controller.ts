@@ -1,0 +1,134 @@
+// src/modules/ride/ride.controller.ts
+import type { Request, Response } from "express";
+import { RideService } from "./ride.service";
+import { asyncHandler } from "../../core/utils/asyncHandler";
+import { ResponseBuilder } from "../../core/utils/apiResponse";
+import type { AuthenticatedRequest } from "../../middlewares/auth.middleware";
+import HTTP_STATUS from "../../constants/statusCodes";
+export class RideController {
+  private rideService = new RideService();
+
+  // Rider Endpoints
+  estimate = asyncHandler(async (req: Request, res: Response) => {
+    // Extract preferredGender from the frontend payload
+    const {
+      pickup,
+      destination,
+      preferredGender,
+      vehicleType,
+      distanceKm,
+      estimatedTimeMins,
+    } = req.body;
+
+    console.log("req.body:", req.body);
+
+    const parsedPickup = JSON.parse(pickup).map(Number);
+    const parsedDestination = JSON.parse(destination).map(Number);
+
+    console.log("parsedPickup:", parsedPickup);
+    console.log("parsedDestination:", parsedDestination);
+
+    const data = await this.rideService.estimateRide(
+      parsedPickup,
+      parsedDestination,
+      preferredGender,
+      vehicleType,
+      distanceKm, // Optional from frontend
+      estimatedTimeMins, // Optional from frontend
+    );
+
+    res
+      .status(HTTP_STATUS.OK)
+      .json(
+        ResponseBuilder.success("Estimate calculated", data, HTTP_STATUS.OK),
+      );
+  });
+
+  request = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    const data = await this.rideService.requestRide(req.user!.userId, req.body);
+    res
+      .status(HTTP_STATUS.CREATED)
+      .json(
+        ResponseBuilder.success(
+          "Ride requested successfully",
+          data,
+          HTTP_STATUS.CREATED,
+        ),
+      );
+  });
+
+  pay = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    const data = await this.rideService.processPayment(
+      req.user!.userId,
+      req.params.id as string,
+    );
+    res
+      .status(HTTP_STATUS.OK)
+      .json(
+        ResponseBuilder.success("Payment successful", data, HTTP_STATUS.OK),
+      );
+  });
+
+  // Driver Endpoints
+  getNearby = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    const { lng, lat } = req.query;
+    const data = await this.rideService.getNearbyRequests(
+      Number(lng),
+      Number(lat),
+    );
+    res
+      .status(HTTP_STATUS.OK)
+      .json(
+        ResponseBuilder.success("Nearby requests found", data, HTTP_STATUS.OK),
+      );
+  });
+
+  accept = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    const data = await this.rideService.acceptRide(
+      req.user!.userId,
+      req.params.id as string,
+    );
+    res
+      .status(HTTP_STATUS.OK)
+      .json(ResponseBuilder.success("Ride accepted", data, HTTP_STATUS.OK));
+  });
+
+  updateStatus = asyncHandler(
+    async (req: AuthenticatedRequest, res: Response) => {
+      const { action } = req.body; // 'arrived', 'start', 'complete', 'confirm_payment'
+      const driverId = req.user!.userId;
+      const rideId = req.params.id as string;
+
+      let data;
+      switch (action) {
+        case "arrived":
+          data = await this.rideService.driverArrived(driverId, rideId);
+          break;
+        case "start":
+          data = await this.rideService.startRide(driverId, rideId);
+          break;
+        case "complete":
+          data = await this.rideService.completeRide(driverId, rideId);
+          break;
+        case "confirm_payment":
+          data = await this.rideService.confirmPaymentCollection(
+            driverId,
+            rideId,
+          );
+          break;
+        default:
+          throw new Error("Invalid action");
+      }
+
+      res
+        .status(HTTP_STATUS.OK)
+        .json(
+          ResponseBuilder.success(
+            `Ride status updated: ${action}`,
+            data,
+            HTTP_STATUS.OK,
+          ),
+        );
+    },
+  );
+}

@@ -87,4 +87,49 @@ export class FareService {
     );
     return updatedFare;
   }
+
+  async calculateEstimate(
+    distanceKm: number,
+    estimatedTimeMins: number,
+    gender: string,
+    vehicleType?: string, // <--- Accept the optional filter
+  ) {
+    // 1. Dynamically construct the query filter
+    const filter: any = { gender };
+
+    // If vehicleType is provided, strictly filter by it. Otherwise, ignore it.
+    if (vehicleType) {
+      filter.vehicleType = vehicleType;
+    }
+
+    // 2. Fetch the correct fare rule from DB based on dynamic filters
+    const rule = await this.fareRepository.findOne(filter);
+
+    if (!rule) {
+      throw new AppError(
+        `Pricing rules for '${gender}' drivers${vehicleType ? ` with a '${vehicleType}'` : ""} are not configured in the system.`,
+        HTTP_STATUS.NOT_FOUND,
+      );
+    }
+
+    // 3. Execute the pricing math
+    const baseFare = rule.baseFare;
+    const distanceFare = distanceKm * rule.pricePerKilometer;
+    const timeFare = estimatedTimeMins * rule.pricePerMinute;
+
+    let totalFare = baseFare + distanceFare + timeFare;
+
+    if (totalFare < rule.minimumFare) {
+      totalFare = rule.minimumFare;
+    }
+
+    return {
+      baseFare,
+      distanceFare,
+      timeFare,
+      waitingCharge: 0,
+      discount: 0,
+      totalFare: Number(totalFare.toFixed(2)), // Clean decimal output
+    };
+  }
 }
