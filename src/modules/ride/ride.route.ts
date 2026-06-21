@@ -5,6 +5,8 @@ import { authenticate } from "../../middlewares/auth.middleware";
 // Add requireRole middleware if you have one for strict driver/rider routing
 import { RideController } from "./ride.controller";
 
+import "./ride.events";
+
 const router = Router();
 const upload = multer();
 const controller = new RideController();
