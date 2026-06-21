@@ -60,7 +60,7 @@ export class RideController {
   pay = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     const data = await this.rideService.processPayment(
       req.user!.userId,
-      req.params.id as string,
+      req.params.rideId as string,
     );
     res
       .status(HTTP_STATUS.OK)
@@ -86,7 +86,7 @@ export class RideController {
   accept = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     const data = await this.rideService.acceptRide(
       req.user!.userId,
-      req.params.id as string,
+      req.params.rideId as string,
     );
     res
       .status(HTTP_STATUS.OK)

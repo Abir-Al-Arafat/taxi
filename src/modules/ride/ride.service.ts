@@ -7,7 +7,7 @@ import { AppEventBus } from "../../shared/events/app-events";
 import { FareService } from "../fare/fare.service";
 import { PromoService } from "../promo/promo.service";
 import { calculateFallbackRouting } from "../../shared/utilities/geo.util";
-
+import { parsePayload } from "../../shared/utilities/parsePayload.util";
 export class RideService {
   private rideRepo = new RideRepository();
   private fareService = new FareService();
@@ -55,27 +55,31 @@ export class RideService {
 
   // 2. Confirm & Request Ride
   async requestRide(riderId: string, payload: any) {
-    // Optionally apply promo code to the estimate
+    // 1. Parse the strings into objects
+    const parsedPayload = parsePayload(payload);
+
+    // 2. Perform Promo logic using the parsed structure
     let discount = 0;
-    if (payload.promoCode) {
+    if (parsedPayload.promoCode) {
       const promoResult = await this.promoService.applyPromoCode(
         riderId,
-        payload.promoCode,
-        payload.fareDetails.totalFare,
+        parsedPayload.promoCode,
+        parsedPayload.fareDetails.totalFare,
       );
       discount = promoResult.discountApplied;
-      payload.fareDetails.discount = discount;
-      payload.fareDetails.totalFare -= discount;
+      parsedPayload.fareDetails.discount = discount;
+      parsedPayload.fareDetails.totalFare -= discount;
     }
 
+    // 3. FIX: Use parsedPayload here, NOT the original payload
     const ride = await this.rideRepo.create({
       riderId: new Types.ObjectId(riderId),
-      ...payload,
+      ...parsedPayload,
       status: "REQUESTED",
       requestedAt: new Date(),
     });
-
-    // Broadcast to WebSocket Gateway to ping nearby drivers
+    console.log("Created ride with ID:", ride._id);
+    // Broadcast to WebSocket Gateway
     AppEventBus.emit("RIDE_REQUESTED", { ride });
     return ride;
   }

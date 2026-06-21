@@ -14,11 +14,11 @@ router.use(authenticate);
 // Rider actions
 router.post("/estimate", upload.none(), controller.estimate);
 router.post("/request", upload.none(), controller.request);
-router.post("/:id/pay", upload.none(), controller.pay);
+router.post("/:rideId/pay", upload.none(), controller.pay);
 
 // Driver actions
 router.get("/nearby", upload.none(), controller.getNearby);
-router.post("/:id/accept", upload.none(), controller.accept);
-router.patch("/:id/status", upload.none(), controller.updateStatus); // Body: { action: 'arrived' }
+router.post("/:rideId/accept", upload.none(), controller.accept);
+router.patch("/:rideId/status", upload.none(), controller.updateStatus); // Body: { action: 'arrived' }
 
 export { router as rideRouter };
