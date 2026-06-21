@@ -24,8 +24,6 @@ AppEventBus.on("RIDER_PAID", (payload) => {
 });
 
 AppEventBus.on("RIDE_REQUESTED", (payload) => {
-  // Push Notification to Rider: "Thank you for riding with us! Please rate your driver."
-  console.log(
-    `[Push Notification] -> Rider ${payload.riderId}: Ride requested.`,
-  );
+  const { ride } = payload;
+  console.log(`[Push Notification] -> Rider ${ride.riderId}: Ride requested.`);
 });

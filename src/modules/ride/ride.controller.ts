@@ -95,9 +95,10 @@ export class RideController {
 
   updateStatus = asyncHandler(
     async (req: AuthenticatedRequest, res: Response) => {
-      const { action } = req.body; // 'arrived', 'start', 'complete', 'confirm_payment'
+      const { action } = req.body; //      "arrived" "start" "complete", "confirm_payment",
+      console.log("Received status update request with action:", action);
       const driverId = req.user!.userId;
-      const rideId = req.params.id as string;
+      const rideId = req.params.rideId as string;
 
       let data;
       switch (action) {
