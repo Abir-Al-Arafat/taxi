@@ -19,6 +19,7 @@ const RideSchema = new Schema<IRide>(
     driverId: { type: Schema.Types.ObjectId, ref: "User", index: true },
     pickup: { type: LocationSchema, required: true },
     destination: { type: LocationSchema, required: true },
+    stopovers: { type: [LocationSchema], default: [] },
     status: {
       type: String,
       enum: [

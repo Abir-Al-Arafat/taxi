@@ -56,8 +56,9 @@ export class RideService {
   // 2. Confirm & Request Ride
   async requestRide(riderId: string, payload: any) {
     // 1. Parse the strings into objects
+    console.log("Original payload in service:", payload);
     const parsedPayload = parsePayload(payload);
-
+    console.log("Parsed payload in service:", parsedPayload);
     // 2. Perform Promo logic using the parsed structure
     let discount = 0;
     if (parsedPayload.promoCode) {

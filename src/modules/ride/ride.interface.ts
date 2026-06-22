@@ -37,6 +37,7 @@ export interface IRide extends Document {
   estimatedTimeMins: number;
   fareDetails: IFareDetails;
   promoCode?: string;
+  stopovers?: ILocation[]; // Optional array of stopover locations
 
   // Timestamps for the State Machine
   requestedAt: Date;
