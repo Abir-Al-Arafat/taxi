@@ -147,6 +147,43 @@ export class WalletService {
     return { updatedBalance: updatedWallet.balance, transaction };
   }
 
+  async deductSystemCommission(
+    driverId: string,
+    amount: number,
+    rideId: string,
+  ) {
+    const wallet = await this.getOrCreateWallet(driverId);
+
+    // EDGE CASE: We intentionally allow the balance to drop below 0.
+    // Since the driver got physical cash, they owe the platform this commission.
+    const updatedWallet = await this.walletRepo.updateOne(
+      { _id: wallet._id },
+      { $inc: { balance: -amount } },
+    );
+
+    if (!updatedWallet) {
+      throw new AppError(
+        "Failed to process system commission",
+        HTTP_STATUS.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    // Record the commission transaction
+    await this.txRepo.create({
+      walletId: wallet._id,
+      userId: new Types.ObjectId(driverId),
+      type: "DEBIT",
+      amount,
+      balanceAfter: updatedWallet.balance,
+      source: "COMMISSION",
+      description: `Commission deducted for cash ride: ${rideId}`,
+    });
+
+    // Optional: If balance is highly negative (e.g., -500), you can emit an event here to suspend the driver's account.
+
+    return updatedWallet;
+  }
+
   async adminDeductWallet(
     adminId: string,
     driverId: string,

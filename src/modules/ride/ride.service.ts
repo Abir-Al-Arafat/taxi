@@ -6,12 +6,19 @@ import HTTP_STATUS from "../../constants/statusCodes";
 import { AppEventBus } from "../../shared/events/app-events";
 import { FareService } from "../fare/fare.service";
 import { PromoService } from "../promo/promo.service";
+import { WalletService } from "../wallet/wallet.service";
+import { FareRepository } from "../fare/fare.repository";
+import { UserRepository } from "../user/user.repository";
 import { calculateFallbackRouting } from "../../shared/utilities/geo.util";
 import { parsePayload } from "../../shared/utilities/parsePayload.util";
 export class RideService {
   private rideRepo = new RideRepository();
   private fareService = new FareService();
   private promoService = new PromoService();
+
+  private walletService = new WalletService();
+  private fareRepo = new FareRepository();
+  private userRepo = new UserRepository();
 
   // ==============================================
   // RIDER FLOWS
@@ -28,11 +35,6 @@ export class RideService {
   ) {
     let distanceKm = providedDistanceKm;
     let estimatedTimeMins = providedTimeMins;
-
-    console.log("Received estimate request with:", {
-      pickupCoords,
-      destCoords,
-    });
 
     // If frontend didn't provide exact map routing, trigger the fallback utility
     if (!distanceKm || !estimatedTimeMins) {
@@ -91,7 +93,8 @@ export class RideService {
     if (!ride || ride.status !== "PAYMENT_PENDING")
       throw new AppError("Invalid ride or state", HTTP_STATUS.BAD_REQUEST);
 
-    // Integrate Stripe/Wallet deduction here...
+    // Since it is cash, this function simply acts as an intercom to ping the driver.
+    // The actual deduction is protected inside the driver's confirmation step below.
 
     AppEventBus.emit("RIDER_PAID", { rideId, driverId: ride.driverId });
     return { success: true, message: "Payment processed successfully" };
@@ -135,8 +138,6 @@ export class RideService {
   }
 
   async declineRide(driverId: string, rideId: string) {
-    console.log(`Driver ${driverId} is declining ride ${rideId}`);
-
     const alreadyDeclined = await this.rideRepo.findOne({
       _id: rideId,
       declinedBy: new Types.ObjectId(driverId),
@@ -157,7 +158,6 @@ export class RideService {
       },
     );
 
-    console.log(`ride : ${ride}`);
     if (!ride)
       throw new AppError("Invalid ride state", HTTP_STATUS.BAD_REQUEST);
 
@@ -232,15 +232,67 @@ export class RideService {
   }
 
   // 8. Driver Confirms Payment
-  async confirmPaymentCollection(driverId: string, rideId: string) {
-    const ride = await this.rideRepo.updateOne(
-      { _id: rideId, driverId, status: "PAYMENT_PENDING" },
-      { $set: { status: "COMPLETED" } }, // Final terminal state
-    );
-    if (!ride)
-      throw new AppError("Invalid ride state", HTTP_STATUS.BAD_REQUEST);
 
-    AppEventBus.emit("PAYMENT_CONFIRMED", { rideId, riderId: ride.riderId });
-    return ride;
+  async confirmPaymentCollection(driverId: string, rideId: string) {
+    // 1. Lock the state: Prevent double-execution
+    const ride: any = await this.rideRepo.findOne({
+      _id: rideId,
+      driverId,
+      status: "PAYMENT_PENDING",
+    });
+    console.log("driverId:", driverId);
+    console.log("rideId:", rideId);
+    console.log("Ride fetched for payment confirmation:", ride);
+    if (!ride)
+      throw new AppError(
+        "Invalid ride state or already completed",
+        HTTP_STATUS.BAD_REQUEST,
+      );
+
+    // 2. Fetch Driver Profile to identify their gender for Fare Rules
+    const driver: any = await this.userRepo.findOne({ _id: driverId });
+    if (!driver) throw new AppError("Driver not found", HTTP_STATUS.NOT_FOUND);
+
+    // 3. Fetch Fare Rule to get dynamic adminCommissionPercentage
+    const fareRule = await this.fareRepo.findOne({
+      gender: driver.gender || "male",
+      // vehicleType: ride.vehicleType,
+    });
+
+    if (!fareRule) {
+      throw new AppError(
+        "System Error: Fare rules not configured for this driver type",
+        HTTP_STATUS.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    // 4. Calculate Commission Math (e.g. 250 * (20 / 100) = 50)
+    const totalFare = ride.fareDetails.totalFare;
+    const commissionAmount = Number(
+      ((totalFare * fareRule.commissionPercentage) / 100).toFixed(2),
+    );
+
+    // 5. Safely deduct the commission from the driver's wallet
+    if (commissionAmount > 0) {
+      await this.walletService.deductSystemCommission(
+        driverId,
+        commissionAmount,
+        rideId,
+      );
+    }
+
+    // 6. Terminate the ride state to "COMPLETED"
+    const completedRide = await this.rideRepo.updateOne(
+      { _id: rideId, driverId, status: "PAYMENT_PENDING" },
+      { $set: { status: "COMPLETED", completedAt: new Date() } },
+    );
+
+    AppEventBus.emit("PAYMENT_CONFIRMED", {
+      rideId,
+      riderId: ride.riderId,
+      commissionDeducted: commissionAmount,
+    });
+
+    return completedRide;
   }
 }

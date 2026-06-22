@@ -2,6 +2,8 @@
 import type { Document, Types } from "mongoose";
 
 export type TransactionSource =
+  | "DEPOSIT"
+  | "COMMISSION"
   | "VOUCHER"
   | "PROMO"
   | "RIDE_PAYMENT"

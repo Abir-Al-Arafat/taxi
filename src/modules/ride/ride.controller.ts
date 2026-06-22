@@ -20,13 +20,8 @@ export class RideController {
       estimatedTimeMins,
     } = req.body;
 
-    console.log("req.body:", req.body);
-
     const parsedPickup = JSON.parse(pickup).map(Number);
     const parsedDestination = JSON.parse(destination).map(Number);
-
-    console.log("parsedPickup:", parsedPickup);
-    console.log("parsedDestination:", parsedDestination);
 
     const data = await this.rideService.estimateRide(
       parsedPickup,

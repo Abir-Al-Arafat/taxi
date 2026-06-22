@@ -29,6 +29,7 @@ const RideSchema = new Schema<IRide>(
         "ARRIVED",
         "IN_PROGRESS",
         "PAYMENT_PENDING",
+        "RIDER_PAID",
         "COMPLETED",
         "CANCELLED",
       ],

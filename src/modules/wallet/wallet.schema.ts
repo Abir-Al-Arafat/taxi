@@ -37,7 +37,15 @@ const WalletTransactionSchema = new Schema<IWalletTransaction>(
     balanceAfter: { type: Number, required: true },
     source: {
       type: String,
-      enum: ["VOUCHER", "PROMO", "RIDE_PAYMENT", "ADMIN_ADJUSTMENT"],
+      enum: [
+        "VOUCHER",
+        "PROMO",
+        "RIDE_PAYMENT",
+        "ADMIN_ADJUSTMENT",
+        "DEPOSIT",
+        "RIDE_PAYMENT",
+        "COMMISSION",
+      ],
       required: true,
     },
     referenceId: { type: String },
