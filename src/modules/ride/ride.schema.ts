@@ -25,6 +25,7 @@ const RideSchema = new Schema<IRide>(
       enum: [
         "REQUESTED",
         "ACCEPTED",
+        "DECLINED",
         "ARRIVED",
         "IN_PROGRESS",
         "PAYMENT_PENDING",
@@ -34,6 +35,7 @@ const RideSchema = new Schema<IRide>(
       default: "REQUESTED",
       index: true,
     },
+    declinedBy: { type: [Schema.Types.ObjectId], ref: "User", default: [] },
     vehicleType: { type: String, enum: ["taxi", "normal car"], required: true },
     preferredGender: {
       type: String,

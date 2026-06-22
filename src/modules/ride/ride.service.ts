@@ -101,8 +101,12 @@ export class RideService {
   // DRIVER FLOWS
   // ==============================================
 
-  async getNearbyRequests(longitude: number, latitude: number) {
-    return this.rideRepo.findNearbyRequests(longitude, latitude);
+  async getNearbyRequests(
+    longitude: number,
+    latitude: number,
+    driverId?: string,
+  ) {
+    return this.rideRepo.findNearbyRequests(longitude, latitude, driverId);
   }
 
   // 3 & 4. Driver Accepts Ride
@@ -127,6 +131,37 @@ export class RideService {
       riderId: ride.riderId,
       driverId,
     });
+    return ride;
+  }
+
+  async declineRide(driverId: string, rideId: string) {
+    console.log(`Driver ${driverId} is declining ride ${rideId}`);
+
+    const alreadyDeclined = await this.rideRepo.findOne({
+      _id: rideId,
+      declinedBy: new Types.ObjectId(driverId),
+    });
+
+    if (alreadyDeclined) {
+      throw new AppError(
+        "You have already declined this ride",
+        HTTP_STATUS.BAD_REQUEST,
+      );
+    }
+
+    const ride = await this.rideRepo.updateOne(
+      { _id: rideId, status: "REQUESTED" },
+      {
+        // $set: { status: "DECLINED" },
+        $push: { declinedBy: new Types.ObjectId(driverId) },
+      },
+    );
+
+    console.log(`ride : ${ride}`);
+    if (!ride)
+      throw new AppError("Invalid ride state", HTTP_STATUS.BAD_REQUEST);
+
+    AppEventBus.emit("RIDE_DECLINED", { rideId, riderId: ride.riderId });
     return ride;
   }
 

@@ -72,9 +72,11 @@ export class RideController {
   // Driver Endpoints
   getNearby = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     const { lng, lat } = req.query;
+
     const data = await this.rideService.getNearbyRequests(
       Number(lng),
       Number(lat),
+      req.user!.userId, // driverId
     );
     res
       .status(HTTP_STATUS.OK)
@@ -91,6 +93,19 @@ export class RideController {
     res
       .status(HTTP_STATUS.OK)
       .json(ResponseBuilder.success("Ride accepted", data, HTTP_STATUS.OK));
+  });
+
+  decline = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    console.log(
+      `Received decline request for ride ${req.params.rideId} from driver ${req.user!.userId}`,
+    );
+    const data = await this.rideService.declineRide(
+      req.user!.userId,
+      req.params.rideId as string,
+    );
+    res
+      .status(HTTP_STATUS.OK)
+      .json(ResponseBuilder.success("Ride declined", data, HTTP_STATUS.OK));
   });
 
   updateStatus = asyncHandler(

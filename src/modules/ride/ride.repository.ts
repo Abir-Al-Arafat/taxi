@@ -12,11 +12,13 @@ export class RideRepository extends BaseRepository<IRide> {
   async findNearbyRequests(
     longitude: number,
     latitude: number,
+    driverId?: string,
     maxDistanceMeters: number = 5000,
   ) {
     return this.model
       .find({
         status: "REQUESTED",
+        ...(driverId ? { declinedBy: { $ne: driverId } } : {}), // Exclude rides declined by this driver
         pickup: {
           $near: {
             $geometry: { type: "Point", coordinates: [longitude, latitude] },

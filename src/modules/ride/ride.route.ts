@@ -21,6 +21,7 @@ router.post("/:rideId/pay", upload.none(), controller.pay);
 // Driver actions
 router.get("/nearby", upload.none(), controller.getNearby);
 router.post("/:rideId/accept", upload.none(), controller.accept);
+router.post("/:rideId/decline", upload.none(), controller.decline);
 router.patch("/:rideId/status", upload.none(), controller.updateStatus); // Body: { action: 'arrived' }
 
 export { router as rideRouter };
