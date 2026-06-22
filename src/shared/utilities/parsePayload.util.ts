@@ -12,6 +12,12 @@ function parsePayload(payload: any): { [key: string]: any } {
 
       if (
         typeof value === "string" &&
+        value.startsWith("[") &&
+        value.endsWith("]")
+      ) {
+        parsedValue = JSON.parse(value);
+      } else if (
+        typeof value === "string" &&
         value.startsWith("{") &&
         value.endsWith("}")
       ) {
