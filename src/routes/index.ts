@@ -9,11 +9,16 @@ import { voucherRouter } from "../modules/voucher/voucher.route";
 import { walletRouter } from "../modules/wallet/wallet.route";
 import { promoRouter } from "../modules/promo/promo.route";
 import { rideRouter } from "../modules/ride/ride.route";
+import { ratingRouter } from "../modules/rating/rating.route";
+import { messageRouter } from "../modules/message/message.route";
+
 const router = Router();
 
 router.use("/auth", authRouter);
 router.use("/users", userRouter);
 router.use("/fares", fareRouter);
+router.use("/ratings", ratingRouter);
+router.use("/messages", messageRouter);
 router.use("/rides", rideRouter);
 router.use("/saved-places", savedPlaceRouter);
 router.use("/driver-profile", driverProfileRouter);
@@ -21,4 +26,5 @@ router.use("/driver-approval", driverApprovalRouter);
 router.use("/vouchers", voucherRouter);
 router.use("/wallet", walletRouter);
 router.use("/promos", promoRouter);
+
 export { router as apiRouter };
