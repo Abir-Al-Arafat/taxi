@@ -37,6 +37,7 @@ const RideSchema = new Schema<IRide>(
       index: true,
     },
     declinedBy: { type: [Schema.Types.ObjectId], ref: "User", default: [] },
+    cancelReason: { type: String },
     vehicleType: { type: String, enum: ["taxi", "normal car"], required: true },
     preferredGender: {
       type: String,

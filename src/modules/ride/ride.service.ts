@@ -142,13 +142,14 @@ export class RideService {
   }
 
   //rider cancels ride
-  async cancelRide(riderId: string, rideId: string) {
+  async cancelRide(riderId: string, rideId: string, reason?: string) {
     const ride = await this.rideRepo.updateOne(
       { _id: rideId, riderId },
       {
         $set: {
           status: "CANCELLED",
           cancelledAt: new Date(),
+          cancelReason: reason,
         },
       },
     );

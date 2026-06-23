@@ -20,6 +20,7 @@ router.get("/", controller.getMyRides);
 router.post("/estimate", upload.none(), controller.estimate);
 router.post("/request", upload.none(), controller.request);
 router.post("/:rideId/pay", upload.none(), controller.pay);
+router.post("/:rideId/cancel", upload.none(), controller.cancel);
 
 // Driver actions
 router.get("/nearby", upload.none(), controller.getNearby);

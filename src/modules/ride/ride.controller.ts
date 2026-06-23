@@ -110,6 +110,7 @@ export class RideController {
     const data = await this.rideService.cancelRide(
       req.user!.userId,
       req.params.rideId as string,
+      req.body.reason,
     );
 
     res

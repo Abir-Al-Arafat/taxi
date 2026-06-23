@@ -39,6 +39,7 @@ export interface IRide extends Document {
   fareDetails: IFareDetails;
   promoCode?: string;
   stopovers?: ILocation[]; // Optional array of stopover locations
+  cancelReason?: string;
   declinedBy: Types.ObjectId[]; // Array of driver IDs who declined the ride
 
   // Timestamps for the State Machine
