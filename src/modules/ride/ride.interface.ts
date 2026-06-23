@@ -8,7 +8,8 @@ export type RideStatus =
   | "IN_PROGRESS"
   | "PAYMENT_PENDING"
   | "COMPLETED"
-  | "CANCELLED";
+  | "CANCELLED"
+  | "RIDER_PAID";
 
 export interface ILocation {
   type: "Point";
@@ -46,4 +47,5 @@ export interface IRide extends Document {
   arrivedAt?: Date;
   startedAt?: Date;
   completedAt?: Date;
+  riderPaidAt?: Date;
 }

@@ -90,9 +90,13 @@ export class RideService {
   // 7. Rider Pays for Ride
   async processPayment(riderId: string, rideId: string) {
     const ride = await this.rideRepo.findOne({ _id: rideId, riderId });
+
     if (!ride || ride.status !== "PAYMENT_PENDING")
       throw new AppError("Invalid ride or state", HTTP_STATUS.BAD_REQUEST);
 
+    ride.status = "RIDER_PAID";
+    ride.riderPaidAt = new Date();
+    await ride.save();
     // Since it is cash, this function simply acts as an intercom to ping the driver.
     // The actual deduction is protected inside the driver's confirmation step below.
 
@@ -240,9 +244,7 @@ export class RideService {
       driverId,
       status: "PAYMENT_PENDING",
     });
-    console.log("driverId:", driverId);
-    console.log("rideId:", rideId);
-    console.log("Ride fetched for payment confirmation:", ride);
+
     if (!ride)
       throw new AppError(
         "Invalid ride state or already completed",
