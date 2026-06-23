@@ -141,6 +141,32 @@ export class RideService {
     return ride;
   }
 
+  //rider cancels ride
+  async cancelRide(riderId: string, rideId: string) {
+    const ride = await this.rideRepo.updateOne(
+      { _id: rideId, riderId },
+      {
+        $set: {
+          status: "CANCELLED",
+          cancelledAt: new Date(),
+        },
+      },
+    );
+
+    if (!ride)
+      throw new AppError("Ride no longer available", HTTP_STATUS.CONFLICT);
+
+    AppEventBus.emit("RIDE_CANCELLED", {
+      rideId,
+      riderId,
+    });
+    return ride;
+  }
+
+  async myRides(userId: string, role: "rider" | "driver", params: any) {
+    return this.rideRepo.findPaginated(params, { [role + "Id"]: userId });
+  }
+
   async declineRide(driverId: string, rideId: string) {
     const alreadyDeclined = await this.rideRepo.findOne({
       _id: rideId,

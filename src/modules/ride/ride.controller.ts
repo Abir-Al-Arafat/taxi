@@ -52,6 +52,22 @@ export class RideController {
       );
   });
 
+  getMyRides = asyncHandler(
+    async (req: AuthenticatedRequest, res: Response) => {
+      const role = req.user?.role as "rider" | "driver";
+      const data = await this.rideService.myRides(
+        req.user!.userId,
+        role,
+        req.query,
+      );
+      res
+        .status(HTTP_STATUS.OK)
+        .json(
+          ResponseBuilder.success("My rides retrieved", data, HTTP_STATUS.OK),
+        );
+    },
+  );
+
   pay = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     const data = await this.rideService.processPayment(
       req.user!.userId,
@@ -88,6 +104,17 @@ export class RideController {
     res
       .status(HTTP_STATUS.OK)
       .json(ResponseBuilder.success("Ride accepted", data, HTTP_STATUS.OK));
+  });
+
+  cancel = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    const data = await this.rideService.cancelRide(
+      req.user!.userId,
+      req.params.rideId as string,
+    );
+
+    res
+      .status(HTTP_STATUS.OK)
+      .json(ResponseBuilder.success("Ride cancelled", data, HTTP_STATUS.OK));
   });
 
   decline = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
