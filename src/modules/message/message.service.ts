@@ -25,7 +25,7 @@ export class MessageService {
     const message = await this.messageRepository.create({
       senderId,
       receiverId: request.receiverId,
-      rideId: request.rideId,
+      rideId: request.rideId as string,
       content: request.content,
       isRead: false,
     });

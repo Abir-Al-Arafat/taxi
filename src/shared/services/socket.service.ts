@@ -21,7 +21,18 @@ export class SocketService {
     this.io.use((socket, next) => {
       try {
         console.log("socket:" + socket);
-        const token = socket.handshake.auth?.token;
+        console.log("socket.handshake:" + JSON.stringify(socket.handshake));
+        console.log(
+          "socket.handshake.auth:" + JSON.stringify(socket.handshake.auth),
+        );
+        console.log(
+          "socket.handshake.auth.token:" +
+            JSON.stringify(socket.handshake.auth.token),
+        );
+        // 1. Get token from the standard auth payload || get token from headers
+        const token =
+          socket.handshake.auth?.token || socket.handshake.headers.token;
+
         if (!token) return next(new Error("Authentication error"));
 
         const decoded = jwtService.verify<{ userId: string }>(token, false);

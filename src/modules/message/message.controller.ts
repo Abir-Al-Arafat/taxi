@@ -35,7 +35,7 @@ export class MessageController {
 
     const messages = await messageService.getConversation(
       userId,
-      targetUserId,
+      targetUserId as string,
       limit,
       skip,
     );
@@ -55,7 +55,7 @@ export class MessageController {
     const userId = req.user!.userId;
     const { senderId } = req.params;
 
-    await messageService.markAsRead(userId, senderId);
+    await messageService.markAsRead(userId, senderId as string);
 
     res
       .status(HTTP_STATUS.OK)

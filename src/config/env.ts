@@ -14,9 +14,24 @@ class Env {
   public readonly jwtAccessExpiresIn: Required<SignOptions>["expiresIn"];
   public readonly jwtRefreshExpiresIn: Required<SignOptions>["expiresIn"];
 
+  public readonly otpDeliveryMethod: "email" | "sms";
+  public readonly resalaToken: string;
+  public readonly resalaTestMode: boolean;
   constructor() {
     this.nodeEnv = process.env.NODE_ENV || "development";
     this.port = Number(process.env.PORT) || 5000;
+
+    this.otpDeliveryMethod =
+      (process.env.OTP_DELIVERY_METHOD as "email" | "sms") || "email";
+    this.resalaToken = process.env.RESALA_TOKEN || "";
+    this.resalaTestMode = process.env.RESALA_TEST_MODE === "true";
+
+    if (this.otpDeliveryMethod === "sms" && !this.resalaToken) {
+      throw new AppError(
+        "RESALA_TOKEN is required when OTP_DELIVERY_METHOD is 'sms'",
+        500,
+      );
+    }
 
     if (!process.env.DATABASE_URL) {
       throw new AppError(

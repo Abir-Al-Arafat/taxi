@@ -8,6 +8,7 @@ import {
 import HTTP_STATUS from "../../constants/statusCodes";
 import { AppError } from "../../core/errors/AppError";
 import { EmailService } from "../../shared/services/email.service";
+import { SmsService } from "../../shared/services/sms.service";
 import { AuthRepository } from "./auth.repository";
 import {
   buildPasswordResetEmailTemplate,
@@ -39,7 +40,7 @@ const PASSWORD_HASH_LENGTH = 64;
 
 export class AuthService {
   private readonly emailService = new EmailService();
-
+  private readonly smsService = new SmsService();
   constructor(private readonly authRepository = new AuthRepository()) {}
 
   async saveRefreshToken(userId: string, refreshToken: string): Promise<void> {
@@ -93,8 +94,11 @@ export class AuthService {
     }
 
     const passwordHash = this.hashPassword(request.password);
+
     const locationAddress = this.normalizeLocationAddress(request.location);
+
     const verificationChallenge = this.createOtpChallenge();
+
     const createPayload: Parameters<AuthRepository["createUser"]>[0] = {
       firstName: request.firstName.trim(),
       lastName: request.lastName.trim(),
