@@ -28,12 +28,13 @@ export class AuthController {
       res: Response,
     ): Promise<void> => {
       const user = await this.authService.signup(req.body);
-
+      const deliveryTarget =
+        env.otpDeliveryMethod === "sms" ? "phone number" : "email";
       res
         .status(HTTP_STATUS.CREATED)
         .json(
           ResponseBuilder.success(
-            "Account created successfully. Verification code sent to email.",
+            `Account created successfully. Verification code sent to ${deliveryTarget}.`,
             user,
             HTTP_STATUS.CREATED,
           ),

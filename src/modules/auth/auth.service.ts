@@ -97,6 +97,22 @@ export class AuthService {
 
     const locationAddress = this.normalizeLocationAddress(request.location);
 
+    // --- NEW LOGIC: Conditional OTP Generation ---
+    let otp: string;
+    if (env.otpDeliveryMethod === "sms") {
+      // Resala generates AND sends the SMS here
+      otp = await this.smsService.sendOtpPin(phoneNumber);
+      // otp = this.generateOtp();
+    } else {
+      // Backend generates for email
+      otp = this.generateOtp();
+    }
+
+    console.log(`Generated OTP: ${otp}`);
+
+    const tokenHash = this.hashToken(otp);
+    const expiresAt = this.createExpirationDate();
+
     const verificationChallenge = this.createOtpChallenge();
 
     const createPayload: Parameters<AuthRepository["createUser"]>[0] = {
@@ -110,8 +126,10 @@ export class AuthService {
       passwordHash,
       isVerified: false,
       profileCompleted: request.role !== "driver",
-      verificationTokenHash: verificationChallenge.tokenHash,
-      verificationTokenExpiresAt: verificationChallenge.expiresAt,
+      // verificationTokenHash: verificationChallenge.tokenHash,
+      verificationTokenHash: tokenHash,
+      // verificationTokenExpiresAt: verificationChallenge.expiresAt,
+      verificationTokenExpiresAt: expiresAt,
     };
 
     if (typeof locationAddress !== "undefined") {
@@ -122,7 +140,13 @@ export class AuthService {
 
     AppEventBus.emit("USER_REGISTERED", { userId: user._id.toString() });
 
-    await this.sendVerificationMessage(user, verificationChallenge.otp);
+    // await this.sendVerificationMessage(user, verificationChallenge.otp);
+
+    // Only send email if method is 'email' (SMS was already sent during generation)
+    console.log("env.otpDeliveryMethod:", env.otpDeliveryMethod);
+    if (env.otpDeliveryMethod === "email") {
+      await this.sendVerificationMessage(user, otp);
+    }
 
     return this.mapUserToResponse(user);
   }
