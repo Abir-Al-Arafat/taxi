@@ -165,7 +165,21 @@ export class RideService {
   }
 
   async myRides(userId: string, role: "rider" | "driver", params: any) {
-    return this.rideRepo.findPaginated(params, { [role + "Id"]: userId });
+    // 1. Build the base target filter for the repository
+    const filter: Record<string, any> = { [role + "Id"]: userId };
+
+    // 2. Add the multiple status filter logic
+    if (params.status) {
+      // Split the comma-separated string, trim spaces, and ensure uppercase
+      const statusArray = params.status
+        .split(",")
+        .map((s: string) => s.trim().toUpperCase());
+
+      // Use MongoDB's $in operator to match any of the provided statuses
+      filter.status = { $in: statusArray };
+    }
+    // 3. Pass the newly constructed filter to your global pagination engine
+    return this.rideRepo.findPaginated(params, filter);
   }
 
   async declineRide(driverId: string, rideId: string) {
