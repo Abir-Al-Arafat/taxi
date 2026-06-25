@@ -14,7 +14,7 @@ const controller = new RideController();
 router.use(authenticate);
 
 // User (Rider/Driver) Endpoints
-router.get("/", controller.getMyRides);
+router.get("/self", controller.getMyRides);
 
 // Rider actions
 router.post("/estimate", upload.none(), controller.estimate);
