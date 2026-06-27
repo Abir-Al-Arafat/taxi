@@ -15,6 +15,10 @@ router.use(authenticate);
 
 // User (Rider/Driver) Endpoints
 router.get("/self", controller.getMyRides);
+router.get("/:rideId", controller.rideById);
+
+// Admin Endpoints
+router.get("/", controller.getAllRides); // Admin only
 
 // Rider actions
 router.post("/estimate", upload.none(), controller.estimate);

@@ -170,4 +170,25 @@ export class RideController {
         );
     },
   );
+
+  rideById = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    const rideId = req.params.rideId as string;
+    const data = await this.rideService.getRideDetailsById(rideId);
+    res
+      .status(HTTP_STATUS.OK)
+      .json(
+        ResponseBuilder.success("Ride details retrieved", data, HTTP_STATUS.OK),
+      );
+  });
+
+  getAllRides = asyncHandler(
+    async (req: AuthenticatedRequest, res: Response) => {
+      const data = await this.rideService.getAllRides(req.query);
+      res
+        .status(HTTP_STATUS.OK)
+        .json(
+          ResponseBuilder.success("All rides retrieved", data, HTTP_STATUS.OK),
+        );
+    },
+  );
 }

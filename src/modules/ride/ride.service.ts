@@ -338,4 +338,14 @@ export class RideService {
 
     return completedRide;
   }
+
+  async getRideDetailsById(rideId: string) {
+    const ride = await this.rideRepo.findOne({ _id: rideId });
+    if (!ride) throw new AppError("Ride not found", HTTP_STATUS.NOT_FOUND);
+    return ride;
+  }
+
+  async getAllRides(params: any) {
+    return this.rideRepo.findPaginated(params);
+  }
 }
