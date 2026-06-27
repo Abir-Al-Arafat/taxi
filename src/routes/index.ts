@@ -11,11 +11,13 @@ import { promoRouter } from "../modules/promo/promo.route";
 import { rideRouter } from "../modules/ride/ride.route";
 import { ratingRouter } from "../modules/rating/rating.route";
 import { messageRouter } from "../modules/message/message.route";
+import { supportRouter } from "../modules/support/support.route";
 
 const router = Router();
 
 router.use("/auth", authRouter);
 router.use("/users", userRouter);
+router.use("/support", supportRouter);
 router.use("/fares", fareRouter);
 router.use("/ratings", ratingRouter);
 router.use("/messages", messageRouter);
