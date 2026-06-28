@@ -51,6 +51,6 @@ router.put("/:id/status", supportController.updateTicket);
  * @route POST /api/v1/support/:id/reply
  * @desc Send direct reply/notification to user
  */
-router.post("/:id/reply", supportController.replyToTicket);
+router.post("/:id/reply", upload.none(), supportController.replyToTicket);
 
 export { router as supportRouter };

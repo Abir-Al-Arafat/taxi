@@ -35,7 +35,22 @@ export class SupportController {
   );
 
   getTickets = asyncHandler(async (req: Request, res: Response) => {
-    const tickets = await this.supportService.getTickets(req.query);
+    const { status, userId, complaintAgainstId, rideId, ...paginationParams } =
+      req.query;
+
+    // Build the list of fields to populate based on truthy query params
+    const fieldsToPopulate: string[] = [];
+    if (userId === "true") fieldsToPopulate.push("userId");
+    if (complaintAgainstId === "true")
+      fieldsToPopulate.push("complaintAgainstId");
+    if (rideId === "true") fieldsToPopulate.push("rideId");
+
+    const tickets = await this.supportService.getTickets(
+      paginationParams,
+      status as string | undefined,
+      fieldsToPopulate,
+    );
+
     res
       .status(HTTP_STATUS.OK)
       .json(
@@ -108,9 +123,6 @@ export class SupportController {
   });
 
   replyToTicket = asyncHandler(async (req: Request, res: Response) => {
-    if (!req.body.message) {
-      throw new AppError("Message is required", HTTP_STATUS.BAD_REQUEST);
-    }
     const result = await this.supportService.replyToTicket(
       req.params.id as string,
       req.body,

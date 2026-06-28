@@ -1,3 +1,4 @@
+import { status } from "./support.schema";
 export interface CreateTicketRequest {
   userName: string; // Used for validation/display logic if needed
   userType: "rider" | "driver";
@@ -9,7 +10,7 @@ export interface CreateTicketRequest {
 }
 
 export interface UpdateTicketRequest {
-  status: "solved" | "rejected" | "pending";
+  status: status;
   adminNotes?: string;
   adminReply?: string;
   resolutionDetails?: {
@@ -20,7 +21,10 @@ export interface UpdateTicketRequest {
 }
 
 export interface ReplyTicketRequest {
-  message: string;
+  status: status;
+  adminNotes?: string;
+  adminReply?: string;
+  //   message: string;
   sendNotification: boolean;
 }
 

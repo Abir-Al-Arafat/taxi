@@ -1,5 +1,6 @@
 import { Schema, model, Document, Types } from "mongoose";
 
+export type status = "pending" | "solved" | "rejected";
 export interface SupportTicketSchema extends Document {
   _id: Types.ObjectId;
   ticketNumber: string;
@@ -10,7 +11,7 @@ export interface SupportTicketSchema extends Document {
   rideId?: Types.ObjectId;
   subject: string;
   description: string;
-  status: "pending" | "solved" | "rejected";
+  status: status;
   adminNotes?: string;
   adminReply?: string;
   resolutionDetails?: {

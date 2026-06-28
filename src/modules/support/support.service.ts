@@ -13,6 +13,7 @@ import type {
 } from "../../shared/types/pagination.types";
 import { Types } from "mongoose";
 import { SupportTicketSchema } from "./support.schema";
+import { status } from "./support.schema";
 
 export class SupportService {
   private supportRepository: SupportRepository;
@@ -59,12 +60,19 @@ export class SupportService {
     return ticket;
   }
 
-  async getTickets(params: IPaginationParams): Promise<IPaginatedResult<any>> {
-    // Relying on BaseRepository's findPaginated functionality
-    return this.supportRepository.findPaginated(params, { deletedAt: null }, [
-      "subject",
-      "ticketNumber",
-    ]);
+  async getTickets(
+    params: IPaginationParams,
+    status?: string,
+    fieldsToPopulate: string[] = [],
+  ) {
+    const filter: Record<string, any> = { deletedAt: null };
+    if (status) filter.status = status;
+    return this.supportRepository.findPaginatedWithDynamicPopulation(
+      params,
+      filter,
+      fieldsToPopulate,
+      ["subject", "ticketNumber"],
+    );
   }
 
   async getUserTickets(
@@ -132,7 +140,9 @@ export class SupportService {
       throw new AppError("Ticket not found", HTTP_STATUS.NOT_FOUND);
     }
 
-    ticket.adminReply = replyPayload.message;
+    ticket.adminReply = replyPayload.adminReply || "";
+    ticket.adminNotes = ticket.adminNotes || replyPayload.adminNotes || "";
+    ticket.status = replyPayload.status as status;
     const updatedTicket = await this.supportRepository.updateOne(
       { _id: new Types.ObjectId(ticketId) },
       ticket,
