@@ -3,6 +3,7 @@ import type {
   NotificationSchema,
 } from "./notification.types";
 import { AppError } from "../../core/errors/AppError";
+import HTTP_STATUS from "../../constants/statusCodes";
 import { NotificationRepository } from "./notification.repository";
 import { EmailService } from "../../shared/services/email.service";
 import { SocketService } from "../../shared/services/socket.service";
@@ -78,5 +79,46 @@ export class NotificationService {
       if (error instanceof AppError) throw error;
       throw new AppError("Failed to dispatch notifications", 500);
     }
+  }
+
+  /**
+   * Fetches unread notifications for a specific user
+   */
+  async getMyNotifications(userId: string): Promise<NotificationSchema[]> {
+    if (!userId) {
+      throw new AppError("User ID is required", HTTP_STATUS.BAD_REQUEST);
+    }
+
+    // Using the repository method we defined earlier
+    return this.notificationRepository.findNotificationsByUser(userId, 50);
+  }
+
+  /**
+   * Marks a specific notification as read, ensuring it belongs to the requesting user
+   */
+  async markAsRead(
+    userId: string,
+    notificationId: string,
+  ): Promise<NotificationSchema> {
+    if (!notificationId) {
+      throw new AppError(
+        "Notification ID is required",
+        HTTP_STATUS.BAD_REQUEST,
+      );
+    }
+
+    const updatedNotification = await this.notificationRepository.markAsRead(
+      notificationId,
+      userId,
+    );
+
+    if (!updatedNotification) {
+      throw new AppError(
+        "Notification not found or access denied",
+        HTTP_STATUS.NOT_FOUND,
+      );
+    }
+
+    return updatedNotification;
   }
 }

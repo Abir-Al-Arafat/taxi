@@ -14,12 +14,12 @@ export class NotificationRepository extends BaseRepository<NotificationSchema> {
     return this.updateOne({ _id: notificationId, userId }, { isRead: true });
   }
 
-  async findUnreadByUser(
+  async findNotificationsByUser(
     userId: string,
     limit = 20,
   ): Promise<NotificationSchema[]> {
     return this.model
-      .find({ userId, isRead: false })
+      .find({ userId })
       .sort({ createdAt: -1 })
       .limit(limit)
       .lean()
