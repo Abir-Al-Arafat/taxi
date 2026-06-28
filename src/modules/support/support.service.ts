@@ -18,10 +18,13 @@ import { NotificationService } from "../notification/notification.service";
 import type { SendNotificationRequest } from "../notification/notification.types";
 
 export class SupportService {
-  private supportRepository: SupportRepository;
+  //   private supportRepository: SupportRepository;
   // private notificationService: NotificationService;
-  constructor(private notificationService: NotificationService) {
-    this.supportRepository = new SupportRepository();
+  constructor(
+    private supportRepository: SupportRepository,
+    private notificationService: NotificationService,
+  ) {
+    // this.supportRepository = new SupportRepository();
   }
 
   async createTicket(userId: string, request: CreateTicketRequest) {

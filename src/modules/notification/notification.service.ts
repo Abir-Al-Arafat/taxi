@@ -38,7 +38,7 @@ export class NotificationService {
             // FIX: Use the static method sendToUser directly on the class
             SocketService.sendToUser(
               payload.userId,
-              "NEW_NOTIFICATION",
+              "newNotification",
               savedNotification,
             );
           });

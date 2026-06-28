@@ -2,13 +2,33 @@ import { Router } from "express";
 import multer from "multer";
 import { SupportController } from "./support.controller";
 import { SupportService } from "./support.service";
+import { SupportRepository } from "./support.repository";
+import { NotificationService } from "../notification/notification.service";
+import { NotificationRepository } from "../notification/notification.repository";
+import { EmailService } from "../../shared/services/email.service";
 import { authenticate } from "../../middlewares/auth.middleware";
 
 const router = Router();
 const upload = multer();
 
-// DI Container
-const supportService = new SupportService();
+// 1. Initialize Notification Module Dependencies
+const notificationRepository = new NotificationRepository();
+const emailService = new EmailService();
+const notificationService = new NotificationService(
+  notificationRepository,
+  emailService,
+);
+
+// 2. Initialize Support Module Dependencies
+const supportRepository = new SupportRepository();
+
+// 3. CRITICAL: Pass the notificationService into SupportService here!
+const supportService = new SupportService(
+  supportRepository,
+  notificationService,
+);
+
+// 4. Pass the configured service to the controller
 const supportController = new SupportController(supportService);
 
 /**
