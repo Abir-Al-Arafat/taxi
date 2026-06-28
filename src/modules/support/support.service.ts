@@ -1,6 +1,7 @@
 import { AppError } from "../../core/errors/AppError";
 import HTTP_STATUS from "../../constants/statusCodes";
 import { SupportRepository } from "./support.repository";
+import { UserRepository } from "../user/user.repository";
 import type {
   CreateTicketRequest,
   UpdateTicketRequest,
@@ -23,6 +24,7 @@ export class SupportService {
   constructor(
     private supportRepository: SupportRepository,
     private notificationService: NotificationService,
+    private userRepository: UserRepository,
   ) {
     // this.supportRepository = new SupportRepository();
   }
@@ -60,7 +62,10 @@ export class SupportService {
       issueDate: new Date(),
     } as Partial<SupportTicketSchema>);
 
-    // TODO: Trigger notification to admin dashboard here
+    //---------------------------------------------------------
+    // Fire and forget notification
+    // ---------------------------------------------------------
+    this.notifyAdminsOfNewTicket(ticket);
 
     return ticket;
   }
@@ -188,5 +193,40 @@ export class SupportService {
     }
 
     return updatedTicket;
+  }
+
+  private async notifyAdminsOfNewTicket(ticket: any): Promise<void> {
+    try {
+      // 1. Fetch all admin users
+      const admins = await this.userRepository.findMany({ role: "admin" });
+
+      // 2. Map over admins to create dispatch promises
+      const notificationPromises = admins.map((admin) => {
+        const notificationPayload: SendNotificationRequest = {
+          userId: String(admin._id),
+          title: "New Support Ticket",
+          body: `A new ticket has been opened: ${ticket.subject}`,
+          type: "SUPPORT_TICKET",
+          channels: ["IN_APP"],
+          data: {
+            ticketId: String(ticket._id),
+            ticketNumber: ticket.ticketNumber,
+            actionUrl: `/admin/support/tickets/${String(ticket._id)}`,
+          },
+        };
+
+        return this.notificationService.send(notificationPayload);
+      });
+
+      // 3. Dispatch all notifications in the background
+      Promise.allSettled(notificationPromises).catch((err) => {
+        console.error(
+          "Non-fatal: Failed to send admin dashboard notification",
+          err,
+        );
+      });
+    } catch (error) {
+      console.error("Non-fatal: Error building admin notification", error);
+    }
   }
 }

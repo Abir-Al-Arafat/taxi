@@ -5,6 +5,7 @@ import { SupportService } from "./support.service";
 import { SupportRepository } from "./support.repository";
 import { NotificationService } from "../notification/notification.service";
 import { NotificationRepository } from "../notification/notification.repository";
+import { UserRepository } from "../user/user.repository";
 import { EmailService } from "../../shared/services/email.service";
 import { authenticate } from "../../middlewares/auth.middleware";
 
@@ -21,11 +22,12 @@ const notificationService = new NotificationService(
 
 // 2. Initialize Support Module Dependencies
 const supportRepository = new SupportRepository();
-
+const userRepository = new UserRepository();
 // 3. CRITICAL: Pass the notificationService into SupportService here!
 const supportService = new SupportService(
   supportRepository,
   notificationService,
+  userRepository,
 );
 
 // 4. Pass the configured service to the controller
