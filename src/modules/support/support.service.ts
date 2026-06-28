@@ -14,11 +14,13 @@ import type {
 import { Types } from "mongoose";
 import { SupportTicketSchema } from "./support.schema";
 import { status } from "./support.schema";
+import { NotificationService } from "../notification/notification.service";
+import type { SendNotificationRequest } from "../notification/notification.types";
 
 export class SupportService {
   private supportRepository: SupportRepository;
-
-  constructor() {
+  // private notificationService: NotificationService;
+  constructor(private notificationService: NotificationService) {
     this.supportRepository = new SupportRepository();
   }
 
@@ -133,9 +135,14 @@ export class SupportService {
   }
 
   async replyToTicket(ticketId: string, replyPayload: ReplyTicketRequest) {
-    const ticket = await this.supportRepository.findOne({
-      _id: new Types.ObjectId(ticketId),
-    });
+    const ticket: any = await this.supportRepository
+      .findTicketById(ticketId)
+      .populate("userId", "name phone email") // Populate userId
+      .populate("complaintAgainstId", "name phone email") // Populate complaintAgainstId
+      .exec();
+
+    console.log("Ticket found for reply:", ticket);
+
     if (!ticket) {
       throw new AppError("Ticket not found", HTTP_STATUS.NOT_FOUND);
     }
@@ -148,8 +155,33 @@ export class SupportService {
       ticket,
     );
 
+    console.log("replyPayload:", replyPayload);
+    console.log(
+      "replyPayload.sendNotification:",
+      replyPayload.sendNotification,
+    );
+    console.log("User ID for notification:", ticket.userId._id);
+    console.log("String(ticket.userId._id):", String(ticket.userId._id));
+    console.log("ticket.userId.email:", ticket.userId.email);
+    console.log("ticketId:", ticketId);
+
     if (replyPayload.sendNotification) {
-      // TODO: dispatch user push notification + email here
+      const notificationPayload: SendNotificationRequest = {
+        userId: String(ticket.userId._id), // Assuming userId is stored as a string in the ticket schema
+        userEmail: ticket.userId.email, // Assume available on ticket or fetched prior
+        title: "Update on your Support Ticket",
+        body: `An agent has replied to your ticket #${ticketId}.`,
+        type: "SUPPORT_TICKET",
+        channels: ["IN_APP", "EMAIL", "PUSH"], // Configure channels dynamically based on user prefs if needed
+        data: {
+          ticketId: ticketId,
+          actionUrl: `/support/tickets/${ticketId}`,
+        },
+      };
+      console.log("Notification payload to be sent:", notificationPayload);
+      // We do not await this if we don't want to block the HTTP response,
+      // but waiting ensures delivery success logic. Await is safer.
+      await this.notificationService.send(notificationPayload);
     }
 
     return updatedTicket;

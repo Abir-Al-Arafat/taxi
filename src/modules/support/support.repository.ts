@@ -39,6 +39,10 @@ export class SupportRepository extends BaseRepository<SupportTicketSchema> {
       .exec();
   }
 
+  findTicketById(ticketId: string) {
+    return this.model.findOne({ _id: new Types.ObjectId(ticketId) });
+  }
+
   /**
    * Get dashboard ticket metrics
    */
