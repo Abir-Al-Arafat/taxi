@@ -31,6 +31,8 @@ export interface UserDocument extends Document {
   adminApproved: "pending" | "approved" | "declined";
   profilePicture?: string;
   isBlocked: boolean;
+  rideTakenCount: number; // Number of rides taken by the user (for riders)
+  rideGivenCount: number; // Number of rides given by the user (for drivers)
 }
 
 const authUserSchema = new Schema<UserDocument>(
@@ -144,6 +146,14 @@ const authUserSchema = new Schema<UserDocument>(
     },
     verifiedAt: {
       type: Date,
+    },
+    rideTakenCount: {
+      type: Number,
+      default: 0,
+    },
+    rideGivenCount: {
+      type: Number,
+      default: 0,
     },
   },
   {

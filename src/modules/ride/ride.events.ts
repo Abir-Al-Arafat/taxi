@@ -27,3 +27,13 @@ AppEventBus.on("RIDE_REQUESTED", (payload) => {
   const { ride } = payload;
   console.log(`[Push Notification] -> Rider ${ride.riderId}: Ride requested.`);
 });
+
+AppEventBus.on("RIDE_COMPLETED", (payload) => {
+  const { ride } = payload;
+  console.log(
+    `[Push Notification] -> Rider ${ride.riderId}: Ride completed. Thank you!`,
+  );
+  console.log(
+    `[Push Notification] -> Driver ${ride.driverId}: Ride completed. Thank you!`,
+  );
+});

@@ -11,6 +11,7 @@ import { FareRepository } from "../fare/fare.repository";
 import { UserRepository } from "../user/user.repository";
 import { calculateFallbackRouting } from "../../shared/utilities/geo.util";
 import { parsePayload } from "../../shared/utilities/parsePayload.util";
+
 export class RideService {
   private rideRepo = new RideRepository();
   private fareService = new FareService();
@@ -268,6 +269,18 @@ export class RideService {
     if (!ride)
       throw new AppError("Invalid ride state", HTTP_STATUS.BAD_REQUEST);
 
+    const rider = await this.userRepo.updateOne(
+      { _id: ride.riderId },
+      { $inc: { rideTakenCount: 1 } },
+    );
+    console.log("completeRide: rider rideTakenCount", rider);
+
+    const driver = await this.userRepo.updateOne(
+      { _id: ride.driverId },
+      { $inc: { rideGivenCount: 1 } },
+    );
+
+    console.log("completeRide: driver rideGivenCount", driver);
     AppEventBus.emit("RIDE_COMPLETED", {
       rideId,
       riderId: ride.riderId,
