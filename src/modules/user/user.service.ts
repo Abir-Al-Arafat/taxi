@@ -68,6 +68,16 @@ export class UserService {
     };
   }
 
+  // Inside UserService
+  async getUsers(options: {
+    page: number;
+    limit: number;
+    includeVehicleType: boolean;
+  }) {
+    // Delegate to the repository
+    return await this.userRepository.getPaginatedUsers(options);
+  }
+
   async getUserById(
     userId: string,
     includeDriverProfile: boolean = false,
@@ -263,6 +273,8 @@ export class UserService {
       updatedAt: user.updatedAt,
       onlineStatus: user.onlineStatus,
       adminApproved: user.adminApproved as "pending" | "approved" | "declined",
+      rideTakenCount: user.rideTakenCount,
+      rideGivenCount: user.rideGivenCount,
     };
   }
 

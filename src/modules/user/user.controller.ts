@@ -5,15 +5,7 @@ import { AppError } from "../../core/errors/AppError";
 import HTTP_STATUS from "../../constants/statusCodes";
 import { UserService } from "./user.service";
 import { AuthenticatedRequest } from "../../middlewares/auth.middleware";
-import { env } from "../../config/env";
-import type {
-  ForgotPasswordRequest,
-  LoginRequest,
-  ResetPasswordRequest,
-  ResendOtpRequest,
-  SignupRequest,
-  VerifyOtpRequest,
-} from "../auth/auth.types";
+
 import { AuthRole } from "../auth/auth.types";
 
 export class UserController {
@@ -35,6 +27,38 @@ export class UserController {
         );
     },
   );
+
+  // Inside UserController
+  getUsers = asyncHandler(async (req: Request, res: Response) => {
+    console.log("getUsers controller called");
+    // Extract pagination and filter queries
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+
+    // Capture our new optional flag
+    const includeVehicleType = req.query.includeVehicleType === "true";
+
+    console.log(
+      `Fetching users with page: ${page}, limit: ${limit}, includeVehicleType: ${includeVehicleType}`,
+    );
+
+    // Pass it to the service
+    const result = await this.userService.getUsers({
+      page,
+      limit,
+      includeVehicleType,
+    });
+
+    res
+      .status(HTTP_STATUS.OK)
+      .json(
+        ResponseBuilder.success(
+          "Users retrieved successfully",
+          result,
+          HTTP_STATUS.OK,
+        ),
+      );
+  });
 
   getUserById = asyncHandler(
     async (req: Request, res: Response): Promise<void> => {

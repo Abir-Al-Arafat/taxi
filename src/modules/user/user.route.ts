@@ -14,7 +14,7 @@ const userController = new UserController();
 // Optionally wrap with admin authMiddleware if this is an admin dashboard
 router.get("/overview", userController.getUserOverview);
 
-router.get("/", userController.getAllUsers);
+router.get("/", userController.getAllUsers); // Admin-only route, consider adding requireAdminRole middleware
 
 router.get("/me", authenticate, userController.getMyDetails);
 

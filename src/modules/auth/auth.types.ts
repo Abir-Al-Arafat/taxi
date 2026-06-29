@@ -100,4 +100,6 @@ export interface AuthUserView {
   profileCompletionRequired: boolean;
   onlineStatus: "online" | "offline";
   adminApproved: "pending" | "approved" | "declined";
+  rideTakenCount: number;
+  rideGivenCount: number;
 }

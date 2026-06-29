@@ -323,4 +323,72 @@ export class UserRepository extends BaseRepository<UserDocument> {
       },
     ]);
   }
+
+  async getPaginatedUsers(options: {
+    page: number;
+    limit: number;
+    includeVehicleType: boolean;
+  }) {
+    console.log(
+      "🚀 ~ file: user.repository.ts:333 ~ UserRepository ~ getPaginatedUsers ~ options:",
+      options,
+    );
+    const { page, limit, includeVehicleType } = options;
+    const skip = (page - 1) * limit;
+
+    // 1. Start building the aggregation pipeline
+    const pipeline: any[] = [];
+    console.log("includeVehicleType", includeVehicleType);
+    // 2. Conditionally add the $lookup to join DriverProfile
+    if (includeVehicleType) {
+      pipeline.push(
+        {
+          $lookup: {
+            from: "driverprofiles", // Verify this matches your actual MongoDB collection name (usually lowercase + plural)
+            localField: "_id",
+            foreignField: "userId", // The field in DriverProfile schema that references the User
+            as: "driverProfileData",
+          },
+        },
+        {
+          // $unwind flattens the array. preserveNullAndEmptyArrays ensures riders (who don't have a profile) aren't filtered out
+          $unwind: {
+            path: "$driverProfileData",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          // Add the vehicleType to the root document for a cleaner response
+          $addFields: {
+            vehicleType: "$driverProfileData.vehicleType",
+          },
+        },
+        {
+          // Remove the raw joined object to keep the payload clean
+          $project: {
+            driverProfileData: 0,
+          },
+        },
+      );
+    }
+
+    // 3. Add pagination stages
+    pipeline.push({ $skip: skip }, { $limit: limit });
+
+    // 4. Execute queries in parallel (one for data, one for total count)
+    const [items, totalCount] = await Promise.all([
+      this.model.aggregate(pipeline),
+      this.model.countDocuments(),
+    ]);
+
+    // Format the response to match your existing structure
+    return {
+      items,
+      meta: {
+        totalItems: totalCount,
+        currentPage: page,
+        totalPages: Math.ceil(totalCount / limit),
+      },
+    };
+  }
 }
