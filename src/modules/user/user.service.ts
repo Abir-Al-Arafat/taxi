@@ -23,7 +23,7 @@ import type { UserDocument } from "../user/user.schema";
 import { parseDate } from "../../shared/utilities/date.util";
 import { normalizeStringArray } from "../../shared/utilities/upload.util";
 import { deleteFile } from "../../shared/utilities/file.util";
-
+import { AuthRole } from "../auth/auth.types";
 export class UserService {
   constructor(private readonly userRepository = new UserRepository()) {}
 
@@ -287,5 +287,52 @@ export class UserService {
     }
 
     return updatePayload;
+  }
+
+  /**
+   * Retrieves and formats monthly user overview statistics
+   */
+  async getUserOverviewStats(year: number, role: AuthRole) {
+    const stats = await this.userRepository.getUserStatsByYearAndRole(
+      year,
+      role,
+    );
+
+    // Array of 12 months
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+
+    // Map the grouped data to a 12-month array
+    const monthlyData = months.map((month, index) => {
+      const monthStat = stats.find((s) => s._id === index + 1);
+      return {
+        name: month,
+        user: monthStat ? monthStat.count : 0,
+      };
+    });
+
+    // Calculate maximum users for the stacked bar diff
+    const maxUserCount = Math.max(...monthlyData.map((d) => d.user), 0);
+    // Add a 20% visual buffer to the top of the chart, fallback to 100 if no data
+    const ceiling = maxUserCount > 0 ? Math.ceil(maxUserCount * 1.2) : 100;
+
+    // Attach the `diff` required by the recharts stacked bar logic
+    return monthlyData.map((d) => ({
+      name: d.name,
+      user: d.user,
+      diff: ceiling - d.user,
+    }));
   }
 }

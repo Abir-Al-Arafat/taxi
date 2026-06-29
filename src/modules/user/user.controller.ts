@@ -14,6 +14,7 @@ import type {
   SignupRequest,
   VerifyOtpRequest,
 } from "../auth/auth.types";
+import { AuthRole } from "../auth/auth.types";
 
 export class UserController {
   constructor(private readonly userService = new UserService()) {}
@@ -185,4 +186,43 @@ export class UserController {
         );
     },
   );
+
+  /**
+   * Get User/Driver overview chart data
+   * GET /api/v1/users/overview?year=2024&role=rider
+   */
+  getUserOverview = asyncHandler(async (req: Request, res: Response) => {
+    // 1. Parse and default queries
+    const year = parseInt(req.query.year as string) || new Date().getFullYear();
+    const role = (req.query.role as string)?.toLowerCase() || "rider";
+
+    // 2. Validate input
+    if (role !== "rider" && role !== "driver") {
+      throw new AppError(
+        "Invalid role. Must be 'rider' or 'driver'",
+        HTTP_STATUS.BAD_REQUEST,
+      );
+    }
+
+    if (isNaN(year) || year < 2000 || year > 2100) {
+      throw new AppError("Invalid year provided", HTTP_STATUS.BAD_REQUEST);
+    }
+
+    // 3. Call Service
+    const overviewData = await this.userService.getUserOverviewStats(
+      year,
+      role as AuthRole,
+    );
+
+    // 4. Format Response
+    res
+      .status(HTTP_STATUS.OK)
+      .json(
+        ResponseBuilder.success(
+          "User overview retrieved successfully",
+          overviewData,
+          HTTP_STATUS.OK,
+        ),
+      );
+  });
 }

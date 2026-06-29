@@ -5,6 +5,7 @@ import { BaseRepository } from "../../repositories/base.repository";
 import { AuthService } from "../auth/auth.service";
 import { UserModel, type UserDocument } from "../user/user.schema";
 import type { UpdateProfileDetails } from "./user.interface";
+import { AuthRole } from "../auth/auth.types";
 
 export class UserRepository extends BaseRepository<UserDocument> {
   private authService = new AuthService();
@@ -268,5 +269,31 @@ export class UserRepository extends BaseRepository<UserDocument> {
       "keyPattern" in error &&
       typeof (error as { keyPattern?: unknown }).keyPattern === "object"
     );
+  }
+
+  /**
+   * Aggregate users by month for a specific year and role
+   */
+  async getUserStatsByYearAndRole(year: number, role: AuthRole) {
+    const startDate = new Date(`${year}-01-01T00:00:00.000Z`);
+    const endDate = new Date(`${year}-12-31T23:59:59.999Z`);
+
+    return await this.model.aggregate([
+      {
+        $match: {
+          role: role,
+          createdAt: { $gte: startDate, $lte: endDate },
+        },
+      },
+      {
+        $group: {
+          _id: { $month: "$createdAt" },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { _id: 1 },
+      },
+    ]);
   }
 }

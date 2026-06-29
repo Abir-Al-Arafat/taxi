@@ -10,6 +10,10 @@ const router = Router();
 const upload = multer();
 const userController = new UserController();
 
+// Mount the overview route BEFORE routes like router.get("/:userId", ...)
+// Optionally wrap with admin authMiddleware if this is an admin dashboard
+router.get("/overview", userController.getUserOverview);
+
 router.get("/", userController.getAllUsers);
 
 router.get("/me", authenticate, userController.getMyDetails);
