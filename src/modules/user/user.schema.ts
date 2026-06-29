@@ -33,6 +33,7 @@ export interface UserDocument extends Document {
   isBlocked: boolean;
   rideTakenCount: number; // Number of rides taken by the user (for riders)
   rideGivenCount: number; // Number of rides given by the user (for drivers)
+  onlineStatus: "online" | "offline"; // Online status of the user (for drivers)
 }
 
 const authUserSchema = new Schema<UserDocument>(
@@ -154,6 +155,11 @@ const authUserSchema = new Schema<UserDocument>(
     rideGivenCount: {
       type: Number,
       default: 0,
+    },
+    onlineStatus: {
+      type: String,
+      enum: ["online", "offline"],
+      default: "offline",
     },
   },
   {

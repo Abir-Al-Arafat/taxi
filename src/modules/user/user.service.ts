@@ -205,6 +205,16 @@ export class UserService {
     return this.mapUserToResponse(updatedUser);
   }
 
+  async toggleOnlineStatus(userId: string): Promise<AuthUserResponse> {
+    const updatedUser = await this.userRepository.toggleOnlineStatus(userId);
+
+    if (!updatedUser) {
+      throw new AppError("User not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    return this.mapUserToResponse(updatedUser);
+  }
+
   private normalizeEmail(email: string): string {
     return email.trim().toLowerCase();
   }
@@ -251,6 +261,8 @@ export class UserService {
         user.role === "driver" && !user.profileCompleted,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
+      onlineStatus: user.onlineStatus,
+      adminApproved: user.adminApproved as "pending" | "approved" | "declined",
     };
   }
 

@@ -29,6 +29,12 @@ router.patch(
 );
 
 router.patch(
+  "/me/online-status",
+  authenticate,
+  userController.toggleOnlineStatus,
+);
+
+router.patch(
   "/me/password",
   authenticate,
   upload.none(),

@@ -187,6 +187,29 @@ export class UserController {
     },
   );
 
+  toggleOnlineStatus = asyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const authReq = req as AuthenticatedRequest;
+      const userId = authReq.user?.userId;
+
+      if (!userId) {
+        throw new AppError("User not authenticated", HTTP_STATUS.UNAUTHORIZED);
+      }
+
+      const updatedUser = await this.userService.toggleOnlineStatus(userId);
+
+      res
+        .status(HTTP_STATUS.OK)
+        .json(
+          ResponseBuilder.success(
+            "User online status toggled successfully",
+            updatedUser,
+            HTTP_STATUS.OK,
+          ),
+        );
+    },
+  );
+
   /**
    * Get User/Driver overview chart data
    * GET /api/v1/users/overview?year=2024&role=rider

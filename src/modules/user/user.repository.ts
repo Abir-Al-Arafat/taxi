@@ -189,6 +189,33 @@ export class UserRepository extends BaseRepository<UserDocument> {
     }
   }
 
+  async toggleOnlineStatus(userId: string): Promise<UserDocument | null> {
+    try {
+      return await this.model.findOneAndUpdate(
+        { _id: userId },
+        [
+          {
+            $set: {
+              onlineStatus: {
+                $cond: {
+                  if: { $eq: ["$onlineStatus", "online"] },
+                  then: "offline",
+                  else: "online",
+                },
+              },
+            },
+          },
+        ],
+        {
+          new: true,
+          updatePipeline: true,
+        },
+      );
+    } catch (error) {
+      this.handleDatabaseError(error);
+    }
+  }
+
   private handleDatabaseError(error: unknown): never {
     if (error instanceof mongoose.Error.ValidationError) {
       const messages = Object.values(error.errors)
