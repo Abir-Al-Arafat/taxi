@@ -1,5 +1,6 @@
 import type {
   SendNotificationRequest,
+  CreateAdminNotificationRequest,
   NotificationSchema,
 } from "./notification.types";
 import { AppError } from "../../core/errors/AppError";
@@ -7,14 +8,67 @@ import HTTP_STATUS from "../../constants/statusCodes";
 import { NotificationRepository } from "./notification.repository";
 import { EmailService } from "../../shared/services/email.service";
 import { SocketService } from "../../shared/services/socket.service";
-
+import { UserRepository } from "../user/user.repository";
+import type {
+  IPaginationParams,
+  IPaginatedResult,
+} from "../../shared/types/pagination.types";
 // Future import: import { PushNotificationService } from "../../shared/services/push.service";
 
 export class NotificationService {
   constructor(
     private notificationRepository: NotificationRepository,
     private emailService: EmailService,
+    private userRepository: UserRepository,
   ) {}
+
+  async createAndBroadcast(
+    payload: CreateAdminNotificationRequest,
+  ): Promise<void> {
+    // 1. Identify target users based on role
+    const filter: any = {};
+    if (payload.targetType !== "all") {
+      filter.role = payload.targetType;
+    }
+
+    console.log("createAndBroadcast payload:", payload);
+
+    const users = await this.userRepository.findMany(filter);
+
+    console.log(`payload ${payload}`);
+    console.log(`Target users for notification:`, users);
+    try {
+      // 2. Persist and Emit for each targeted user
+      const notificationPromises = users.map(async (user) => {
+        const savedNotification = await this.notificationRepository.create({
+          userId: String(user._id),
+          title: payload.title,
+          body: payload.body,
+          type: payload.type,
+          data: payload.data || {},
+          isRead: false,
+        });
+
+        console.log(
+          `Notification created for user ${user._id}:`,
+          savedNotification,
+        );
+
+        // Real-time broadcast
+        SocketService.sendToUser(
+          String(user._id),
+          "newNotification",
+          savedNotification,
+        );
+      });
+      console.log("Notification promises created:", notificationPromises);
+      const results = await Promise.allSettled(notificationPromises);
+      console.log("Notification promises results:", results);
+    } catch (error) {
+      console.error("Error creating and broadcasting notification:", error);
+      throw new AppError("Error creating and broadcasting notification", 500);
+    }
+  }
 
   /**
    * Dynamically dispatches a notification across specified channels
@@ -120,5 +174,42 @@ export class NotificationService {
     }
 
     return updatedNotification;
+  }
+
+  async getAllNotifications(
+    query: any,
+  ): Promise<IPaginatedResult<NotificationSchema>> {
+    // 1. Extract standard pagination & search parameters
+    const paginationParams: IPaginationParams = {
+      page: query.page,
+      limit: query.limit,
+      sort: query.sort,
+      search: query.search,
+    };
+
+    // 2. Build explicit database filters from query parameters
+    const filters: Record<string, any> = {};
+
+    if (query.type) {
+      filters.type = query.type;
+    }
+
+    if (query.isRead !== undefined) {
+      filters.isRead = query.isRead === "true";
+    }
+
+    if (query.userId) {
+      filters.userId = query.userId;
+    }
+
+    // 3. Define which fields the ?search= parameter should scan
+    const searchableFields = ["title", "body"];
+
+    // 4. Execute the paginated query
+    return this.notificationRepository.findPaginated(
+      paginationParams,
+      filters,
+      searchableFields,
+    );
   }
 }

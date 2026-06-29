@@ -7,10 +7,11 @@ const notificationSchema = new Schema<
   {
     userId: { type: String, required: true, index: true },
     title: { type: String, required: true },
-    body: { type: String, required: true },
+    body: { type: String },
     type: { type: String, required: true },
     data: { type: Schema.Types.Mixed, default: {} },
     isRead: { type: Boolean, default: false },
+    city: { type: String, default: "" },
   },
   {
     timestamps: true,

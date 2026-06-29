@@ -59,4 +59,51 @@ export class NotificationController {
         );
     },
   );
+
+  sendAdminNotification = asyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      console.log("req.body", req.body);
+      const { targetType, title, body, type, data, city } = req.body;
+
+      const notification = await this.notificationService.createAndBroadcast({
+        targetType,
+        title,
+        body,
+        type,
+        data,
+        city,
+      });
+      console.log("Notification broadcasted successfully:", notification);
+      res
+        .status(HTTP_STATUS.CREATED)
+        .json(
+          ResponseBuilder.success(
+            "Notification broadcasted successfully",
+            null,
+            HTTP_STATUS.CREATED,
+          ),
+        );
+    },
+  );
+
+  /**
+   * Admin endpoint to get all notifications globally
+   */
+  getAllNotifications = asyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const result = await this.notificationService.getAllNotifications(
+        req.query,
+      );
+
+      res
+        .status(HTTP_STATUS.OK)
+        .json(
+          ResponseBuilder.success(
+            "All notifications retrieved successfully",
+            result,
+            HTTP_STATUS.OK,
+          ),
+        );
+    },
+  );
 }
