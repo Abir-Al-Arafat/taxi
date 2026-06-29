@@ -230,4 +230,49 @@ export class WalletTransactionRepository extends BaseRepository<IWalletTransacti
       },
     };
   }
+
+  /**
+   * Calculate total platform earnings
+   * Adjust the $match criteria based on how you track platform earnings
+   * (e.g., only completed rides, platform commission, etc.)
+   */
+  async getTotalPlatformEarnings(): Promise<number> {
+    const result = await this.model.aggregate([
+      {
+        $match: {
+          // Example: transactionType: "commission", status: "completed"
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$amount" },
+        },
+      },
+    ]);
+
+    return result.length > 0 ? result[0].total : 0;
+  }
+
+  /**
+   * Calculates the sum of transaction amounts based on dynamic filters.
+   * Defaults to calculating platform earnings via "COMMISSION".
+   * * @param filters - MongoDB match criteria to filter transactions
+   * @returns Total sum of the matched transactions
+   */
+  async calculateTotalAmount(
+    filters: any = { source: { $in: ["COMMISSION"] } },
+  ): Promise<number> {
+    const result = await this.model.aggregate([
+      { $match: filters },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$amount" },
+        },
+      },
+    ]);
+
+    return result.length > 0 ? result[0].total : 0;
+  }
 }

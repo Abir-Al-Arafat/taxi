@@ -1,4 +1,5 @@
-import type { Model, QueryOptions } from "mongoose";
+import type { Document, Model, QueryOptions } from "mongoose";
+import mongoose from "mongoose";
 import type {
   IPaginationParams,
   IPaginatedResult,
@@ -97,5 +98,12 @@ export abstract class BaseRepository<T> {
         limit,
       },
     };
+  }
+
+  /**
+   * Count documents matching a specific filter
+   */
+  async countDocuments(filter: any = {}): Promise<number> {
+    return await this.model.countDocuments(filter).exec();
   }
 }

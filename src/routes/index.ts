@@ -13,6 +13,7 @@ import { ratingRouter } from "../modules/rating/rating.route";
 import { messageRouter } from "../modules/message/message.route";
 import { supportRouter } from "../modules/support/support.route";
 import { notificationRouter } from "../modules/notification/notification.route";
+import { dashboardRouter } from "../modules/dashboard/dashboard.route";
 
 const router = Router();
 
@@ -30,5 +31,6 @@ router.use("/driver-approval", driverApprovalRouter);
 router.use("/vouchers", voucherRouter);
 router.use("/wallet", walletRouter);
 router.use("/promos", promoRouter);
+router.use("/dashboard", dashboardRouter);
 
 export { router as apiRouter };
