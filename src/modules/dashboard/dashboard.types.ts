@@ -17,3 +17,14 @@ export interface UserOverviewQuery {
   year: number;
   role: AuthRole;
 }
+
+export interface RevenueStatsResponse {
+  totalRevenue: number;
+  todayEarning: number;
+}
+
+export interface EarningsTableQuery {
+  page: number;
+  limit: number;
+  search?: string | undefined;
+}

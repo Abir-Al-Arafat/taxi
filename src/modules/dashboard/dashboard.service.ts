@@ -1,15 +1,19 @@
 import { UserRepository } from "../user/user.repository";
 import { WalletTransactionRepository } from "../wallet/wallet.repository";
+import { RideRepository } from "../ride/ride.repository";
 import type {
   DashboardStatsResponse,
   UserOverviewDataPoint,
   UserOverviewQuery,
+  RevenueStatsResponse,
+  EarningsTableQuery,
 } from "./dashboard.types";
 
 export class DashboardService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly walletTransactionRepo: WalletTransactionRepository,
+    private readonly rideRepo: RideRepository,
   ) {}
 
   /**
@@ -82,5 +86,54 @@ export class DashboardService {
       user: d.user,
       diff: ceiling - d.user,
     }));
+  }
+
+  /**
+   * Retrieves Revenue Stats (Total Revenue & Today's Earning)
+   */
+  async getRevenueStats(): Promise<RevenueStatsResponse> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Start of today
+
+    const totalCriteria = { source: { $in: ["COMMISSION"] } };
+    const todayCriteria = {
+      source: { $in: ["COMMISSION"] },
+      createdAt: { $gte: today },
+    };
+
+    const [totalRevenue, todayEarning] = await Promise.all([
+      this.walletTransactionRepo.calculateTotalAmount(totalCriteria),
+      this.walletTransactionRepo.calculateTotalAmount(todayCriteria),
+    ]);
+
+    return {
+      totalRevenue,
+      todayEarning,
+    };
+  }
+
+  /**
+   * Retrieves paginated Earnings Table data (Joins Rides with Users)
+   */
+  async getEarningsTable(query: EarningsTableQuery) {
+    const { page, limit, search } = query;
+    const skip = (page - 1) * limit;
+
+    const { items, totalCount } = await this.rideRepo.getEarningsTableData(
+      skip,
+      limit,
+      search,
+    );
+
+    return {
+      items,
+      pagination: {
+        // Fixed: Renamed from 'meta' to 'pagination'
+        totalItems: totalCount,
+        totalPages: Math.ceil(totalCount / limit),
+        currentPage: page,
+        limit: limit, // Fixed: Added limit to match other APIs
+      },
+    };
   }
 }

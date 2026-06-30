@@ -59,4 +59,46 @@ export class DashboardController {
         ),
       );
   });
+
+  /**
+   * GET /api/v1/dashboard/revenue-stats
+   */
+  getRevenueStats = asyncHandler(async (req: Request, res: Response) => {
+    const stats = await this.dashboardService.getRevenueStats();
+
+    res
+      .status(HTTP_STATUS.OK)
+      .json(
+        ResponseBuilder.success(
+          "Revenue stats retrieved successfully",
+          stats,
+          HTTP_STATUS.OK,
+        ),
+      );
+  });
+
+  /**
+   * GET /api/v1/dashboard/earnings-table?page=1&limit=10
+   */
+  getEarningsTable = asyncHandler(async (req: Request, res: Response) => {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const search = req.query.search as string | undefined;
+
+    const tableData = await this.dashboardService.getEarningsTable({
+      page,
+      limit,
+      search,
+    });
+
+    res
+      .status(HTTP_STATUS.OK)
+      .json(
+        ResponseBuilder.success(
+          "Earnings table retrieved successfully",
+          tableData,
+          HTTP_STATUS.OK,
+        ),
+      );
+  });
 }
