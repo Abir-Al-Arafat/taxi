@@ -183,6 +183,7 @@ export class RideController {
 
   getAllRides = asyncHandler(
     async (req: AuthenticatedRequest, res: Response) => {
+      console.log("Received getAllRides request");
       const data = await this.rideService.getAllRides(req.query);
       res
         .status(HTTP_STATUS.OK)

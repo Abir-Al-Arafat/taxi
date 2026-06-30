@@ -50,10 +50,60 @@ export abstract class BaseRepository<T> {
   /**
    * GLOBAL REUSABLE DATABASE ENGINE: Pagination, Searching, Sorting & Filtering
    */
+  // async findPaginated(
+  //   params: IPaginationParams,
+  //   targetFilter: Record<string, any> = {},
+  //   searchableFields: string[] = [],
+  // ): Promise<IPaginatedResult<any>> {
+  //   const page = Math.max(
+  //     1,
+  //     params.page ? parseInt(String(params.page), 10) : 1,
+  //   );
+  //   const limit = Math.max(
+  //     1,
+  //     params.limit ? parseInt(String(params.limit), 10) : 10,
+  //   );
+  //   const skip = (page - 1) * limit;
+
+  //   const sortOrder = params.sort || "-createdAt";
+
+  //   // Reconstruct the compound filter object cleanly using value maps
+  //   const finalFilter: Record<string, any> = { ...targetFilter };
+
+  //   if (params.search && searchableFields.length > 0) {
+  //     const searchRegex = new RegExp(String(params.search).trim(), "i");
+  //     finalFilter.$or = searchableFields.map((field) => ({
+  //       [field]: searchRegex,
+  //     }));
+  //   }
+
+  //   const [items, totalItems] = await Promise.all([
+  //     this.model
+  //       .find(finalFilter)
+  //       .sort(sortOrder)
+  //       .skip(skip)
+  //       .limit(limit)
+  //       .lean() // Optimized read strategy to avoid internal document wrapping overhead
+  //       .exec(),
+  //     this.model.countDocuments(finalFilter).exec(),
+  //   ]);
+
+  //   return {
+  //     items,
+  //     pagination: {
+  //       totalItems,
+  //       totalPages: Math.ceil(totalItems / limit),
+  //       currentPage: page,
+  //       limit,
+  //     },
+  //   };
+  // }
+
   async findPaginated(
     params: IPaginationParams,
     targetFilter: Record<string, any> = {},
     searchableFields: string[] = [],
+    populateOptions: any[] = [], // Added to support dynamic population
   ): Promise<IPaginatedResult<any>> {
     console.log("findPaginated() called with params:", params);
     const page = Math.max(
@@ -78,14 +128,21 @@ export abstract class BaseRepository<T> {
       }));
     }
 
+    // Build the query
+    let query = this.model
+      .find(finalFilter)
+      .sort(sortOrder)
+      .skip(skip)
+      .limit(limit)
+      .lean(); // Optimized read strategy to avoid internal document wrapping overhead
+
+    // Apply conditional Mongoose population
+    if (populateOptions && populateOptions.length > 0) {
+      query = query.populate(populateOptions) as any;
+    }
+
     const [items, totalItems] = await Promise.all([
-      this.model
-        .find(finalFilter)
-        .sort(sortOrder)
-        .skip(skip)
-        .limit(limit)
-        .lean() // Optimized read strategy to avoid internal document wrapping overhead
-        .exec(),
+      query.exec(),
       this.model.countDocuments(finalFilter).exec(),
     ]);
 

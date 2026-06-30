@@ -11,6 +11,7 @@ import { FareRepository } from "../fare/fare.repository";
 import { UserRepository } from "../user/user.repository";
 import { calculateFallbackRouting } from "../../shared/utilities/geo.util";
 import { parsePayload } from "../../shared/utilities/parsePayload.util";
+import { DriverProfileRepository } from "../driver-profile/driver-profile.repository";
 
 export class RideService {
   private rideRepo = new RideRepository();
@@ -20,6 +21,8 @@ export class RideService {
   private walletService = new WalletService();
   private fareRepo = new FareRepository();
   private userRepo = new UserRepository();
+
+  private driverProfileRepo = new DriverProfileRepository();
 
   // ==============================================
   // RIDER FLOWS
@@ -358,7 +361,81 @@ export class RideService {
     return ride;
   }
 
+  // async getAllRides(params: any) {
+  //   return this.rideRepo.findPaginated(params);
+  // }
   async getAllRides(params: any) {
-    return this.rideRepo.findPaginated(params);
+    const populateOptions: any[] = [];
+
+    // 1. Populate Rider Info (Selective fields per database patterns rules)
+    if (String(params.rider) === "true") {
+      populateOptions.push({
+        path: "riderId",
+        select:
+          "firstName lastName email phoneNumber profilePicture rating rideTakenCount",
+      });
+    }
+
+    // 2. Populate Driver Info
+    if (
+      String(params.driver) === "true" ||
+      String(params["driver-profile"]) === "true"
+    ) {
+      populateOptions.push({
+        path: "driverId",
+        select:
+          "firstName lastName email phoneNumber profilePicture rating rideGivenCount",
+      });
+    }
+
+    // Call the newly upgraded BaseRepository paginator
+    const paginatedResult = await this.rideRepo.findPaginated(
+      params,
+      {}, // Target filter
+      [], // Searchable fields
+      populateOptions,
+    );
+
+    // 3. Handle Driver Profile Injection (Solving N+1 Anti-Pattern)
+    if (
+      String(params["driver-profile"]) === "true" &&
+      paginatedResult.items.length > 0
+    ) {
+      // Extract unique driverIds from this page of results
+      const driverIds = paginatedResult.items
+        .map((item: any) => item.driverId?._id || item.driverId)
+        .filter((id: any) => id); // Removes unassigned null/undefined drivers
+
+      if (driverIds.length > 0) {
+        // Fetch all matching profiles in a SINGLE query
+        const profiles = await this.driverProfileRepo.findMany({
+          userId: { $in: driverIds },
+        });
+
+        // Map them by string ID for quick O(1) lookup
+        const profileMap = new Map();
+        profiles.forEach((p: any) => profileMap.set(p.userId.toString(), p));
+
+        // Inject the driverProfile into our finalized lean response payload
+        paginatedResult.items = paginatedResult.items.map((item: any) => {
+          if (item.driverId) {
+            const driverIdStr = item.driverId._id
+              ? item.driverId._id.toString()
+              : item.driverId.toString();
+
+            if (item.driverId._id) {
+              // If driver was populated, nest it inside the driver object
+              item.driverId.driverProfile = profileMap.get(driverIdStr) || null;
+            } else {
+              // If driver was NOT populated but profile was requested, place at root
+              item.driverProfile = profileMap.get(driverIdStr) || null;
+            }
+          }
+          return item;
+        });
+      }
+    }
+
+    return paginatedResult;
   }
 }
