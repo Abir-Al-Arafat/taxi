@@ -46,4 +46,5 @@ router.get(
   "/active-users-growth-chart",
   dashboardController.getActiveUsersGrowthChart,
 );
+router.get("/driver-topup-report", dashboardController.getDriverTopUpReport);
 export { router as dashboardRouter };

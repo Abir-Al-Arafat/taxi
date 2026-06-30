@@ -51,3 +51,20 @@ export interface ActiveUsersGrowthDataPoint {
   activeDrivers: number;
   activeRiders: number;
 }
+
+export interface DriverTopUpReportQuery {
+  page: number;
+  limit: number;
+  search?: string;
+}
+
+export interface DriverTopUpDataPoint {
+  id: string;
+  driverName: string;
+  phoneNumber: string;
+  walletBalance: number;
+  totalTopUp: number;
+  lastTopUp: number;
+  totalRides: number;
+  totalEarnings: number;
+}

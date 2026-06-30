@@ -177,4 +177,29 @@ export class DashboardController {
         );
     },
   );
+
+  /**
+   * GET /api/v1/dashboard/driver-topup-report
+   */
+  getDriverTopUpReport = asyncHandler(async (req: Request, res: Response) => {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const search = req.query.search as string | undefined;
+
+    const reportData = await this.dashboardService.getDriverTopUpReport({
+      page,
+      limit,
+      search,
+    });
+
+    res
+      .status(HTTP_STATUS.OK)
+      .json(
+        ResponseBuilder.success(
+          "Driver report retrieved successfully",
+          reportData,
+          HTTP_STATUS.OK,
+        ),
+      );
+  });
 }

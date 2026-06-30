@@ -260,4 +260,24 @@ export class DashboardService {
       };
     });
   }
+
+  // Add this inside DashboardService
+
+  async getDriverTopUpReport(query: any) {
+    const { page, limit, search } = query;
+    const skip = (page - 1) * limit;
+
+    const { items, totalCount } =
+      await this.userRepository.getDriverTopUpReportData(skip, limit, search);
+
+    return {
+      items,
+      pagination: {
+        totalItems: totalCount,
+        totalPages: Math.ceil(totalCount / limit),
+        currentPage: page,
+        limit: limit,
+      },
+    };
+  }
 }
