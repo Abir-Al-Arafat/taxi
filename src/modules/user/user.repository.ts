@@ -391,4 +391,129 @@ export class UserRepository extends BaseRepository<UserDocument> {
       },
     };
   }
+
+  /**
+   * Fetches paginated driver top-up and earnings report
+   */
+  async getDriverTopUpReportData(skip: number, limit: number, search?: string) {
+    const matchStage: any = { role: "driver" };
+
+    if (search) {
+      const searchRegex = new RegExp(search.trim(), "i");
+      matchStage.$or = [
+        { firstName: searchRegex },
+        { lastName: searchRegex },
+        { phoneNumber: searchRegex },
+      ];
+    }
+
+    const pipeline: any[] = [
+      { $match: matchStage },
+      {
+        $facet: {
+          metadata: [{ $count: "total" }],
+          data: [
+            { $sort: { createdAt: -1 } },
+            { $skip: skip },
+            { $limit: limit },
+
+            // 1. Join Wallet Collection
+            {
+              $lookup: {
+                from: "wallets", // Ensure this matches your MongoDB collection name
+                localField: "_id",
+                foreignField: "user",
+                as: "wallet",
+              },
+            },
+            { $unwind: { path: "$wallet", preserveNullAndEmptyArrays: true } },
+
+            // 2. Join Wallet Transactions (Top-ups / Credits)
+            {
+              $lookup: {
+                from: "wallettransactions",
+                let: { walletId: "$wallet._id" },
+                pipeline: [
+                  {
+                    $match: {
+                      $expr: {
+                        $and: [
+                          { $eq: ["$walletId", "$$walletId"] },
+                          { $eq: ["$type", "CREDIT"] },
+                          // You can add { $eq: ["$source", "TOP_UP"] } if you strictly separate top-ups from other credits
+                        ],
+                      },
+                    },
+                  },
+                  { $sort: { createdAt: -1 } }, // Sort newest first to get "lastTopUp"
+                ],
+                as: "credits",
+              },
+            },
+
+            // 3. Join Rides for Total Rides and Total Earnings
+            {
+              $lookup: {
+                from: "rides",
+                let: { driverId: "$_id" },
+                pipeline: [
+                  {
+                    $match: {
+                      $expr: { $eq: ["$driverId", "$$driverId"] },
+                      status: "COMPLETED",
+                    },
+                  },
+                  {
+                    $group: {
+                      _id: null,
+                      totalRides: { $sum: 1 },
+                      totalEarnings: { $sum: "$fareDetails.totalFare" }, // Summing total driver earnings
+                    },
+                  },
+                ],
+                as: "rideStats",
+              },
+            },
+
+            // 4. Project Final Flat Object for the Frontend
+            {
+              $project: {
+                _id: 0,
+                id: "$_id",
+                driverName: { $concat: ["$firstName", " ", "$lastName"] },
+                phoneNumber: "$phoneNumber",
+                walletBalance: { $ifNull: ["$wallet.balance", 0] },
+                totalTopUp: { $sum: "$credits.amount" },
+                lastTopUp: {
+                  $let: {
+                    vars: { firstCredit: { $arrayElemAt: ["$credits", 0] } },
+                    in: { $ifNull: ["$$firstCredit.amount", 0] },
+                  },
+                },
+                totalRides: {
+                  $let: {
+                    vars: { stat: { $arrayElemAt: ["$rideStats", 0] } },
+                    in: { $ifNull: ["$$stat.totalRides", 0] },
+                  },
+                },
+                totalEarnings: {
+                  $let: {
+                    vars: { stat: { $arrayElemAt: ["$rideStats", 0] } },
+                    in: { $ifNull: ["$$stat.totalEarnings", 0] },
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+    ];
+
+    const result = await this.model.aggregate(pipeline).exec();
+
+    return {
+      items: result[0]?.data || [],
+      totalCount: result[0]?.metadata[0]?.total || 0,
+    };
+  }
 }
