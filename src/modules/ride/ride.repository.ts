@@ -263,4 +263,48 @@ export class RideRepository extends BaseRepository<IRide> {
 
     return await this.model.aggregate(pipeline).exec();
   }
+
+  /**
+   * Calculates Monthly Active Users (MAU) based on ride activity
+   */
+  async getMonthlyActiveUsers(year: number): Promise<any[]> {
+    const startDate = new Date(`${year}-01-01T00:00:00.000Z`);
+    const endDate = new Date(`${year}-12-31T23:59:59.999Z`);
+
+    const pipeline: any[] = [
+      {
+        $match: {
+          createdAt: { $gte: startDate, $lte: endDate },
+        },
+      },
+      {
+        $group: {
+          _id: { $month: "$createdAt" },
+          // $addToSet pushes unique IDs only
+          uniqueRiders: { $addToSet: "$riderId" },
+          uniqueDrivers: { $addToSet: "$driverId" },
+        },
+      },
+      {
+        $project: {
+          monthIndex: "$_id",
+          activeRiders: { $size: "$uniqueRiders" },
+          // A driverId could be null if a ride was requested but never accepted
+          // We filter out nulls before calculating the array size
+          activeDrivers: {
+            $size: {
+              $filter: {
+                input: "$uniqueDrivers",
+                as: "driver",
+                cond: { $ne: ["$$driver", null] },
+              },
+            },
+          },
+        },
+      },
+      { $sort: { monthIndex: 1 } },
+    ];
+
+    return await this.model.aggregate(pipeline).exec();
+  }
 }

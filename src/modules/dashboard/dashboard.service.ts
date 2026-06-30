@@ -8,6 +8,7 @@ import type {
   RevenueStatsResponse,
   EarningsTableQuery,
   ReportsAnalyticsStatsResponse,
+  ActiveUsersGrowthDataPoint,
 } from "./dashboard.types";
 import type { RidesOverviewDataPoint } from "./dashboard.types";
 
@@ -220,6 +221,42 @@ export class DashboardService {
         month,
         completed: monthStat ? monthStat.completed : 0,
         cancelled: monthStat ? monthStat.cancelled : 0,
+      };
+    });
+  }
+
+  // Add this method inside DashboardService
+
+  /**
+   * Retrieves and formats monthly active users (MAU) for the growth chart
+   */
+  async getActiveUsersGrowthChartStats(
+    year: number,
+  ): Promise<ActiveUsersGrowthDataPoint[]> {
+    const stats = await this.rideRepo.getMonthlyActiveUsers(year);
+
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+
+    return months.map((month, index) => {
+      // monthIndex matches the 1-12 month output from MongoDB
+      const monthStat = stats.find((s: any) => s.monthIndex === index + 1);
+      return {
+        month,
+        activeRiders: monthStat ? monthStat.activeRiders : 0,
+        activeDrivers: monthStat ? monthStat.activeDrivers : 0,
       };
     });
   }

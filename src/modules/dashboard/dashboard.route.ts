@@ -41,5 +41,9 @@ router.get(
   dashboardController.getReportsAnalyticsStats,
 );
 router.get("/rides-overview-chart", dashboardController.getRidesOverviewChart);
-
+// Add this to the router mapping in src/modules/dashboard/dashboard.route.ts
+router.get(
+  "/active-users-growth-chart",
+  dashboardController.getActiveUsersGrowthChart,
+);
 export { router as dashboardRouter };

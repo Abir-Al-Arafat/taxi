@@ -45,3 +45,9 @@ export interface RidesOverviewDataPoint {
   completed: number;
   cancelled: number;
 }
+
+export interface ActiveUsersGrowthDataPoint {
+  month: string;
+  activeDrivers: number;
+  activeRiders: number;
+}

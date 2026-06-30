@@ -148,4 +148,33 @@ export class DashboardController {
         ),
       );
   });
+
+  // Add this inside DashboardController
+
+  /**
+   * GET /api/v1/dashboard/active-users-growth-chart?year=2026
+   */
+  getActiveUsersGrowthChart = asyncHandler(
+    async (req: Request, res: Response) => {
+      const year =
+        parseInt(req.query.year as string) || new Date().getFullYear();
+
+      if (isNaN(year) || year < 2000 || year > 2100) {
+        throw new AppError("Invalid year provided", HTTP_STATUS.BAD_REQUEST);
+      }
+
+      const chartData =
+        await this.dashboardService.getActiveUsersGrowthChartStats(year);
+
+      res
+        .status(HTTP_STATUS.OK)
+        .json(
+          ResponseBuilder.success(
+            "Active users growth chart retrieved successfully",
+            chartData,
+            HTTP_STATUS.OK,
+          ),
+        );
+    },
+  );
 }
