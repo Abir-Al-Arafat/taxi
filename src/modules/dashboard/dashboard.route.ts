@@ -36,5 +36,9 @@ router.get(
 
 router.get("/revenue-stats", dashboardController.getRevenueStats);
 router.get("/earnings-table", dashboardController.getEarningsTable);
+router.get(
+  "/reports-analytics-stats",
+  dashboardController.getReportsAnalyticsStats,
+);
 
 export { router as dashboardRouter };

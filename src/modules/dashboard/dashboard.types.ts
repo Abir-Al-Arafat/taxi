@@ -28,3 +28,14 @@ export interface EarningsTableQuery {
   limit: number;
   search?: string | undefined;
 }
+
+export interface ReportsAnalyticsStatsResponse {
+  totalRevenue: number;
+  commissionEarned: number;
+  averageRideValue: number;
+  completionRate: number;
+  activeRiders: number;
+  activeDrivers: number;
+  totalRides: number;
+  cancelledRides: number;
+}

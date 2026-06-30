@@ -192,4 +192,41 @@ export class RideRepository extends BaseRepository<IRide> {
       totalCount: result[0]?.metadata[0]?.total || 0,
     };
   }
+
+  /**
+   * Fetches aggregated stats for the Reports & Analytics dashboard
+   */
+  async getRideAnalyticsStats() {
+    const pipeline: any[] = [
+      {
+        $facet: {
+          totalRides: [{ $count: "count" }],
+          cancelledRides: [
+            { $match: { status: "CANCELLED" } },
+            { $count: "count" },
+          ],
+          completedStats: [
+            { $match: { status: "COMPLETED" } },
+            {
+              $group: {
+                _id: null,
+                totalFare: { $sum: "$fareDetails.totalFare" },
+                completedCount: { $sum: 1 },
+              },
+            },
+          ],
+        },
+      },
+    ];
+
+    const result = await this.model.aggregate(pipeline).exec();
+    const data = result[0];
+
+    return {
+      totalRides: data.totalRides[0]?.count || 0,
+      cancelledRides: data.cancelledRides[0]?.count || 0,
+      completedRides: data.completedStats[0]?.completedCount || 0,
+      totalRevenue: data.completedStats[0]?.totalFare || 0, // Total Gross Booking Value
+    };
+  }
 }

@@ -101,4 +101,25 @@ export class DashboardController {
         ),
       );
   });
+
+  // Add this inside DashboardController in src/modules/dashboard/dashboard.controller.ts
+
+  /**
+   * GET /api/v1/dashboard/reports-analytics-stats
+   */
+  getReportsAnalyticsStats = asyncHandler(
+    async (req: Request, res: Response) => {
+      const stats = await this.dashboardService.getReportsAnalyticsStats();
+
+      res
+        .status(HTTP_STATUS.OK)
+        .json(
+          ResponseBuilder.success(
+            "Reports analytics stats retrieved successfully",
+            stats,
+            HTTP_STATUS.OK,
+          ),
+        );
+    },
+  );
 }

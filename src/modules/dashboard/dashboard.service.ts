@@ -7,6 +7,7 @@ import type {
   UserOverviewQuery,
   RevenueStatsResponse,
   EarningsTableQuery,
+  ReportsAnalyticsStatsResponse,
 } from "./dashboard.types";
 
 export class DashboardService {
@@ -134,6 +135,56 @@ export class DashboardService {
         currentPage: page,
         limit: limit, // Fixed: Added limit to match other APIs
       },
+    };
+  }
+
+  // Add this inside DashboardService in src/modules/dashboard/dashboard.service.ts
+
+  /**
+   * Retrieves detailed aggregated stats for the Reports Analytics page
+   */
+  async getReportsAnalyticsStats(): Promise<ReportsAnalyticsStatsResponse> {
+    // Run DB queries in parallel
+    const [rideStats, activeRiders, activeDrivers, commissionEarned] =
+      await Promise.all([
+        this.rideRepo.getRideAnalyticsStats(),
+        // this.userRepository.countDocuments({ role: "rider", isBlocked: false }),
+        // this.userRepository.countDocuments({
+        //   role: "driver",
+        //   isBlocked: false,
+        // }),
+        this.userRepository.countDocuments({
+          role: "rider",
+          isBlocked: { $ne: true },
+        }),
+        this.userRepository.countDocuments({
+          role: "driver",
+          isBlocked: { $ne: true },
+          adminApproved: "approved", // Only count fully approved drivers
+        }),
+        this.walletTransactionRepo.calculateTotalAmount({
+          source: { $in: ["COMMISSION"] },
+        }),
+      ]);
+
+    const { totalRides, completedRides, totalRevenue, cancelledRides } =
+      rideStats;
+
+    // Calculate derived metrics safely to avoid division by zero
+    const completionRate =
+      totalRides > 0 ? (completedRides / totalRides) * 100 : 0;
+    const averageRideValue =
+      completedRides > 0 ? totalRevenue / completedRides : 0;
+
+    return {
+      totalRevenue,
+      commissionEarned,
+      averageRideValue,
+      completionRate,
+      activeRiders,
+      activeDrivers,
+      totalRides,
+      cancelledRides,
     };
   }
 }
