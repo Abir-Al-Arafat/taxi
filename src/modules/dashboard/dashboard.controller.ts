@@ -122,4 +122,30 @@ export class DashboardController {
         );
     },
   );
+
+  // Add this inside DashboardController
+
+  /**
+   * GET /api/v1/dashboard/rides-overview-chart?year=2026
+   */
+  getRidesOverviewChart = asyncHandler(async (req: Request, res: Response) => {
+    const year = parseInt(req.query.year as string) || new Date().getFullYear();
+
+    if (isNaN(year) || year < 2000 || year > 2100) {
+      throw new AppError("Invalid year provided", HTTP_STATUS.BAD_REQUEST);
+    }
+
+    const chartData =
+      await this.dashboardService.getRidesOverviewChartStats(year);
+
+    res
+      .status(HTTP_STATUS.OK)
+      .json(
+        ResponseBuilder.success(
+          "Rides overview chart retrieved successfully",
+          chartData,
+          HTTP_STATUS.OK,
+        ),
+      );
+  });
 }

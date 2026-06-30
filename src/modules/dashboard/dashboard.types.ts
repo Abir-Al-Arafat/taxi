@@ -39,3 +39,9 @@ export interface ReportsAnalyticsStatsResponse {
   totalRides: number;
   cancelledRides: number;
 }
+
+export interface RidesOverviewDataPoint {
+  month: string;
+  completed: number;
+  cancelled: number;
+}

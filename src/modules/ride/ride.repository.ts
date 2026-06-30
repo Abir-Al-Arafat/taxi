@@ -229,4 +229,38 @@ export class RideRepository extends BaseRepository<IRide> {
       totalRevenue: data.completedStats[0]?.totalFare || 0, // Total Gross Booking Value
     };
   }
+
+  /**
+   * Aggregates completed and cancelled rides by month for a given year
+   */
+  async getRidesOverviewByYear(year: number): Promise<any[]> {
+    const startDate = new Date(`${year}-01-01T00:00:00.000Z`);
+    const endDate = new Date(`${year}-12-31T23:59:59.999Z`);
+
+    const pipeline: any[] = [
+      {
+        $match: {
+          createdAt: { $gte: startDate, $lte: endDate },
+          // Filter to only include statuses we care about for performance
+          status: { $in: ["COMPLETED", "CANCELLED"] },
+        },
+      },
+      {
+        $group: {
+          _id: { $month: "$createdAt" },
+          completed: {
+            $sum: { $cond: [{ $eq: ["$status", "COMPLETED"] }, 1, 0] },
+          },
+          cancelled: {
+            $sum: { $cond: [{ $eq: ["$status", "CANCELLED"] }, 1, 0] },
+          },
+        },
+      },
+      {
+        $sort: { _id: 1 },
+      },
+    ];
+
+    return await this.model.aggregate(pipeline).exec();
+  }
 }

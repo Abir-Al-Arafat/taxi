@@ -40,5 +40,6 @@ router.get(
   "/reports-analytics-stats",
   dashboardController.getReportsAnalyticsStats,
 );
+router.get("/rides-overview-chart", dashboardController.getRidesOverviewChart);
 
 export { router as dashboardRouter };

@@ -9,6 +9,7 @@ import type {
   EarningsTableQuery,
   ReportsAnalyticsStatsResponse,
 } from "./dashboard.types";
+import type { RidesOverviewDataPoint } from "./dashboard.types";
 
 export class DashboardService {
   constructor(
@@ -186,5 +187,40 @@ export class DashboardService {
       totalRides,
       cancelledRides,
     };
+  }
+
+  // Add this inside DashboardService
+
+  /**
+   * Retrieves and formats monthly rides overview (completed vs cancelled)
+   */
+  async getRidesOverviewChartStats(
+    year: number,
+  ): Promise<RidesOverviewDataPoint[]> {
+    const stats = await this.rideRepo.getRidesOverviewByYear(year);
+
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+
+    return months.map((month, index) => {
+      const monthStat = stats.find((s: any) => s._id === index + 1);
+      return {
+        month,
+        completed: monthStat ? monthStat.completed : 0,
+        cancelled: monthStat ? monthStat.cancelled : 0,
+      };
+    });
   }
 }
