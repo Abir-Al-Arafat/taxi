@@ -68,3 +68,9 @@ export interface DriverTopUpDataPoint {
   totalRides: number;
   totalEarnings: number;
 }
+
+export interface VoucherUsageReportQuery {
+  page: number;
+  limit: number;
+  search?: string;
+}

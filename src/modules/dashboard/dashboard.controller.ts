@@ -202,4 +202,29 @@ export class DashboardController {
         ),
       );
   });
+
+  /**
+   * GET /api/v1/dashboard/voucher-usage-report
+   */
+  getVoucherUsageReport = asyncHandler(async (req: Request, res: Response) => {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const search = req.query.search as string | undefined;
+
+    const reportData = await this.dashboardService.getVoucherUsageReport({
+      page,
+      limit,
+      search: search as string,
+    });
+
+    res
+      .status(HTTP_STATUS.OK)
+      .json(
+        ResponseBuilder.success(
+          "Voucher report retrieved successfully",
+          reportData,
+          HTTP_STATUS.OK,
+        ),
+      );
+  });
 }

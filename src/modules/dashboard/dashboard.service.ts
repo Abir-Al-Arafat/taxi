@@ -1,6 +1,8 @@
 import { UserRepository } from "../user/user.repository";
 import { WalletTransactionRepository } from "../wallet/wallet.repository";
 import { RideRepository } from "../ride/ride.repository";
+import { VoucherRepository } from "../voucher/voucher.repository";
+
 import type {
   DashboardStatsResponse,
   UserOverviewDataPoint,
@@ -9,6 +11,7 @@ import type {
   EarningsTableQuery,
   ReportsAnalyticsStatsResponse,
   ActiveUsersGrowthDataPoint,
+  VoucherUsageReportQuery,
 } from "./dashboard.types";
 import type { RidesOverviewDataPoint } from "./dashboard.types";
 
@@ -17,6 +20,7 @@ export class DashboardService {
     private readonly userRepository: UserRepository,
     private readonly walletTransactionRepo: WalletTransactionRepository,
     private readonly rideRepo: RideRepository,
+    private readonly voucherRepo: VoucherRepository,
   ) {}
 
   /**
@@ -269,6 +273,27 @@ export class DashboardService {
 
     const { items, totalCount } =
       await this.userRepository.getDriverTopUpReportData(skip, limit, search);
+
+    return {
+      items,
+      pagination: {
+        totalItems: totalCount,
+        totalPages: Math.ceil(totalCount / limit),
+        currentPage: page,
+        limit: limit,
+      },
+    };
+  }
+
+  /**
+   * Retrieves paginated Voucher Usage Report
+   */
+  async getVoucherUsageReport(query: VoucherUsageReportQuery) {
+    const { page, limit, search } = query;
+    const skip = (page - 1) * limit;
+
+    const { items, totalCount } =
+      await this.voucherRepo.getVoucherUsageReportData(skip, limit, search);
 
     return {
       items,
