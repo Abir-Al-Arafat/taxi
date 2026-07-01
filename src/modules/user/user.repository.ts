@@ -422,7 +422,7 @@ export class UserRepository extends BaseRepository<UserDocument> {
               $lookup: {
                 from: "wallets", // Ensure this matches your MongoDB collection name
                 localField: "_id",
-                foreignField: "user",
+                foreignField: "userId",
                 as: "wallet",
               },
             },
@@ -432,13 +432,13 @@ export class UserRepository extends BaseRepository<UserDocument> {
             {
               $lookup: {
                 from: "wallettransactions",
-                let: { walletId: "$wallet._id" },
+                let: { driverId: "$_id" },
                 pipeline: [
                   {
                     $match: {
                       $expr: {
                         $and: [
-                          { $eq: ["$walletId", "$$walletId"] },
+                          { $eq: ["$userId", "$$driverId"] },
                           { $eq: ["$type", "CREDIT"] },
                           // You can add { $eq: ["$source", "TOP_UP"] } if you strictly separate top-ups from other credits
                         ],
