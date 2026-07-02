@@ -28,7 +28,7 @@ const adminSchema = new Schema<AdminSchema>(
     role: {
       type: String,
       required: true,
-      default: "Operation Team",
+      default: "operation staff",
       trim: true,
     },
     sections: [{ type: String, enum: ALL_SECTIONS }],

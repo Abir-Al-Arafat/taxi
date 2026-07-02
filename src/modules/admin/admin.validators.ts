@@ -7,6 +7,17 @@ export const createAdminValidation = [
   body("phone").trim().notEmpty().withMessage("Phone number is required"),
   body("role").trim().notEmpty().withMessage("Role is required"),
   body("sections")
+    // Parse the form-data string back into an actual array
+    .customSanitizer((value) => {
+      if (typeof value === "string") {
+        try {
+          return JSON.parse(value);
+        } catch (error) {
+          return value; // Let the isArray() validator catch the formatting error
+        }
+      }
+      return value;
+    })
     .isArray()
     .withMessage("Sections must be an array")
     .custom((sections: string[]) => {

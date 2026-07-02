@@ -3,6 +3,8 @@ import multer from "multer";
 import { AdminController } from "./admin.controller";
 import { AdminService } from "./admin.service";
 import { AdminRepository } from "./admin.repository";
+import { EmailService } from "../../shared/services/email.service";
+import { JwtService } from "../../shared/services/jwt.service";
 import { createAdminValidation } from "./admin.validators";
 import { authenticate } from "../../middlewares/auth.middleware";
 import { requireAdminRole } from "../../middlewares/admin.middleware"; // Assuming you have this middleware
@@ -14,7 +16,13 @@ const upload = multer();
 
 // Dependency Injection
 const adminRepository = new AdminRepository();
-const adminService = new AdminService(adminRepository);
+const emailService = new EmailService();
+const jwtService = new JwtService();
+const adminService = new AdminService(
+  adminRepository,
+  emailService,
+  jwtService,
+);
 const adminController = new AdminController(adminService);
 
 /**
@@ -26,10 +34,29 @@ router.post(
   "/",
   upload.none(),
   authenticate,
-  requireAdminRole, // Optional: if you have a middleware restricting to super-admins
+  requireAdminRole,
   createAdminValidation,
   handleValidationErrors,
   adminController.createAdmin,
 );
+
+/**
+ * Admin Login
+ * POST /api/v1/admins/login
+ * Public: Used by the Next.js Dashboard to authenticate staff
+ */
+router.post(
+  "/login",
+  upload.none(),
+  // Add a simple validator here if desired
+  adminController.login,
+);
+
+/**
+ * Get all admin staff (with pagination, filtering, searching)
+ * GET /api/v1/admins
+ * Protected: Requires authentication and Admin roles
+ */
+router.get("/", authenticate, requireAdminRole, adminController.getAdmins);
 
 export { router as adminRouter };

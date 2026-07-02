@@ -1,15 +1,21 @@
+import bcrypt from "bcrypt";
 import { AppError } from "../../core/errors/AppError";
 import HTTP_STATUS from "../../constants/statusCodes";
 import { AdminRepository } from "./admin.repository";
+import { EmailService } from "../../shared/services/email.service";
+import { buildAdminInviteEmailTemplate } from "./admin.templates";
 import type { CreateAdminRequest, AdminSchema } from "./admin.types";
 import { hashPassword } from "../auth/auth.util";
-// import bcrypt from "bcrypt";
-// import { EmailService } from "../../shared/services/email.service";
-
+import { JwtService } from "../../shared/services/jwt.service";
+import type {
+  IPaginationParams,
+  IPaginatedResult,
+} from "../../shared/types/pagination.types";
 export class AdminService {
   constructor(
     private readonly adminRepository: AdminRepository,
-    // private readonly emailService: EmailService
+    private readonly emailService: EmailService,
+    private readonly jwtService: JwtService,
   ) {}
 
   /**
@@ -34,9 +40,11 @@ export class AdminService {
 
     // 2. Generate secure temporary password
     const tempPassword = Math.random().toString(36).slice(-10);
+    const saltRounds = 10;
+    const passwordHash = await bcrypt.hash(tempPassword, saltRounds);
     // const passwordHash = await bcrypt.hash(tempPassword, 10);
     // const passwordHash = `hashed_${tempPassword}`; // Placeholder
-    const passwordHash = hashPassword(tempPassword);
+    // const passwordHash = hashPassword(tempPassword);
 
     // 3. Persist Admin
     const admin = await this.adminRepository.create({
@@ -45,13 +53,106 @@ export class AdminService {
       isActive: true,
     });
 
-    // 4. Trigger side effect (Send email with temp password)
-    // await this.emailService.sendAdminInvite(admin.email, tempPassword);
+    // 4. Send Email Notification
+    const emailPayload = buildAdminInviteEmailTemplate({
+      name: request.name,
+      email: request.email,
+      tempPassword,
+    });
+
+    const sentMail = await this.emailService.sendEmail({
+      to: request.email,
+      subject: emailPayload.subject,
+      text: emailPayload.text,
+      html: emailPayload.html,
+    });
+
+    console.log(`emailPayload ${emailPayload}: sentMail ${sentMail}`);
 
     // 5. Format response (strip password hash)
     const adminData = admin.toObject ? admin.toObject() : admin;
     delete adminData.passwordHash;
 
     return adminData;
+  }
+
+  async login(email: string, password: string) {
+    // 1. Use the new repository method (Fixes the protected model error)
+    const admin = await this.adminRepository.findByEmailWithPassword(email);
+
+    if (!admin || !admin.isActive) {
+      throw new AppError(
+        "Invalid credentials or inactive account",
+        HTTP_STATUS.UNAUTHORIZED,
+      );
+    }
+
+    // 2. Verify password
+    const isPasswordValid = await bcrypt.compare(password, admin.passwordHash);
+    if (!isPasswordValid) {
+      throw new AppError("Invalid credentials", HTTP_STATUS.UNAUTHORIZED);
+    }
+
+    // 3. Use signAccessToken instead of generateToken (Fixes the JwtService error)
+    const accessToken = this.jwtService.signAccessToken({
+      id: admin._id,
+      role: admin.role,
+      sections: admin.sections,
+    });
+
+    // 4. Use destructuring to remove the password (Fixes the delete operator error)
+    const adminObj = admin.toObject ? admin.toObject() : admin;
+    const { passwordHash, ...safeAdminData } = adminObj;
+
+    return {
+      admin: safeAdminData,
+      accessToken,
+    };
+  }
+
+  /**
+   * Get all admin staff with pagination, search, sort, and filters
+   */
+  async getAdmins(
+    query: Record<string, any>,
+  ): Promise<IPaginatedResult<AdminSchema>> {
+    // 1. Extract standard pagination parameters
+    const paginationParams: IPaginationParams = {
+      page: query.page ? Number(query.page) : 1,
+      limit: query.limit ? Number(query.limit) : 10,
+      sort: query.sort ? String(query.sort) : "-createdAt",
+      search: query.search ? String(query.search) : "",
+    };
+
+    // 2. Build target filter for specific fields
+    const targetFilter: Record<string, any> = {};
+
+    // Filter by active status
+    if (query.isActive !== undefined) {
+      targetFilter.isActive =
+        query.isActive === "true" || query.isActive === true;
+    }
+
+    // Filter by specific role
+    if (query.role) {
+      targetFilter.role = query.role;
+    }
+
+    // Filter by specific section access (if they have access to at least this section)
+    if (query.section) {
+      targetFilter.sections = { $in: [query.section] };
+    }
+
+    // 3. Define fields that the global search will look through
+    const searchableFields = ["name", "email", "phone"];
+
+    // 4. Fetch paginated results via the BaseRepository
+    const result = await this.adminRepository.findPaginated(
+      paginationParams,
+      targetFilter,
+      searchableFields,
+    );
+
+    return result;
   }
 }

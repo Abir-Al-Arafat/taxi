@@ -14,4 +14,8 @@ export class AdminRepository extends BaseRepository<AdminSchema> {
   async findByPhone(phone: string): Promise<AdminSchema | null> {
     return this.model.findOne({ phone }).exec();
   }
+
+  async findByEmailWithPassword(email: string): Promise<AdminSchema | null> {
+    return this.model.findOne({ email }).select("+passwordHash").exec();
+  }
 }
