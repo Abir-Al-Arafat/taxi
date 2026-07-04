@@ -12,6 +12,7 @@ export const ALL_SECTIONS = [
   "Promo code",
   "Notification Management",
   "Help & Support",
+  "All",
 ];
 
 const adminSchema = new Schema<AdminSchema>(
@@ -34,6 +35,9 @@ const adminSchema = new Schema<AdminSchema>(
     sections: [{ type: String, enum: ALL_SECTIONS }],
     passwordHash: { type: String, required: true, select: false },
     isActive: { type: Boolean, default: true },
+    passwordResetTokenHash: { type: String, select: false },
+    passwordResetTokenExpiresAt: { type: Date, select: false },
+    passwordResetTokenVerifiedAt: { type: Date, select: false },
   },
   { timestamps: true },
 );

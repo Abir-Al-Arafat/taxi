@@ -70,4 +70,65 @@ export class AdminController {
         ),
       );
   });
+
+  forgotPassword = asyncHandler(async (req: Request, res: Response) => {
+    const { email } = req.body;
+    if (!email)
+      throw new AppError("Email is required", HTTP_STATUS.BAD_REQUEST);
+
+    await this.adminService.forgotPassword(email);
+
+    res
+      .status(HTTP_STATUS.OK)
+      .json(
+        ResponseBuilder.success(
+          "If the email exists, a reset code has been sent",
+          null,
+          HTTP_STATUS.OK,
+        ),
+      );
+  });
+
+  verifyOtp = asyncHandler(async (req: Request, res: Response) => {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      throw new AppError("Email and OTP are required", HTTP_STATUS.BAD_REQUEST);
+    }
+
+    await this.adminService.verifyPasswordResetOtp(email, otp);
+
+    res
+      .status(HTTP_STATUS.OK)
+      .json(
+        ResponseBuilder.success(
+          "OTP verified successfully",
+          null,
+          HTTP_STATUS.OK,
+        ),
+      );
+  });
+
+  resetPassword = asyncHandler(async (req: Request, res: Response) => {
+    const { email, newPassword, confirmPassword } = req.body;
+
+    if (!email || !newPassword || !confirmPassword) {
+      throw new AppError(
+        "Email, new password, and confirm password are required",
+        HTTP_STATUS.BAD_REQUEST,
+      );
+    }
+
+    await this.adminService.resetPassword(email, newPassword, confirmPassword);
+
+    res
+      .status(HTTP_STATUS.OK)
+      .json(
+        ResponseBuilder.success(
+          "Password has been reset successfully",
+          null,
+          HTTP_STATUS.OK,
+        ),
+      );
+  });
 }

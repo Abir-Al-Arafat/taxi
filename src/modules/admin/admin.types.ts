@@ -22,6 +22,9 @@ export interface AdminSchema extends Document {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  passwordResetTokenHash?: string;
+  passwordResetTokenExpiresAt?: Date;
+  passwordResetTokenVerifiedAt?: Date; // Optional: if you use a two-step verify then reset flow
 }
 
 export interface CreateAdminRequest {

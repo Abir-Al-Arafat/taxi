@@ -59,4 +59,25 @@ router.post(
  */
 router.get("/", authenticate, requireAdminRole, adminController.getAdmins);
 
+/**
+ * Admin Forgot Password
+ * POST /api/v1/admins/forgot-password
+ * Public
+ */
+router.post("/forgot-password", upload.none(), adminController.forgotPassword);
+
+/**
+ * Admin Verify OTP (Step 2)
+ * POST /api/v1/admins/verify-otp
+ * Public
+ */
+router.post("/verify-otp", upload.none(), adminController.verifyOtp);
+
+/**
+ * Admin Reset Password (Step 3)
+ * POST /api/v1/admins/reset-password
+ * Public
+ */
+router.post("/reset-password", upload.none(), adminController.resetPassword);
+
 export { router as adminRouter };

@@ -1,4 +1,6 @@
 import bcrypt from "bcrypt";
+import crypto from "crypto";
+import { buildAdminPasswordResetEmailTemplate } from "./admin.templates";
 import { AppError } from "../../core/errors/AppError";
 import HTTP_STATUS from "../../constants/statusCodes";
 import { AdminRepository } from "./admin.repository";
@@ -154,5 +156,135 @@ export class AdminService {
     );
 
     return result;
+  }
+
+  /**
+   * Step 1: Request Password Reset
+   */
+  async forgotPassword(email: string): Promise<void> {
+    const admin = await this.adminRepository.findByEmail(email);
+
+    // Security best practice: Do not throw an error if the email is not found.
+    // Just return silently to prevent email enumeration attacks.
+    if (!admin || !admin.isActive) return;
+
+    // 1. Generate a 4 or 6 digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6 digits
+
+    // 2. Hash it before saving (SHA-256 is fine for OTPs)
+    const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
+
+    // 3. Save hash to admin document
+    await this.adminRepository.model.updateOne(
+      { _id: admin._id },
+      {
+        passwordResetTokenHash: otpHash,
+        passwordResetTokenExpiresAt: expiresAt,
+      },
+    );
+
+    // 4. Send the raw OTP via email
+    const emailPayload = buildAdminPasswordResetEmailTemplate(admin.name, otp);
+    await this.emailService.sendEmail({
+      to: admin.email,
+      subject: emailPayload.subject,
+      text: emailPayload.text,
+      html: emailPayload.html,
+    });
+  }
+
+  /**
+   * Step 2: Verify the OTP
+   */
+  async verifyPasswordResetOtp(email: string, otp: string): Promise<void> {
+    const admin = await this.adminRepository.model
+      .findOne({ email })
+      .select("+passwordResetTokenHash +passwordResetTokenExpiresAt")
+      .exec();
+
+    if (!admin || !admin.isActive) {
+      throw new AppError("Invalid request", HTTP_STATUS.BAD_REQUEST);
+    }
+
+    if (!admin.passwordResetTokenHash || !admin.passwordResetTokenExpiresAt) {
+      throw new AppError(
+        "No password reset requested",
+        HTTP_STATUS.BAD_REQUEST,
+      );
+    }
+
+    if (admin.passwordResetTokenExpiresAt < new Date()) {
+      throw new AppError("Reset code has expired", HTTP_STATUS.BAD_REQUEST);
+    }
+
+    // Verify OTP Hash
+    const incomingOtpHash = crypto
+      .createHash("sha256")
+      .update(otp)
+      .digest("hex");
+    if (incomingOtpHash !== admin.passwordResetTokenHash) {
+      throw new AppError("Invalid reset code", HTTP_STATUS.BAD_REQUEST);
+    }
+
+    // Mark as verified by setting the verifiedAt timestamp
+    await this.adminRepository.model.updateOne(
+      { _id: admin._id },
+      { passwordResetTokenVerifiedAt: new Date() },
+    );
+  }
+
+  /**
+   * Step 3: Set New Password
+   */
+  async resetPassword(
+    email: string,
+    newPassword: string,
+    confirmPassword: string,
+  ): Promise<void> {
+    if (newPassword !== confirmPassword) {
+      throw new AppError("Passwords do not match", HTTP_STATUS.BAD_REQUEST);
+    }
+
+    const admin = await this.adminRepository.model
+      .findOne({ email })
+      .select("+passwordResetTokenVerifiedAt")
+      .exec();
+
+    if (!admin || !admin.isActive) {
+      throw new AppError("Invalid request", HTTP_STATUS.BAD_REQUEST);
+    }
+
+    // Ensure the OTP was successfully verified
+    if (!admin.passwordResetTokenVerifiedAt) {
+      throw new AppError("Please verify your OTP first", HTTP_STATUS.FORBIDDEN);
+    }
+
+    // Security Check: Ensure they reset the password within 15 minutes of verifying the OTP
+    const sessionExpirationTime = new Date(
+      admin.passwordResetTokenVerifiedAt.getTime() + 15 * 60 * 1000,
+    );
+    if (sessionExpirationTime < new Date()) {
+      throw new AppError(
+        "Reset session expired. Please request a new code.",
+        HTTP_STATUS.BAD_REQUEST,
+      );
+    }
+
+    // Hash the new password with bcrypt
+    const newPasswordHash = await bcrypt.hash(newPassword, 10);
+
+    // Save new password and clear all reset token fields
+    await this.adminRepository.model.updateOne(
+      { _id: admin._id },
+      {
+        passwordHash: newPasswordHash,
+        $unset: {
+          passwordResetTokenHash: 1,
+          passwordResetTokenExpiresAt: 1,
+          passwordResetTokenVerifiedAt: 1,
+        },
+      },
+    );
   }
 }
