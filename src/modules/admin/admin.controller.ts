@@ -3,10 +3,14 @@ import { asyncHandler } from "../../core/utils/asyncHandler";
 import { ResponseBuilder } from "../../core/utils/apiResponse";
 import HTTP_STATUS from "../../constants/statusCodes";
 import { AdminService } from "./admin.service";
+import { ActivityService } from "../activity/activity.service";
 import { AppError } from "../../core/errors/AppError";
 
 export class AdminController {
-  constructor(private readonly adminService: AdminService) {}
+  constructor(
+    private readonly adminService: AdminService,
+    private readonly activityService: ActivityService,
+  ) {}
 
   /**
    * Create new admin staff
@@ -129,6 +133,23 @@ export class AdminController {
           null,
           HTTP_STATUS.OK,
         ),
+      );
+  });
+
+  getAdminActivities = asyncHandler(async (req: Request, res: Response) => {
+    const { adminId } = req.params;
+
+    // Call generic service specifying "Admin"
+    const result = await this.activityService.getActivitiesForActor(
+      adminId as string,
+      "Admin",
+      req.query,
+    );
+
+    res
+      .status(HTTP_STATUS.OK)
+      .json(
+        ResponseBuilder.success("Activities retrieved", result, HTTP_STATUS.OK),
       );
   });
 }

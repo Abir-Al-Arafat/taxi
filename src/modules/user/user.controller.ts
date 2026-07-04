@@ -4,6 +4,7 @@ import { ResponseBuilder } from "../../core/utils/apiResponse";
 import { AppError } from "../../core/errors/AppError";
 import HTTP_STATUS from "../../constants/statusCodes";
 import { UserService } from "./user.service";
+
 import { AuthenticatedRequest } from "../../middlewares/auth.middleware";
 
 import { AuthRole } from "../auth/auth.types";
@@ -272,4 +273,19 @@ export class UserController {
         ),
       );
   });
+
+  // getUserActivities = asyncHandler(async (req: Request, res: Response) => {
+  //   const { userId } = req.params;
+
+  //   // Call generic service specifying "User"
+  //   const result = await this.activityService.getActivitiesForActor(
+  //     userId,
+  //     "User",
+  //     req.query,
+  //   );
+
+  //   res
+  //     .status(HTTP_STATUS.OK)
+  //     .json(ResponseBuilder.success("User timeline retrieved", result));
+  // });
 }

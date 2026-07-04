@@ -9,7 +9,7 @@ export const PageTypes = [
 export type PageType = (typeof PageTypes)[number];
 
 interface PageSchema extends Document {
-  _id: Types.ObjectId; // <-- Changed to Types.ObjectId
+  _id: Types.ObjectId;
   type: PageType;
   content: string;
   createdAt: Date;

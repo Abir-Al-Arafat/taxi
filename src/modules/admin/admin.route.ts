@@ -2,6 +2,8 @@ import { Router } from "express";
 import multer from "multer";
 import { AdminController } from "./admin.controller";
 import { AdminService } from "./admin.service";
+import { ActivityService } from "../activity/activity.service";
+import { ActivityRepository } from "../activity/activity.repository";
 import { AdminRepository } from "./admin.repository";
 import { EmailService } from "../../shared/services/email.service";
 import { JwtService } from "../../shared/services/jwt.service";
@@ -16,6 +18,7 @@ const upload = multer();
 
 // Dependency Injection
 const adminRepository = new AdminRepository();
+const activityRepository = new ActivityRepository();
 const emailService = new EmailService();
 const jwtService = new JwtService();
 const adminService = new AdminService(
@@ -23,7 +26,8 @@ const adminService = new AdminService(
   emailService,
   jwtService,
 );
-const adminController = new AdminController(adminService);
+const activityService = new ActivityService(activityRepository);
+const adminController = new AdminController(adminService, activityService);
 
 /**
  * Create new admin staff

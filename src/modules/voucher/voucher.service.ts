@@ -10,7 +10,7 @@ import { AppEventBus } from "../../shared/events/app-events";
 import { StandardPromoStrategy } from "./strategies/base-promo.strategy";
 import type { IPaginationParams } from "../../shared/types/pagination.types";
 import type { IPromoStrategy, VoucherStatus } from "./voucher.interface";
-
+import { SYSTEM_EVENTS } from "../activity/activity.events";
 export class VoucherService {
   private voucherRepo = new VoucherRepository();
   private batchRepo = new VoucherBatchRepository();
@@ -55,6 +55,14 @@ export class VoucherService {
 
     // 3. Bulk Insert
     await this.voucherRepo.insertMany(vouchers);
+
+    // 4. Emit Activity Log Event
+    AppEventBus.emit(SYSTEM_EVENTS.LOG_ACTIVITY, {
+      actorId: adminId,
+      actorModel: "Admin",
+      action: "VOUCHER_BATCH_CREATED",
+      description: `Created a new ${payload.batchName} promo code: ${vouchers[0]?.code} with value ${payload.value} LYD`,
+    });
     return batch;
   }
 
