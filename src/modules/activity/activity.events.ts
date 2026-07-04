@@ -11,7 +11,9 @@ export function setupGlobalActivityEvents(activityService: ActivityService) {
     SYSTEM_EVENTS.LOG_ACTIVITY,
     async (payload: CreateActivityLogRequest) => {
       try {
-        await activityService.logActivity(payload);
+        console.log("Received SYSTEM_ACTIVITY_LOGGED event:", payload);
+        const result = await activityService.logActivity(payload);
+        console.log("Successfully logged system activity:", result);
       } catch (error) {
         console.error("Failed to process SYSTEM_ACTIVITY_LOGGED event:", error);
       }

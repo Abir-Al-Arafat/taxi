@@ -10,7 +10,11 @@ const activitySchema = new Schema<ActivitySchema>(
       refPath: "actorModel",
       index: true,
     },
-    actorModel: { type: String, required: true, enum: ["Admin", "User"] },
+    actorModel: {
+      type: String,
+      required: true,
+      enum: ["admin", "operation staff", "rider", "driver"],
+    },
 
     action: { type: String, required: true, trim: true },
     description: { type: String, required: true, trim: true },

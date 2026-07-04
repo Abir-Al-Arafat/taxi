@@ -16,6 +16,7 @@ import { notificationRouter } from "../modules/notification/notification.route";
 import { dashboardRouter } from "../modules/dashboard/dashboard.route";
 import { adminRouter } from "../modules/admin/admin.route";
 import pageRouter from "../modules/page/page.route";
+import { activityRouter } from "../modules/activity/activity.route";
 
 const router = Router();
 
@@ -36,5 +37,6 @@ router.use("/promos", promoRouter);
 router.use("/dashboard", dashboardRouter);
 router.use("/admins", adminRouter);
 router.use("/pages", pageRouter);
+router.use("/activities", activityRouter);
 
 export { router as apiRouter };

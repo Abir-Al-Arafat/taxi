@@ -36,7 +36,7 @@ export class ActivityService {
     };
 
     // Filter by BOTH ID and the collection type to ensure clean data
-    const targetFilter = { actorId, actorModel };
+    const targetFilter = { actorId };
     const searchableFields = ["action", "description", "resourceType"];
 
     return this.activityRepository.findPaginated(

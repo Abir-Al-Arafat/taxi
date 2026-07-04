@@ -97,7 +97,7 @@ export class AdminService {
 
     // 3. Use signAccessToken instead of generateToken (Fixes the JwtService error)
     const accessToken = this.jwtService.signAccessToken({
-      id: admin._id,
+      userId: admin._id,
       role: admin.role,
       sections: admin.sections,
     });

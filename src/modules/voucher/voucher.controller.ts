@@ -14,10 +14,8 @@ export class VoucherController {
   // Admin Controls
   generateBatch = asyncHandler(
     async (req: AuthenticatedRequest, res: Response) => {
-      const batch = await this.service.generateBatch(
-        req.user!.userId,
-        req.body,
-      );
+      console.log("req.user:", req.user);
+      const batch = await this.service.generateBatch(req.user as any, req.body);
       res
         .status(201)
         .json(

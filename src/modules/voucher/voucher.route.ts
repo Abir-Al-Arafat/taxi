@@ -3,6 +3,7 @@ import { Router } from "express";
 import multer from "multer";
 import { authenticate } from "../../middlewares/auth.middleware";
 import { requireAdminRole } from "../../middlewares/admin.middleware";
+import { requireOperationStaffRole } from "../../middlewares/operationStaff.middleware";
 import { VoucherController } from "./voucher.controller";
 import {
   generateBatchValidation,
@@ -17,7 +18,7 @@ const controller = new VoucherController();
 // 1. ADMIN ENDPOINTS (Strictly requires Admin Role)
 // -----------------------------------------------------
 
-router.use(authenticate, requireAdminRole);
+router.use(authenticate);
 
 router.post(
   "/generate-batch",

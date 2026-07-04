@@ -21,7 +21,10 @@ export class VoucherService {
   ) {}
 
   async generateBatch(
-    adminId: string,
+    user: {
+      userId: string;
+      role: string;
+    },
     payload: {
       quantity: number;
       value: number;
@@ -34,14 +37,14 @@ export class VoucherService {
         "Maximum 1000 vouchers per batch allowed",
         HTTP_STATUS.BAD_REQUEST,
       );
-
+    console.log("Generating batch with payload:", payload, "for user:", user);
     // 1. Create Batch Record
     const batch = await this.batchRepo.create({
       batchName: payload.batchName || `Batch-${Date.now()}`,
       quantity: payload.quantity,
       value: payload.value,
       expiryDate: payload.expiryDate ? new Date(payload.expiryDate) : null,
-      createdBy: adminId as any,
+      createdBy: user.userId as any,
     });
 
     // 2. Generate secure unique codes (Predictable sequences like 001, 002 are security risks for vouchers)
@@ -58,8 +61,8 @@ export class VoucherService {
 
     // 4. Emit Activity Log Event
     AppEventBus.emit(SYSTEM_EVENTS.LOG_ACTIVITY, {
-      actorId: adminId,
-      actorModel: "Admin",
+      actorId: user.userId,
+      actorModel: user.role,
       action: "VOUCHER_BATCH_CREATED",
       description: `Created a new ${payload.batchName} promo code: ${vouchers[0]?.code} with value ${payload.value} LYD`,
     });

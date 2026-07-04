@@ -83,5 +83,10 @@ router.post("/verify-otp", upload.none(), adminController.verifyOtp);
  * Public
  */
 router.post("/reset-password", upload.none(), adminController.resetPassword);
-
+router.get(
+  "/:adminId/activities",
+  authenticate,
+  requireAdminRole,
+  adminController.getAdminActivities,
+);
 export { router as adminRouter };
