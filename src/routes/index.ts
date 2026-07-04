@@ -15,6 +15,7 @@ import { supportRouter } from "../modules/support/support.route";
 import { notificationRouter } from "../modules/notification/notification.route";
 import { dashboardRouter } from "../modules/dashboard/dashboard.route";
 import { adminRouter } from "../modules/admin/admin.route";
+import pageRouter from "../modules/page/page.route";
 
 const router = Router();
 
@@ -34,5 +35,6 @@ router.use("/wallet", walletRouter);
 router.use("/promos", promoRouter);
 router.use("/dashboard", dashboardRouter);
 router.use("/admins", adminRouter);
+router.use("/pages", pageRouter);
 
 export { router as apiRouter };
