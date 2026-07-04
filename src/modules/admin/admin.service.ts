@@ -276,7 +276,7 @@ export class AdminService {
   }
 
   async getAdminById(adminId: string): Promise<Partial<AdminSchema> | null> {
-    const admin = await this.adminRepository.model.findById(adminId).exec();
+    const admin = await this.adminRepository.findById(adminId);
     if (!admin) return null;
 
     const adminData = admin.toObject ? admin.toObject() : admin;

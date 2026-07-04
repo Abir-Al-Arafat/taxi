@@ -38,4 +38,9 @@ export class AdminRepository extends BaseRepository<AdminSchema> {
   ): Promise<void> {
     await this.model.updateOne({ _id: id }, updateData).exec();
   }
+
+  // Add this inside your AdminRepository class
+  async findById(id: string): Promise<AdminSchema | null> {
+    return this.model.findById(id).exec();
+  }
 }
