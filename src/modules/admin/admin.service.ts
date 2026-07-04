@@ -176,13 +176,10 @@ export class AdminService {
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
 
     // 3. Save hash to admin document
-    await this.adminRepository.model.updateOne(
-      { _id: admin._id },
-      {
-        passwordResetTokenHash: otpHash,
-        passwordResetTokenExpiresAt: expiresAt,
-      },
-    );
+    await this.adminRepository.updateAdminRecord(admin._id, {
+      passwordResetTokenHash: otpHash,
+      passwordResetTokenExpiresAt: expiresAt,
+    });
 
     // 4. Send the raw OTP via email
     const emailPayload = buildAdminPasswordResetEmailTemplate(admin.name, otp);
@@ -198,10 +195,7 @@ export class AdminService {
    * Step 2: Verify the OTP
    */
   async verifyPasswordResetOtp(email: string, otp: string): Promise<void> {
-    const admin = await this.adminRepository.model
-      .findOne({ email })
-      .select("+passwordResetTokenHash +passwordResetTokenExpiresAt")
-      .exec();
+    const admin = await this.adminRepository.findByEmailWithResetTokens(email);
 
     if (!admin || !admin.isActive) {
       throw new AppError("Invalid request", HTTP_STATUS.BAD_REQUEST);
@@ -228,10 +222,9 @@ export class AdminService {
     }
 
     // Mark as verified by setting the verifiedAt timestamp
-    await this.adminRepository.model.updateOne(
-      { _id: admin._id },
-      { passwordResetTokenVerifiedAt: new Date() },
-    );
+    await this.adminRepository.updateAdminRecord(admin._id, {
+      passwordResetTokenVerifiedAt: new Date(),
+    });
   }
 
   /**
@@ -246,10 +239,7 @@ export class AdminService {
       throw new AppError("Passwords do not match", HTTP_STATUS.BAD_REQUEST);
     }
 
-    const admin = await this.adminRepository.model
-      .findOne({ email })
-      .select("+passwordResetTokenVerifiedAt")
-      .exec();
+    const admin = await this.adminRepository.findByEmailWithResetTokens(email);
 
     if (!admin || !admin.isActive) {
       throw new AppError("Invalid request", HTTP_STATUS.BAD_REQUEST);
@@ -275,16 +265,23 @@ export class AdminService {
     const newPasswordHash = await bcrypt.hash(newPassword, 10);
 
     // Save new password and clear all reset token fields
-    await this.adminRepository.model.updateOne(
-      { _id: admin._id },
-      {
-        passwordHash: newPasswordHash,
-        $unset: {
-          passwordResetTokenHash: 1,
-          passwordResetTokenExpiresAt: 1,
-          passwordResetTokenVerifiedAt: 1,
-        },
+    await this.adminRepository.updateAdminRecord(admin._id, {
+      passwordHash: newPasswordHash,
+      $unset: {
+        passwordResetTokenHash: 1,
+        passwordResetTokenExpiresAt: 1,
+        passwordResetTokenVerifiedAt: 1,
       },
-    );
+    });
+  }
+
+  async getAdminById(adminId: string): Promise<Partial<AdminSchema> | null> {
+    const admin = await this.adminRepository.model.findById(adminId).exec();
+    if (!admin) return null;
+
+    const adminData = admin.toObject ? admin.toObject() : admin;
+    delete adminData.passwordHash;
+
+    return adminData;
   }
 }

@@ -75,6 +75,30 @@ export class AdminController {
       );
   });
 
+  getAdminById = asyncHandler(async (req: Request, res: Response) => {
+    const { adminId } = req.params;
+
+    if (!adminId) {
+      throw new AppError("Admin ID is required", HTTP_STATUS.BAD_REQUEST);
+    }
+
+    const admin = await this.adminService.getAdminById(adminId as string);
+
+    if (!admin) {
+      throw new AppError("Admin not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    res
+      .status(HTTP_STATUS.OK)
+      .json(
+        ResponseBuilder.success(
+          "Admin details retrieved successfully",
+          admin,
+          HTTP_STATUS.OK,
+        ),
+      );
+  });
+
   forgotPassword = asyncHandler(async (req: Request, res: Response) => {
     const { email } = req.body;
     if (!email)

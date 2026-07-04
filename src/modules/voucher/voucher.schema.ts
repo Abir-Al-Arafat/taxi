@@ -8,7 +8,7 @@ const VoucherBatchSchema = new Schema<IVoucherBatch>(
     quantity: { type: Number, required: true, max: 1000 },
     value: { type: Number, required: true, min: 1 },
     expiryDate: { type: Date },
-    createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    createdBy: { type: Schema.Types.ObjectId, ref: "Admin", required: true },
   },
   { timestamps: true },
 );

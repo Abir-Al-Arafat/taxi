@@ -62,7 +62,12 @@ router.post(
  * Protected: Requires authentication and Admin roles
  */
 router.get("/", authenticate, requireAdminRole, adminController.getAdmins);
-
+router.get(
+  "/:adminId",
+  authenticate,
+  requireAdminRole,
+  adminController.getAdminById,
+);
 /**
  * Admin Forgot Password
  * POST /api/v1/admins/forgot-password
