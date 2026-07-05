@@ -349,7 +349,10 @@ export class RideService {
       { $set: { status: "PAYMENT_PENDING", completedAt: new Date() } },
     );
     if (!ride)
-      throw new AppError("Invalid ride state", HTTP_STATUS.BAD_REQUEST);
+      throw new AppError(
+        "Ride not found (check state)",
+        HTTP_STATUS.BAD_REQUEST,
+      );
 
     const rider = await this.userRepo.updateOne(
       { _id: ride.riderId },
@@ -363,10 +366,22 @@ export class RideService {
     );
 
     console.log("completeRide: driver rideGivenCount", driver);
+
+    // ==========================================
+    // NOTIFY THE RIDER VIA SOCKET
+    // ==========================================
+    // Convert riderId to string to match the SocketService signature
+    const riderIdStr = ride.riderId.toString();
+
+    SocketService.sendToUser(
+      riderIdStr,
+      "rideCompleted", // The frontend rider app should listen to this event
+      { ride },
+    );
+    // ==========================================
+
     AppEventBus.emit("RIDE_COMPLETED", {
-      rideId,
-      riderId: ride.riderId,
-      finalFare: ride.fareDetails.totalFare,
+      ride,
     });
     return ride;
   }
