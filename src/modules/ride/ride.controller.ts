@@ -140,15 +140,25 @@ export class RideController {
 
       let data;
       switch (action) {
-        case "arrived":
-          data = await this.rideService.driverArrived(driverId, rideId);
+        case "arrived_at_pickup":
+          data = await this.rideService.driverArrivedAtPickup(driverId, rideId);
           break;
+
         case "start":
           data = await this.rideService.startRide(driverId, rideId);
           break;
+
+        case "arrived_at_destination":
+          data = await this.rideService.driverArrivedAtDestination(
+            driverId,
+            rideId,
+          );
+          break;
+
         case "complete":
           data = await this.rideService.completeRide(driverId, rideId);
           break;
+
         case "confirm_payment":
           data = await this.rideService.confirmPaymentCollection(
             driverId,

@@ -278,10 +278,10 @@ export class RideService {
   }
 
   // 5. Driver Arrives at Pickup
-  async driverArrived(driverId: string, rideId: string) {
+  async driverArrivedAtPickup(driverId: string, rideId: string) {
     const ride = await this.rideRepo.updateOne(
       { _id: rideId, driverId, status: "ACCEPTED" },
-      { $set: { status: "ARRIVED", arrivedAt: new Date() } },
+      { $set: { status: "ARRIVED_AT_PICKUP", arrivedAt: new Date() } },
     );
     if (!ride)
       throw new AppError("Invalid ride state", HTTP_STATUS.BAD_REQUEST);
@@ -294,7 +294,32 @@ export class RideService {
 
     SocketService.sendToUser(
       riderIdStr,
-      "driverArrived", // The frontend rider app should listen to this event
+      "arrivedAtPickup", // The frontend rider app should listen to this event
+      { ride },
+    );
+    // ==========================================
+
+    AppEventBus.emit("DRIVER_ARRIVED", { rideId, riderId: ride.riderId });
+    return ride;
+  }
+  // 5. Driver Arrives at Destination
+  async driverArrivedAtDestination(driverId: string, rideId: string) {
+    const ride = await this.rideRepo.updateOne(
+      { _id: rideId, driverId, status: "IN_PROGRESS" },
+      { $set: { status: "PAYMENT_PENDING", arrivedAt: new Date() } },
+    );
+    if (!ride)
+      throw new AppError("Invalid ride state", HTTP_STATUS.BAD_REQUEST);
+
+    // ==========================================
+    // NOTIFY THE RIDER VIA SOCKET
+    // ==========================================
+    // Convert riderId to string to match the SocketService signature
+    const riderIdStr = ride.riderId.toString();
+
+    SocketService.sendToUser(
+      riderIdStr,
+      "arrivedAtDestination", // The frontend rider app should listen to this event
       { ride },
     );
     // ==========================================
@@ -308,7 +333,7 @@ export class RideService {
     const ride: any = await this.rideRepo.findOne({
       _id: rideId,
       driverId,
-      status: "ARRIVED",
+      status: "ARRIVED_AT_PICKUP",
     });
     if (!ride)
       throw new AppError("Invalid ride state", HTTP_STATUS.BAD_REQUEST);
@@ -355,7 +380,7 @@ export class RideService {
   // 7. Reached Destination
   async completeRide(driverId: string, rideId: string) {
     const ride = await this.rideRepo.updateOne(
-      { _id: rideId, driverId, status: "RIDER_PAID" },
+      { _id: rideId, driverId, status: "PAYMENT_CONFIRMED" },
       { $set: { status: "COMPLETED", completedAt: new Date() } },
     );
     if (!ride)
@@ -444,10 +469,10 @@ export class RideService {
       );
     }
 
-    // 6. Terminate the ride state to "COMPLETED"
+    // 6. Change the ride state to "PAYMENT_CONFIRMED"
     const completedRide = await this.rideRepo.updateOne(
       { _id: rideId, driverId, status: "RIDER_PAID" },
-      { $set: { status: "COMPLETED", completedAt: new Date() } },
+      { $set: { status: "PAYMENT_CONFIRMED", completedAt: new Date() } },
     );
 
     // ==========================================
