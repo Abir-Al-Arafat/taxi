@@ -403,7 +403,7 @@ export class RideService {
     const ride: any = await this.rideRepo.findOne({
       _id: rideId,
       driverId,
-      status: "PAYMENT_PENDING",
+      status: "RIDER_PAID",
     });
 
     if (!ride)
@@ -449,6 +449,16 @@ export class RideService {
       { _id: rideId, driverId, status: "PAYMENT_PENDING" },
       { $set: { status: "COMPLETED", completedAt: new Date() } },
     );
+
+    // ==========================================
+    // NOTIFY RIDER VIA SOCKET
+    // ==========================================
+    SocketService.sendToUser(
+      ride!.riderId.toString(),
+      "paymentConfirmed", // Your frontend rider app should listen to this event
+      { ride },
+    );
+    // ==========================================
 
     AppEventBus.emit("PAYMENT_CONFIRMED", {
       rideId,
