@@ -276,6 +276,19 @@ export class RideService {
     if (!ride)
       throw new AppError("Invalid ride state", HTTP_STATUS.BAD_REQUEST);
 
+    // ==========================================
+    // NOTIFY THE RIDER VIA SOCKET
+    // ==========================================
+    // Convert riderId to string to match the SocketService signature
+    const riderIdStr = ride.riderId.toString();
+
+    SocketService.sendToUser(
+      riderIdStr,
+      "driverArrived", // The frontend rider app should listen to this event
+      { ride },
+    );
+    // ==========================================
+
     AppEventBus.emit("DRIVER_ARRIVED", { rideId, riderId: ride.riderId });
     return ride;
   }
