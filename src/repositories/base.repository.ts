@@ -47,6 +47,10 @@ export abstract class BaseRepository<T> {
     return this.model.deleteOne(filter).exec();
   }
 
+  async deleteMany(filter: Record<string, any>): Promise<any> {
+    return this.model.deleteMany(filter).exec();
+  }
+
   /**
    * GLOBAL REUSABLE DATABASE ENGINE: Pagination, Searching, Sorting & Filtering
    */

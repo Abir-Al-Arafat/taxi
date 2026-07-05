@@ -54,7 +54,7 @@ export class PromoService {
     }
 
     // 2. Update the Rules
-    const deleted = await this.ruleRepo.deleteOne({ promoCodeId: promoId });
+    const deleted = await this.ruleRepo.deleteMany({ promoCodeId: promoId });
     console.log("Deleted existing rules:", deleted);
     if (rules && rules.length > 0) {
       const formattedRules = rules.map((r) => ({
