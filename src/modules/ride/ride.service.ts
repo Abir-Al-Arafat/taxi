@@ -325,6 +325,19 @@ export class RideService {
       },
     );
 
+    // ==========================================
+    // NOTIFY THE RIDER VIA SOCKET
+    // ==========================================
+    // Convert riderId to string to match the SocketService signature
+    const riderIdStr = ride.riderId.toString();
+
+    SocketService.sendToUser(
+      riderIdStr,
+      "rideStarted", // The frontend rider app should listen to this event
+      { updatedRide },
+    );
+    // ==========================================
+
     AppEventBus.emit("RIDE_STARTED", { rideId, riderId: ride.riderId });
     return updatedRide;
   }
