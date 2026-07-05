@@ -38,6 +38,35 @@ export class PromoService {
     return promo;
   }
 
+  async updatePromoCode(
+    promoId: string,
+    data: any,
+    rules: Partial<IPromoRule>[],
+  ) {
+    // 1. Update the Promo Code
+    const updatedPromo = await this.promoRepo.updateOne(
+      { _id: promoId },
+      { ...data, code: data.code.toUpperCase() },
+    );
+
+    if (!updatedPromo) {
+      throw new AppError("Promo code not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    // 2. Update the Rules
+    const deleted = await this.ruleRepo.deleteOne({ promoCodeId: promoId });
+    console.log("Deleted existing rules:", deleted);
+    if (rules && rules.length > 0) {
+      const formattedRules = rules.map((r) => ({
+        ...r,
+        promoCodeId: updatedPromo._id,
+      }));
+      await this.ruleRepo.insertMany(formattedRules);
+    }
+
+    return updatedPromo;
+  }
+
   async getAdminPromoList(params: IPaginationParams) {
     return this.promoRepo.findPaginated(params, {}, []);
   }

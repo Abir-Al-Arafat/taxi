@@ -24,6 +24,24 @@ export class PromoController {
       );
   });
 
+  updatePromo = asyncHandler(async (req: Request, res: Response) => {
+    const { rules, ...promoData } = req.body;
+    const updatedPromo = await this.service.updatePromoCode(
+      req.params.id as string,
+      promoData,
+      rules || [],
+    );
+    res
+      .status(HTTP_STATUS.OK)
+      .json(
+        ResponseBuilder.success(
+          "Promo code updated successfully",
+          { promo: updatedPromo },
+          HTTP_STATUS.OK,
+        ),
+      );
+  });
+
   listAllPromos = asyncHandler(async (req: Request, res: Response) => {
     const data = await this.service.getAdminPromoList(req.query);
     res

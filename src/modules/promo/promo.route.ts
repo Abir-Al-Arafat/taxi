@@ -27,6 +27,13 @@ adminRouter.post(
   handleValidationErrors,
   controller.createPromo,
 );
+adminRouter.put(
+  "/update/:id",
+  upload.none(),
+  createPromoValidation,
+  handleValidationErrors,
+  controller.updatePromo,
+);
 adminRouter.get("/list", controller.listAllPromos);
 adminRouter.get("/stats", controller.getPromoStats);
 adminRouter.get("/:id", controller.getPromoDetails);
