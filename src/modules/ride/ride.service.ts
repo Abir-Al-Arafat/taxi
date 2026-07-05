@@ -133,7 +133,7 @@ export class RideService {
 
   // 7. Rider Pays for Ride
   async processPayment(riderId: string, rideId: string) {
-    const ride = await this.rideRepo.findOne({ _id: rideId, riderId });
+    const ride: any = await this.rideRepo.findOne({ _id: rideId, riderId });
 
     if (!ride || ride.status !== "PAYMENT_PENDING")
       throw new AppError("Invalid ride or state", HTTP_STATUS.BAD_REQUEST);
@@ -143,6 +143,16 @@ export class RideService {
     await ride.save();
     // Since it is cash, this function simply acts as an intercom to ping the driver.
     // The actual deduction is protected inside the driver's confirmation step below.
+
+    // ==========================================
+    // NOTIFY DRIVER VIA SOCKET
+    // ==========================================
+    SocketService.sendToUser(
+      ride!.driverId.toString(),
+      "ridePaymentReceived", // Your frontend driver app should listen to this event
+      { ride },
+    );
+    // ==========================================
 
     AppEventBus.emit("RIDER_PAID", { rideId, driverId: ride.driverId });
     return { success: true, message: "Payment processed successfully" };
