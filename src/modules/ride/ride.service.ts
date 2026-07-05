@@ -12,7 +12,7 @@ import { UserRepository } from "../user/user.repository";
 import { calculateFallbackRouting } from "../../shared/utilities/geo.util";
 import { parsePayload } from "../../shared/utilities/parsePayload.util";
 import { DriverProfileRepository } from "../driver-profile/driver-profile.repository";
-
+import { SocketService } from "../../shared/services/socket.service";
 export class RideService {
   private rideRepo = new RideRepository();
   private fareService = new FareService();
@@ -86,6 +86,46 @@ export class RideService {
       requestedAt: new Date(),
     });
     console.log("Created ride with ID:", ride._id);
+
+    // ==========================================
+    // NOTIFY NEARBY DRIVERS VIA SOCKET
+    // ==========================================
+    // Assuming your parsed payload maps pickup coordinates to an array like [longitude, latitude]
+    // Adjust the path (e.g., pickup.coordinates or pickupCoords) based on your schema structure
+    const coordinates =
+      parsedPayload.pickup?.coordinates || parsedPayload.pickupCoords;
+
+    if (coordinates && coordinates.length === 2) {
+      const [longitude, latitude] = coordinates;
+
+      // Find online drivers within 5km radius
+      const nearbyDrivers = await this.userRepo.findNearbyOnlineDrivers(
+        longitude,
+        latitude,
+        5000,
+      );
+
+      console.log(
+        `Found ${nearbyDrivers.length} nearby drivers to notify for ride ${ride._id}`,
+      );
+
+      console.log(
+        `Notifying drivers about new ride request at coordinates: [${longitude}, ${latitude}]`,
+      );
+
+      console.log(`Found ${nearbyDrivers.length} nearby drivers to notify.`);
+
+      // Emit to each driver's specific socket room using SocketService
+      nearbyDrivers.forEach((driver) => {
+        SocketService.sendToUser(
+          driver._id.toString(),
+          "newRideRequest", // Your frontend driver app should listen to this event
+          { ride },
+        );
+      });
+    }
+    // ==========================================
+
     // Broadcast to WebSocket Gateway
     AppEventBus.emit("RIDE_REQUESTED", { ride });
     return ride;

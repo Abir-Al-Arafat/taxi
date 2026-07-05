@@ -516,4 +516,23 @@ export class UserRepository extends BaseRepository<UserDocument> {
       totalCount: result[0]?.metadata[0]?.total || 0,
     };
   }
+
+  async findNearbyOnlineDrivers(
+    longitude: number,
+    latitude: number,
+    maxDistanceMeters: number = 5000,
+  ) {
+    return this.model
+      .find({
+        role: "driver",
+        onlineStatus: "online", // Only notify online drivers
+        location: {
+          $near: {
+            $geometry: { type: "Point", coordinates: [longitude, latitude] },
+            $maxDistance: maxDistanceMeters,
+          },
+        },
+      })
+      .exec();
+  }
 }
