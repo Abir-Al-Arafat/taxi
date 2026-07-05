@@ -9,6 +9,7 @@ export class VoucherRepository extends BaseRepository<IVoucher> {
   }
 
   async getVoucherStats() {
+    console.log("Fetching voucher stats...");
     return this.model.aggregate([
       {
         $group: {

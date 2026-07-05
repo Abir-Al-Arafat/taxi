@@ -102,7 +102,22 @@ export class VoucherService {
   }
 
   async getStats() {
-    return this.voucherRepo.getVoucherStats();
+    const stats = await this.voucherRepo.getVoucherStats();
+    // 2. Calculate the totals using JavaScript (No extra DB query needed!)
+    const totalVouchers = stats.reduce((sum, item) => sum + item.count, 0);
+    const allVouchersValue = stats.reduce(
+      (sum, item) => sum + item.totalValue,
+      0,
+    );
+
+    // 3. Return the combined data
+    return {
+      summary: {
+        totalVouchers,
+        allVouchersValue,
+      },
+      stats,
+    };
   }
 
   // --- REDEMPTION FLOW ---
