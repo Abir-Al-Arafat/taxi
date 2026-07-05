@@ -355,8 +355,8 @@ export class RideService {
   // 7. Reached Destination
   async completeRide(driverId: string, rideId: string) {
     const ride = await this.rideRepo.updateOne(
-      { _id: rideId, driverId, status: "IN_PROGRESS" },
-      { $set: { status: "PAYMENT_PENDING", completedAt: new Date() } },
+      { _id: rideId, driverId, status: "RIDER_PAID" },
+      { $set: { status: "COMPLETED", completedAt: new Date() } },
     );
     if (!ride)
       throw new AppError(
@@ -446,7 +446,7 @@ export class RideService {
 
     // 6. Terminate the ride state to "COMPLETED"
     const completedRide = await this.rideRepo.updateOne(
-      { _id: rideId, driverId, status: "PAYMENT_PENDING" },
+      { _id: rideId, driverId, status: "RIDER_PAID" },
       { $set: { status: "COMPLETED", completedAt: new Date() } },
     );
 
