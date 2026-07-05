@@ -34,6 +34,7 @@ adminRouter.put(
   handleValidationErrors,
   controller.updatePromo,
 );
+adminRouter.patch("/toggle-status/:id", controller.togglePromoStatus);
 adminRouter.get("/list", controller.listAllPromos);
 adminRouter.get("/stats", controller.getPromoStats);
 adminRouter.get("/:id", controller.getPromoDetails);

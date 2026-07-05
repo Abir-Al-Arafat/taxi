@@ -19,6 +19,17 @@ export class PromoCodeRepository extends BaseRepository<IPromoCode> {
     ]);
     return { total, active };
   }
+
+  async togglePromoStatus(promoCodeId: string): Promise<void> {
+    const promo = await this.model.findById(promoCodeId);
+    console.log("promo:", promo);
+    console.log("Current promo status:", promo?.isActive);
+    const newIsActive = !promo?.isActive;
+
+    await this.model
+      .updateOne({ _id: promoCodeId }, { isActive: newIsActive })
+      .exec();
+  }
 }
 
 export class PromoRuleRepository extends BaseRepository<IPromoRule> {

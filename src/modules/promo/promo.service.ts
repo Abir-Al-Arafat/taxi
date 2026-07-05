@@ -276,4 +276,13 @@ export class PromoService {
       totalUsageAmount: totalUsageAmount,
     };
   }
+
+  async togglePromoStatus(promoId: string) {
+    const promo = await this.promoRepo.findOne({ _id: promoId });
+    if (!promo) {
+      throw new AppError("Promo code not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    await this.promoRepo.togglePromoStatus(promoId);
+  }
 }

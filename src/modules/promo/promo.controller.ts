@@ -42,6 +42,19 @@ export class PromoController {
       );
   });
 
+  togglePromoStatus = asyncHandler(async (req: Request, res: Response) => {
+    await this.service.togglePromoStatus(req.params.id as string);
+    res
+      .status(HTTP_STATUS.OK)
+      .json(
+        ResponseBuilder.success(
+          "Promo code status toggled successfully",
+          null,
+          HTTP_STATUS.OK,
+        ),
+      );
+  });
+
   listAllPromos = asyncHandler(async (req: Request, res: Response) => {
     const data = await this.service.getAdminPromoList(req.query);
     res
