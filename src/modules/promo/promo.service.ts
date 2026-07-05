@@ -235,4 +235,16 @@ export class PromoService {
       finalFare: Math.max(0, estimatedFare - discountApplied),
     };
   }
+
+  async getPromoStatistics() {
+    const { total, active } = await this.promoRepo.getPromoCounts();
+    const totalUsageAmount =
+      await this.redemptionRepo.getTotalDiscountApplied();
+
+    return {
+      totalPromos: total,
+      activePromos: active,
+      totalUsageAmount: totalUsageAmount,
+    };
+  }
 }

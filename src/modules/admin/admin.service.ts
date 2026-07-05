@@ -281,6 +281,7 @@ export class AdminService {
 
     const adminData = admin.toObject ? admin.toObject() : admin;
     delete adminData.passwordHash;
+    delete adminData.__v;
 
     return adminData;
   }

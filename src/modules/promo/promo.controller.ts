@@ -89,4 +89,17 @@ export class PromoController {
         );
     },
   );
+
+  getPromoStats = asyncHandler(async (req: Request, res: Response) => {
+    const stats = await this.service.getPromoStatistics();
+    res
+      .status(HTTP_STATUS.OK)
+      .json(
+        ResponseBuilder.success(
+          "Promo statistics retrieved successfully",
+          stats,
+          HTTP_STATUS.OK,
+        ),
+      );
+  });
 }

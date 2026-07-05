@@ -28,6 +28,7 @@ adminRouter.post(
   controller.createPromo,
 );
 adminRouter.get("/list", controller.listAllPromos);
+adminRouter.get("/stats", controller.getPromoStats);
 adminRouter.get("/:id", controller.getPromoDetails);
 
 router.use("/admin", adminRouter);
