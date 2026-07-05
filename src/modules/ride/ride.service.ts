@@ -90,7 +90,7 @@ export class RideService {
     // ==========================================
     // NOTIFY NEARBY DRIVERS VIA SOCKET
     // ==========================================
-    // Assuming your parsed payload maps pickup coordinates to an array like [longitude, latitude]
+    // parsed payload maps pickup coordinates to an array like [longitude, latitude]
     // Adjust the path (e.g., pickup.coordinates or pickupCoords) based on your schema structure
     const coordinates =
       parsedPayload.pickup?.coordinates || parsedPayload.pickupCoords;
@@ -176,6 +176,19 @@ export class RideService {
 
     if (!ride)
       throw new AppError("Ride no longer available", HTTP_STATUS.CONFLICT);
+
+    // ==========================================
+    // NOTIFY THE RIDER VIA SOCKET
+    // ==========================================
+    // Convert riderId to string to match the SocketService signature
+    const riderIdStr = ride.riderId.toString();
+
+    SocketService.sendToUser(
+      riderIdStr,
+      "rideAccepted", // The frontend rider app should listen to this event
+      { ride },
+    );
+    // ==========================================
 
     AppEventBus.emit("RIDE_ACCEPTED", {
       rideId,
