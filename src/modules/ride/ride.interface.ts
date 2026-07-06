@@ -49,4 +49,5 @@ export interface IRide extends Document {
   startedAt?: Date;
   completedAt?: Date;
   riderPaidAt?: Date;
+  createdAt: Date;
 }

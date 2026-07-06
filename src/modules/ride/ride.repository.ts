@@ -307,4 +307,13 @@ export class RideRepository extends BaseRepository<IRide> {
 
     return await this.model.aggregate(pipeline).exec();
   }
+
+  async findLastCompletedRide(userId: string, role: string) {
+    const query =
+      role === "rider"
+        ? { riderId: userId, status: "completed" }
+        : { driverId: userId, status: "completed" };
+
+    return this.model.findOne(query).sort({ createdAt: -1 }).lean();
+  }
 }

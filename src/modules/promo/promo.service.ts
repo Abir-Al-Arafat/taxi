@@ -6,6 +6,7 @@ import {
   PromoRedemptionRepository,
 } from "./promo.repository";
 import { UserRepository } from "../user/user.repository";
+import { RideRepository } from "../ride/ride.repository";
 import { AppError } from "../../core/errors/AppError";
 import HTTP_STATUS from "../../constants/statusCodes";
 import type { IPaginationParams } from "../../shared/types/pagination.types";
@@ -16,6 +17,7 @@ export class PromoService {
   private ruleRepo = new PromoRuleRepository();
   private redemptionRepo = new PromoRedemptionRepository();
   private userRepo = new UserRepository();
+  private rideRepo = new RideRepository();
 
   // ==============================================
   // ADMIN FLOWS
@@ -96,11 +98,43 @@ export class PromoService {
     const user: any = await this.userRepo.findOne({ _id: userId });
     if (!user) return false;
 
-    // 🔌 FUTURE INTEGRATION POINT: Fetch actual ride stats from RideModule
-    // For now, defaulting to placeholder values to satisfy the engine
+    // -------------------------------------------------------------
+    // ACTUAL RIDE STATS INTEGRATION
+    // -------------------------------------------------------------
+
+    // 1. Calculate Total Rides based on user role
+    const totalRides =
+      user.role === "rider"
+        ? user.rideTakenCount || 0
+        : user.rideGivenCount || 0;
+
+    // 2. Calculate Days Since Last Ride
+
+    let daysSinceLastRide = 9999; // Default large number for users with no rides
+
+    // Determine query based on role to find their last completed ride
+    const lastRideQuery =
+      user.role === "rider"
+        ? { riderId: userId, status: "completed" }
+        : { driverId: userId, status: "completed" };
+
+    // Fetch the most recent completed ride using mongoose's sort
+    const lastRide = await this.rideRepo.findLastCompletedRide(
+      userId,
+      user.role,
+    );
+
+    if (lastRide && lastRide.createdAt) {
+      const now = new Date();
+      const lastRideDate = new Date(lastRide.createdAt as Date);
+      // Calculate difference in milliseconds, then convert to days
+      const diffTime = Math.abs(now.getTime() - lastRideDate.getTime());
+      daysSinceLastRide = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    }
+
     const userStats = {
-      totalRides: 0, // Mock: Replace with actual ride count
-      daysSinceLastRide: 100, // Mock: Replace with actual calculation
+      totalRides,
+      daysSinceLastRide,
     };
 
     for (const rule of rules) {
