@@ -21,14 +21,19 @@ export class PromoCodeRepository extends BaseRepository<IPromoCode> {
   }
 
   async togglePromoStatus(promoCodeId: string): Promise<void> {
-    const promo = await this.model.findById(promoCodeId);
-    console.log("promo:", promo);
-    console.log("Current promo status:", promo?.isActive);
-    const newIsActive = !promo?.isActive;
-
-    await this.model
-      .updateOne({ _id: promoCodeId }, { isActive: newIsActive })
-      .exec();
+    try {
+      await this.model.updateOne(
+        { _id: promoCodeId },
+        [{ $set: { isActive: { $not: "$isActive" } } }],
+        { updatePipeline: true },
+      );
+    } catch (error) {
+      console.error(
+        `Error toggling promo status for ID ${promoCodeId}:`,
+        error,
+      );
+      throw error;
+    }
   }
 }
 
