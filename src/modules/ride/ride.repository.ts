@@ -311,8 +311,8 @@ export class RideRepository extends BaseRepository<IRide> {
   async findLastCompletedRide(userId: string, role: string) {
     const query =
       role === "rider"
-        ? { riderId: userId, status: "completed" }
-        : { driverId: userId, status: "completed" };
+        ? { riderId: userId, status: "COMPLETED" }
+        : { driverId: userId, status: "COMPLETED" };
 
     return this.model.findOne(query).sort({ createdAt: -1 }).lean();
   }
