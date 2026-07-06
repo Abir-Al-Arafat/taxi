@@ -54,6 +54,7 @@ export class RideController {
 
   getMyRides = asyncHandler(
     async (req: AuthenticatedRequest, res: Response) => {
+      console.log("getMyRides");
       const role = req.user?.role as "rider" | "driver";
       const data = await this.rideService.myRides(
         req.user!.userId,

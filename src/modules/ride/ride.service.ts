@@ -245,8 +245,30 @@ export class RideService {
       // Use MongoDB's $in operator to match any of the provided statuses
       filter.status = { $in: statusArray };
     }
+
+    // 3. Prepare populate options based on query parameters
+    const populateOptions: any[] = [];
+
+    // Populate Driver Info if requested (?driver=true)
+    if (String(params.driver) === "true") {
+      populateOptions.push({
+        path: "driverId",
+        select:
+          "firstName lastName email phoneNumber profilePicture rating rideGivenCount", // Only select necessary fields
+      });
+    }
+
+    // Populate Rider Info if requested (?rider=true) - Useful when a driver fetches their rides
+    if (String(params.rider) === "true") {
+      populateOptions.push({
+        path: "riderId",
+        select:
+          "firstName lastName email phoneNumber profilePicture rating rideTakenCount",
+      });
+    }
+
     // 3. Pass the newly constructed filter to your global pagination engine
-    return this.rideRepo.findPaginated(params, filter);
+    return this.rideRepo.findPaginated(params, filter, [], populateOptions);
   }
 
   async declineRide(driverId: string, rideId: string) {

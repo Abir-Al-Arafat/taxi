@@ -19,7 +19,7 @@ const ratingSchema = new Schema<RatingSchema>(
     },
     driverId: {
       type: Schema.Types.ObjectId,
-      ref: "Driver",
+      ref: "User",
       required: true,
       index: true,
     },
