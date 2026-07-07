@@ -7,6 +7,8 @@ import { AppEventBus } from "../../shared/events/app-events";
 import { FareService } from "../fare/fare.service";
 import { PromoService } from "../promo/promo.service";
 import { WalletService } from "../wallet/wallet.service";
+import { RatingService } from "../rating/rating.service";
+import { RatingRepository } from "../rating/rating.repository";
 import { FareRepository } from "../fare/fare.repository";
 import { UserRepository } from "../user/user.repository";
 import { calculateFallbackRouting } from "../../shared/utilities/geo.util";
@@ -18,7 +20,7 @@ export class RideService {
   private rideRepo = new RideRepository();
   private fareService = new FareService();
   private promoService = new PromoService();
-
+  private ratingService = new RatingService(new RatingRepository());
   private walletService = new WalletService();
   private fareRepo = new FareRepository();
   private userRepo = new UserRepository();
@@ -286,7 +288,6 @@ export class RideService {
 
     // --- 4. DRIVER AVERAGE RATING (?driverRatingAvg=true) ---
     if (String(params.driverRatingAvg) === "true") {
-      // Get unique driver IDs to avoid redundant DB matching
       const driverIds = [
         ...new Set(
           items
@@ -295,48 +296,30 @@ export class RideService {
         ),
       ];
 
-      if (driverIds.length) {
-        // Group by driverId and calculate the average score
-        const driverRatings = await Rating.aggregate([
-          { $match: { driverId: { $in: driverIds } } }, // ⚠️ Update 'driverId' if your schema uses a different name
-          { $group: { _id: "$driverId", avg: { $avg: "$score" } } }, // ⚠️ Update 'score' if your schema uses 'rating' or 'value'
-        ]);
+      // Delegate the database logic entirely to the RatingService
+      const driverRatingMap =
+        await this.ratingService.getAverageRatingsForDrivers(driverIds);
 
-        // Map for O(1) lookups
-        const driverRatingMap = new Map();
-        driverRatings.forEach((r) =>
-          driverRatingMap.set(r._id.toString(), r.avg),
-        );
-
-        // Inject into items
-        items = items.map((item: any) => {
-          const dIdStr = (item.driverId?._id || item.driverId)?.toString();
-          // Round to 1 decimal place (e.g., 4.8)
-          item.driverAverageRating = driverRatingMap.has(dIdStr)
-            ? Number(driverRatingMap.get(dIdStr).toFixed(1))
-            : 0;
-          return item;
-        });
-      }
+      items = items.map((item: any) => {
+        const dIdStr = (item.driverId?._id || item.driverId)?.toString();
+        item.driverAverageRating = driverRatingMap.has(dIdStr)
+          ? Number(driverRatingMap.get(dIdStr)!.toFixed(1))
+          : 0;
+        return item;
+      });
     }
 
     // --- 5. RIDE AVERAGE RATING (?rideRatingAvg=true) ---
     if (String(params.rideRatingAvg) === "true") {
       const rideIds = items.map((item: any) => item._id);
 
-      // Group by rideId and calculate the average score
-      const rideRatings = await Rating.aggregate([
-        { $match: { rideId: { $in: rideIds } } },
-        { $group: { _id: "$rideId", avg: { $avg: "$score" } } }, // ⚠️ Update 'score' if necessary
-      ]);
+      // Delegate the database logic entirely to the RatingService
+      const rideRatingMap =
+        await this.ratingService.getAverageRatingsForRides(rideIds);
 
-      const rideRatingMap = new Map();
-      rideRatings.forEach((r) => rideRatingMap.set(r._id.toString(), r.avg));
-
-      // Inject into items
       items = items.map((item: any) => {
         item.rideAverageRating = rideRatingMap.has(item._id.toString())
-          ? Number(rideRatingMap.get(item._id.toString()).toFixed(1))
+          ? Number(rideRatingMap.get(item._id.toString())!.toFixed(1))
           : 0;
         return item;
       });

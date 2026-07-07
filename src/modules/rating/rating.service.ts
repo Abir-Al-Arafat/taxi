@@ -86,4 +86,16 @@ export class RatingService {
       stats,
     };
   }
+
+  async getAverageRatingsForDrivers(
+    driverIds: string[],
+  ): Promise<Map<string, number>> {
+    return this.ratingRepository.getAverageRatingsForDrivers(driverIds);
+  }
+
+  async getAverageRatingsForRides(
+    rideIds: string[],
+  ): Promise<Map<string, number>> {
+    return this.ratingRepository.getAverageRatingsForRides(rideIds);
+  }
 }
