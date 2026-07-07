@@ -1,0 +1,9 @@
+services:
+  api:
+    image: abirwerks/taxi-backend:latest
+    container_name: taxi-backend
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    restart: unless-stopped
