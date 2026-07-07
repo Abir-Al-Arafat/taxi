@@ -589,6 +589,10 @@ export class AuthService {
         user.role === "driver" && !user.profileCompleted,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
+      onlineStatus: user.onlineStatus || false,
+      adminApproved: user.adminApproved || false,
+      rideTakenCount: user.rideTakenCount || 0,
+      rideGivenCount: user.rideGivenCount || 0,
     };
   }
 

@@ -98,8 +98,8 @@ export interface AuthUserView {
   updatedAt: Date;
   profileCompleted: boolean;
   profileCompletionRequired: boolean;
-  onlineStatus: "online" | "offline";
-  adminApproved: "pending" | "approved" | "declined";
-  rideTakenCount: number;
-  rideGivenCount: number;
+  onlineStatus?: "online" | "offline";
+  adminApproved?: "pending" | "approved" | "declined";
+  rideTakenCount?: number;
+  rideGivenCount?: number;
 }

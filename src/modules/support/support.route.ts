@@ -14,15 +14,19 @@ const upload = multer();
 
 // 1. Initialize Notification Module Dependencies
 const notificationRepository = new NotificationRepository();
+const userRepository = new UserRepository();
+
 const emailService = new EmailService();
+
 const notificationService = new NotificationService(
   notificationRepository,
   emailService,
+  userRepository,
 );
 
 // 2. Initialize Support Module Dependencies
 const supportRepository = new SupportRepository();
-const userRepository = new UserRepository();
+
 // 3. CRITICAL: Pass the notificationService into SupportService here!
 const supportService = new SupportService(
   supportRepository,
