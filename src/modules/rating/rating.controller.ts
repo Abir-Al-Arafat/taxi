@@ -10,9 +10,9 @@ export class RatingController {
   constructor(private ratingService: RatingService) {}
 
   public submitRating = asyncHandler(async (req: Request, res: Response) => {
-    console.log("req.user:", req.user); // Debugging log
+    console.log("req.user:", (req as any).user); // Debugging log
     // Note: req.user would be set by your auth.middleware
-    const userId = (req as any).user?.id || req.user?.userId; // Fallback for testing without auth
+    const userId = (req as any).user?.id || (req as any).user?.userId; // Fallback for testing without auth
     if (!userId) throw new AppError("Unauthorized", HTTP_STATUS.UNAUTHORIZED);
 
     const { rideId, driverId, score, comment } = req.body;
@@ -81,9 +81,9 @@ export class RatingController {
     },
   );
   public getMyRatings = asyncHandler(async (req: Request, res: Response) => {
-    console.log("req.user:", req.user);
-    console.log("req.user.userId:", req.user.userId);
-    const driverId = req.user.userId;
+    console.log("req.user:", (req as any).user);
+    console.log("req.user.userId:", (req as any).user.userId);
+    const driverId = (req as any).user.userId;
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     console.log("Driver ID from token:", driverId);

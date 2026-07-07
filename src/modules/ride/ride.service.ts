@@ -13,6 +13,7 @@ import { calculateFallbackRouting } from "../../shared/utilities/geo.util";
 import { parsePayload } from "../../shared/utilities/parsePayload.util";
 import { DriverProfileRepository } from "../driver-profile/driver-profile.repository";
 import { SocketService } from "../../shared/services/socket.service";
+import { Rating } from "../rating/rating.schema";
 export class RideService {
   private rideRepo = new RideRepository();
   private fareService = new FareService();
@@ -267,8 +268,84 @@ export class RideService {
       });
     }
 
-    // 3. Pass the newly constructed filter to your global pagination engine
-    return this.rideRepo.findPaginated(params, filter, [], populateOptions);
+    // 4. Pass the filter and population array to your global pagination engine
+    const paginatedResult = await this.rideRepo.findPaginated(
+      params,
+      filter,
+      [],
+      populateOptions,
+    );
+
+    // If no items, just return early
+    if (!paginatedResult.items.length) return paginatedResult;
+
+    // Convert items to plain JS objects once, so we can freely attach new properties
+    let items = paginatedResult.items.map((item: any) =>
+      item.toObject ? item.toObject() : item,
+    );
+
+    // --- 4. DRIVER AVERAGE RATING (?driverRatingAvg=true) ---
+    if (String(params.driverRatingAvg) === "true") {
+      // Get unique driver IDs to avoid redundant DB matching
+      const driverIds = [
+        ...new Set(
+          items
+            .map((item: any) => item.driverId?._id || item.driverId)
+            .filter(Boolean),
+        ),
+      ];
+
+      if (driverIds.length) {
+        // Group by driverId and calculate the average score
+        const driverRatings = await Rating.aggregate([
+          { $match: { driverId: { $in: driverIds } } }, // ⚠️ Update 'driverId' if your schema uses a different name
+          { $group: { _id: "$driverId", avg: { $avg: "$score" } } }, // ⚠️ Update 'score' if your schema uses 'rating' or 'value'
+        ]);
+
+        // Map for O(1) lookups
+        const driverRatingMap = new Map();
+        driverRatings.forEach((r) =>
+          driverRatingMap.set(r._id.toString(), r.avg),
+        );
+
+        // Inject into items
+        items = items.map((item: any) => {
+          const dIdStr = (item.driverId?._id || item.driverId)?.toString();
+          // Round to 1 decimal place (e.g., 4.8)
+          item.driverAverageRating = driverRatingMap.has(dIdStr)
+            ? Number(driverRatingMap.get(dIdStr).toFixed(1))
+            : 0;
+          return item;
+        });
+      }
+    }
+
+    // --- 5. RIDE AVERAGE RATING (?rideRatingAvg=true) ---
+    if (String(params.rideRatingAvg) === "true") {
+      const rideIds = items.map((item: any) => item._id);
+
+      // Group by rideId and calculate the average score
+      const rideRatings = await Rating.aggregate([
+        { $match: { rideId: { $in: rideIds } } },
+        { $group: { _id: "$rideId", avg: { $avg: "$score" } } }, // ⚠️ Update 'score' if necessary
+      ]);
+
+      const rideRatingMap = new Map();
+      rideRatings.forEach((r) => rideRatingMap.set(r._id.toString(), r.avg));
+
+      // Inject into items
+      items = items.map((item: any) => {
+        item.rideAverageRating = rideRatingMap.has(item._id.toString())
+          ? Number(rideRatingMap.get(item._id.toString()).toFixed(1))
+          : 0;
+        return item;
+      });
+    }
+
+    // Reattach the newly mapped items to the paginated result
+    paginatedResult.items = items;
+
+    return paginatedResult;
   }
 
   async declineRide(driverId: string, rideId: string) {
