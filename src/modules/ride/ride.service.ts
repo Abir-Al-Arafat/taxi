@@ -201,7 +201,6 @@ export class RideService {
       "rideAccepted", // The frontend rider app should listen to this event
       { ride },
     );
-    // ==========================================
 
     AppEventBus.emit("RIDE_ACCEPTED", {
       rideId,

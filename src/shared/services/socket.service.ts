@@ -49,6 +49,41 @@ export class SocketService {
 
       console.log(`User connected: ${userId} (Socket: ${socket.id})`);
 
+      // 1. Join a dedicated room for the active ride
+      socket.on("joinRideRoom", (rideId: string) => {
+        const roomName = `ride_${rideId}`;
+        socket.join(roomName);
+        console.log(`Socket ${socket.id} joined room: ${roomName}`);
+      });
+
+      // 2. Listen for location updates and broadcast to the room
+      socket.on(
+        "sendLocation",
+        (data: {
+          rideId: string;
+          lat: number;
+          lng: number;
+          role: "driver" | "rider";
+        }) => {
+          const roomName = `ride_${data.rideId}`;
+
+          // socket.to().emit broadcasts to everyone in the room EXCEPT the sender
+          socket.to(roomName).emit("receiveLocation", {
+            lat: data.lat,
+            lng: data.lng,
+            role: data.role,
+            timestamp: new Date(),
+          });
+        },
+      );
+
+      // 3. Leave the room when the ride is over
+      socket.on("leaveRideRoom", (rideId: string) => {
+        const roomName = `ride_${rideId}`;
+        socket.leave(roomName);
+        console.log(`Socket ${socket.id} left room: ${roomName}`);
+      });
+
       socket.on("disconnect", () => {
         this.userSockets.delete(userId);
         console.log(`User disconnected: ${userId}`);
