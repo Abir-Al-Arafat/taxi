@@ -80,10 +80,10 @@ export const signupValidation = [
     .isString()
     .withMessage("Location address must be a string")
     .trim(),
-  body("gender")
-    .trim()
-    .isIn([...allowedGenders])
-    .withMessage("Gender must be male, female, or other"),
+  // body("gender")
+  //   .trim()
+  //   .isIn([...allowedGenders])
+  //   .withMessage("Gender must be male, female, or other"),
   body("role")
     .trim()
     .isIn([...allowedRoles])
