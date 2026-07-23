@@ -1,0 +1,5883 @@
+{
+	"info": {
+		"_postman_id": "c641b5f4-86b6-4485-97de-64eaa784bd4b",
+		"name": "taxi",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "55025588",
+		"_collection_link": "https://taxi-swiftride.postman.co/workspace/Team-Workspace~4ca90fbe-8e72-4b3c-82f5-b7e1dc84fec6/collection/55025588-c641b5f4-86b6-4485-97de-64eaa784bd4b?action=share&source=collection_link&creator=55025588"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "admin",
+					"item": [
+						{
+							"name": "login (admin created)",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "password",
+											"value": "2khzfioq35",
+											"type": "text"
+										},
+										{
+											"key": "email",
+											"value": "employer@mockmail.xyz",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/admins/login",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"admins",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "forgot password",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "email",
+											"value": "iadmin@mockmail.xyz",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/admins/forgot-password",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"admins",
+										"forgot-password"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "verify-otp",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "email",
+											"value": "iadmin@mockmail.xyz",
+											"type": "text"
+										},
+										{
+											"key": "otp",
+											"value": "857014",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/admins/verify-otp",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"admins",
+										"verify-otp"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "reset password",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "email",
+											"value": "iadmin@mockmail.xyz",
+											"type": "text"
+										},
+										{
+											"key": "newPassword",
+											"value": "iadmin@mockmail.xyz",
+											"type": "text"
+										},
+										{
+											"key": "confirmPassword",
+											"value": "iadmin@mockmail.xyz",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/admins/reset-password",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"admins",
+										"reset-password"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "signup",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "firstName",
+									"value": "chauffeur@mockmail.xyz",
+									"type": "text"
+								},
+								{
+									"key": "lastName",
+									"value": "chauffeur@mockmail.xyz",
+									"type": "text"
+								},
+								{
+									"key": "phoneNumber",
+									"value": "0910937399",
+									"description": "0910937399 | 0916660002",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "chauffeur@mockmail.xyz",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "chauffeur@mockmail.xyz",
+									"type": "text"
+								},
+								{
+									"key": "confirmPassword",
+									"value": "chauffeur@mockmail.xyz",
+									"type": "text"
+								},
+								{
+									"key": "location[lat]",
+									"value": " 32.8872",
+									"type": "text"
+								},
+								{
+									"key": "location[lng]",
+									"value": " 13.1913",
+									"type": "text"
+								},
+								{
+									"key": "location[address]",
+									"value": " Tripoli area",
+									"type": "text"
+								},
+								{
+									"key": "gender",
+									"value": "male",
+									"description": "male, female, or other",
+									"type": "text"
+								},
+								{
+									"key": "role",
+									"value": "rider",
+									"description": "rider or driver",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/auth/signup",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"auth",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "resend otp for signup",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "phoneNumber",
+									"value": "019999998",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "abir@mockmail.xyz",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/auth/resend-otp",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"auth",
+								"resend-otp"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "forgot password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phoneNumber\": \"019999999\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/auth/forgot-password",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"auth",
+								"forgot-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "verify otp",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "phoneNumber",
+									"value": "0910937399",
+									"type": "text"
+								},
+								{
+									"key": "otp",
+									"value": "9948",
+									"type": "text"
+								},
+								{
+									"key": "purpose",
+									"value": "signup",
+									"description": "signup | forgot-password",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/auth/verify-otp",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"auth",
+								"verify-otp"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "reset password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "phoneNumber",
+									"value": "019999999",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "abir@mockmail.xyz",
+									"type": "text"
+								},
+								{
+									"key": "confirmPassword",
+									"value": "abir@mockmail.xyz",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/auth/reset-password",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"auth",
+								"reset-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login (signed up / registered)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "phoneNumber",
+									"value": "019999998",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "driver@mockmail.xyz",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "abir@mockmail.xyz",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/auth/login",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "refresh token",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/auth/refresh",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"auth",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "log out",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/auth/logout",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "all users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURLLocal}}/users?includeVehicleType=true",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "iadmin@mockmail.xyz",
+									"description": "[\"firstName\", \"lastName\", \"email\", \"phoneNumber\"]",
+									"disabled": true
+								},
+								{
+									"key": "role",
+									"value": "driver",
+									"description": "rider, driver",
+									"disabled": true
+								},
+								{
+									"key": "isVerified",
+									"value": "true",
+									"description": "true | false",
+									"disabled": true
+								},
+								{
+									"key": "gender",
+									"value": "female",
+									"description": "male | female | other",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "firstName",
+									"description": "createdAt | firstName",
+									"disabled": true
+								},
+								{
+									"key": "includeVehicleType",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURLLocal}}/users/:id?includeDriverProfile=true",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"users",
+								":id"
+							],
+							"query": [
+								{
+									"key": "includeDriverProfile",
+									"value": "true"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "6a23abe72458e7b99027a591"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "my profile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURLLocal}}/users/me",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"users",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update my profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "firstName",
+									"value": "updated",
+									"type": "text"
+								},
+								{
+									"key": "lastName",
+									"value": "updated",
+									"type": "text"
+								},
+								{
+									"key": "gender",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "location[lat]",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "location[lng]",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "locationAddress",
+									"value": "Tripoli area",
+									"type": "text"
+								},
+								{
+									"key": "profilePicture",
+									"type": "file",
+									"src": "/home/abir/Pictures/Screenshots/Screenshot From 2026-06-10 09-01-04.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/users/me",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"users",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "toggle online status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{riderToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/users/me/online-status",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"users",
+								"me",
+								"online-status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "change password",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "currentPassword",
+									"value": "currentPassword",
+									"type": "text"
+								},
+								{
+									"key": "newPassword",
+									"value": "abir@mockmail.xyz",
+									"type": "text"
+								},
+								{
+									"key": "confirmPassword",
+									"value": "abir@mockmail.xyz",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/users/me/password",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"users",
+								"me",
+								"password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "toggle block",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/users/:id/toggle-block",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"users",
+								":id",
+								"toggle-block"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "6a0d6c066b5bcd75c2e13560"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "driver application",
+			"item": [
+				{
+					"name": "driver status",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{driverToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "firstName",
+									"value": "driver",
+									"type": "text"
+								},
+								{
+									"key": "lastName",
+									"value": "driver",
+									"type": "text"
+								},
+								{
+									"key": "phoneNumber",
+									"value": "019999998",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "driver@mockmail.xyz",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "driver@mockmail.xyz",
+									"type": "text"
+								},
+								{
+									"key": "confirmPassword",
+									"value": "driver@mockmail.xyz",
+									"type": "text"
+								},
+								{
+									"key": "location[lat]",
+									"value": " 32.8872",
+									"type": "text"
+								},
+								{
+									"key": "location[lng]",
+									"value": " 13.1913",
+									"type": "text"
+								},
+								{
+									"key": "location[address]",
+									"value": " Tripoli area",
+									"type": "text"
+								},
+								{
+									"key": "gender",
+									"value": "male",
+									"description": "male, female, or other",
+									"type": "text"
+								},
+								{
+									"key": "role",
+									"value": "driver",
+									"description": "rider or driver",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/driver-profile/status",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"driver-profile",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "me",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{driverToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "firstName",
+									"value": "driver",
+									"type": "text"
+								},
+								{
+									"key": "lastName",
+									"value": "driver",
+									"type": "text"
+								},
+								{
+									"key": "phoneNumber",
+									"value": "019999998",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "driver@mockmail.xyz",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "driver@mockmail.xyz",
+									"type": "text"
+								},
+								{
+									"key": "confirmPassword",
+									"value": "driver@mockmail.xyz",
+									"type": "text"
+								},
+								{
+									"key": "location[lat]",
+									"value": " 32.8872",
+									"type": "text"
+								},
+								{
+									"key": "location[lng]",
+									"value": " 13.1913",
+									"type": "text"
+								},
+								{
+									"key": "location[address]",
+									"value": " Tripoli area",
+									"type": "text"
+								},
+								{
+									"key": "gender",
+									"value": "male",
+									"description": "male, female, or other",
+									"type": "text"
+								},
+								{
+									"key": "role",
+									"value": "driver",
+									"description": "rider or driver",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/driver-profile/me",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"driver-profile",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "complete profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{driverToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "gender",
+									"value": "male",
+									"description": "male, female, or other",
+									"type": "text"
+								},
+								{
+									"key": "nidOrPassport",
+									"type": "file",
+									"src": "/home/abir/Pictures/Screenshots/androgynous-avatar-non-binary-queer-person.jpg"
+								},
+								{
+									"key": "profilePicture",
+									"type": "file",
+									"src": "/home/abir/Pictures/Screenshots/androgynous-avatar-non-binary-queer-person.jpg"
+								},
+								{
+									"key": "drivingLicenseImages",
+									"type": "file",
+									"src": "/home/abir/Pictures/Screenshots/androgynous-avatar-non-binary-queer-person.jpg"
+								},
+								{
+									"key": "vehicleRegistrationDocumentImages",
+									"type": "file",
+									"src": "/home/abir/Pictures/Screenshots/10025122.jpg"
+								},
+								{
+									"key": "dateOfBirth",
+									"value": "2026-06-06T00:00:00.000Z",
+									"type": "text"
+								},
+								{
+									"key": "carCompany",
+									"value": "carCompany",
+									"type": "text"
+								},
+								{
+									"key": "model",
+									"value": "model",
+									"type": "text"
+								},
+								{
+									"key": "year",
+									"value": "2025",
+									"type": "text"
+								},
+								{
+									"key": "color",
+									"value": "red",
+									"type": "text"
+								},
+								{
+									"key": "plateNumber",
+									"value": "111111",
+									"type": "text"
+								},
+								{
+									"key": "vehicleType",
+									"value": "taxi",
+									"description": "taxi | normal car",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/driver-profile/complete",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"driver-profile",
+								"complete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit complete profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{driverToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "gender",
+									"value": "male",
+									"description": "male, female, or other",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "nidOrPassport",
+									"type": "file",
+									"src": "/home/abir/Pictures/Screenshots/20760.jpg",
+									"disabled": true
+								},
+								{
+									"key": "profilePicture",
+									"type": "file",
+									"src": "/home/abir/Pictures/Screenshots/10025122.jpg",
+									"disabled": true
+								},
+								{
+									"key": "drivingLicenseImages",
+									"type": "file",
+									"src": "/home/abir/Pictures/Screenshots/20760.jpg",
+									"disabled": true
+								},
+								{
+									"key": "vehicleRegistrationDocumentImages",
+									"type": "file",
+									"src": "/home/abir/Pictures/Screenshots/10025122.jpg",
+									"disabled": true
+								},
+								{
+									"key": "dateOfBirth",
+									"value": "2026-06-06T00:00:00.000Z",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "carCompany",
+									"value": "carCompany",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "model",
+									"value": "model",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "year",
+									"value": "2025",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "color",
+									"value": "red",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "plateNumber",
+									"value": "111111",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "vehicleType",
+									"value": "taxi",
+									"description": "taxi | normal car",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/driver-profile/me",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"driver-profile",
+								"me"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "saved places",
+			"item": [
+				{
+					"name": "my saved places",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{userToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "firstName",
+									"value": "driver",
+									"type": "text"
+								},
+								{
+									"key": "lastName",
+									"value": "driver",
+									"type": "text"
+								},
+								{
+									"key": "phoneNumber",
+									"value": "019999998",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "driver@mockmail.xyz",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "driver@mockmail.xyz",
+									"type": "text"
+								},
+								{
+									"key": "confirmPassword",
+									"value": "driver@mockmail.xyz",
+									"type": "text"
+								},
+								{
+									"key": "location[lat]",
+									"value": " 32.8872",
+									"type": "text"
+								},
+								{
+									"key": "location[lng]",
+									"value": " 13.1913",
+									"type": "text"
+								},
+								{
+									"key": "location[address]",
+									"value": " Tripoli area",
+									"type": "text"
+								},
+								{
+									"key": "gender",
+									"value": "male",
+									"description": "male, female, or other",
+									"type": "text"
+								},
+								{
+									"key": "role",
+									"value": "driver",
+									"description": "rider or driver",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/saved-places?page=1&limit=5&search=Homeless",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"saved-places"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								},
+								{
+									"key": "search",
+									"value": "Homeless"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add a saved place",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{userToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Home",
+									"type": "text"
+								},
+								{
+									"key": "address",
+									"value": "address",
+									"type": "text"
+								},
+								{
+									"key": "longitude",
+									"value": "2.2945",
+									"type": "text"
+								},
+								{
+									"key": "latitude",
+									"value": "48.8584",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/saved-places",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"saved-places"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete a saved place",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{userToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/saved-places/:id",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"saved-places",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "6a2e3c369045f7b12b21963f"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit a saved place",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{userToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "updated",
+									"type": "text"
+								},
+								{
+									"key": "address",
+									"value": "updated",
+									"type": "text"
+								},
+								{
+									"key": "longitude",
+									"value": "139.6503",
+									"type": "text"
+								},
+								{
+									"key": "latitude",
+									"value": "35.6762",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/saved-places/:id",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"saved-places",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "6a2e3c369045f7b12b21963f"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "driver approval",
+			"item": [
+				{
+					"name": "all drivers",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/driver-approval/list",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"driver-approval",
+								"list"
+							],
+							"query": [
+								{
+									"key": "profileCompleted",
+									"value": "true",
+									"description": "true",
+									"disabled": true
+								},
+								{
+									"key": "adminApproved",
+									"value": "true",
+									"description": "true",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "019999998",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "5",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "",
+									"description": "-createdAt | createdAt",
+									"disabled": true
+								},
+								{
+									"key": "vehicleType",
+									"value": "taxi",
+									"description": "taxi | normal car",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "driver by id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/driver-approval/list/:driverId",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"driver-approval",
+								"list",
+								":driverId"
+							],
+							"variable": [
+								{
+									"key": "driverId",
+									"value": "6a23abe72458e7b99027a591"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "approve driver",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "action",
+									"value": "accept",
+									"description": "\"accept\", \"decline\"",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/driver-approval/review/:driverId",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"driver-approval",
+								"review",
+								":driverId"
+							],
+							"variable": [
+								{
+									"key": "driverId",
+									"value": "6a23abe72458e7b99027a591"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "base fare",
+			"item": [
+				{
+					"name": "all fares",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/fares?gender=male",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"fares"
+							],
+							"query": [
+								{
+									"key": "gender",
+									"value": "male"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update fare",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "baseFare",
+									"value": "49",
+									"type": "text"
+								},
+								{
+									"key": "minimumFare",
+									"value": "79",
+									"type": "text"
+								},
+								{
+									"key": "pricePerMinute",
+									"value": "1.9",
+									"type": "text"
+								},
+								{
+									"key": "pricePerKilometer",
+									"value": "23",
+									"type": "text"
+								},
+								{
+									"key": "waitingTimeCharge",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "cancellationFee",
+									"value": "12",
+									"type": "text"
+								},
+								{
+									"key": "commissionPercentage",
+									"value": "31",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/fares/:gender",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"fares",
+								":gender"
+							],
+							"variable": [
+								{
+									"key": "gender",
+									"value": "female"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add fare config",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "gender",
+									"value": "female",
+									"type": "text"
+								},
+								{
+									"key": "baseFare",
+									"value": "50",
+									"type": "text"
+								},
+								{
+									"key": "minimumFare",
+									"value": "80",
+									"type": "text"
+								},
+								{
+									"key": "pricePerMinute",
+									"value": "2.5",
+									"type": "text"
+								},
+								{
+									"key": "pricePerKilometer",
+									"value": "15",
+									"type": "text"
+								},
+								{
+									"key": "waitingTimeCharge",
+									"value": "5",
+									"type": "text"
+								},
+								{
+									"key": "cancellationFee",
+									"value": "30",
+									"type": "text"
+								},
+								{
+									"key": "commissionPercentage",
+									"value": "20",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/fares",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"fares"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "voucher",
+			"item": [
+				{
+					"name": "add vouchers",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{staffToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "quantity",
+									"value": "5",
+									"type": "text"
+								},
+								{
+									"key": "value",
+									"value": "10",
+									"type": "text"
+								},
+								{
+									"key": "batchName",
+									"value": "ten lyd",
+									"type": "text"
+								},
+								{
+									"key": "expiryDate",
+									"value": "2026-06-20T14:30:00.000Z",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/vouchers/generate-batch",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"vouchers",
+								"generate-batch"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "all vouchers",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/vouchers",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"vouchers"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "VC50LYD-1D9E768E",
+									"description": "code",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "3",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "CANCELLED",
+									"description": "  | \"ACTIVE\"\n  | \"USED\"\n  | \"EXPIRED\"\n  | \"CANCELLED\"\n  | \"RESERVED\";",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "voucher stats",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "quantity",
+									"value": "5",
+									"type": "text"
+								},
+								{
+									"key": "value",
+									"value": "50",
+									"type": "text"
+								},
+								{
+									"key": "batchName",
+									"value": "fifty lyd",
+									"type": "text"
+								},
+								{
+									"key": "expiryDate",
+									"value": "2026-06-20T14:30:00.000Z",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/vouchers/stats",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"vouchers",
+								"stats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "voucher batches",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "quantity",
+									"value": "5",
+									"type": "text"
+								},
+								{
+									"key": "value",
+									"value": "50",
+									"type": "text"
+								},
+								{
+									"key": "batchName",
+									"value": "fifty lyd",
+									"type": "text"
+								},
+								{
+									"key": "expiryDate",
+									"value": "2026-06-20T14:30:00.000Z",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/vouchers/batches",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"vouchers",
+								"batches"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "voucher by code",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "quantity",
+									"value": "5",
+									"type": "text"
+								},
+								{
+									"key": "value",
+									"value": "50",
+									"type": "text"
+								},
+								{
+									"key": "batchName",
+									"value": "fifty lyd",
+									"type": "text"
+								},
+								{
+									"key": "expiryDate",
+									"value": "2026-06-20T14:30:00.000Z",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/vouchers/code/:code",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"vouchers",
+								"code",
+								":code"
+							],
+							"variable": [
+								{
+									"key": "code",
+									"value": "VC50LYD-B977EB58"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update voucher status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "status",
+									"value": "CANCELLED",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/vouchers/:id/status",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"vouchers",
+								":id",
+								"status"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "6a311e7289bc1a1a947ebc8f"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "wallets",
+			"item": [
+				{
+					"name": "driver",
+					"item": [
+						{
+							"name": "top up",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{driverToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "code",
+											"value": "VC50LYD-2C0F3AA8",
+											"type": "text"
+										},
+										{
+											"key": "promoCode",
+											"value": "",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/wallet/top-up",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"wallet",
+										"top-up"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "my wallet balance",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{driverToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "quantity",
+											"value": "5",
+											"type": "text"
+										},
+										{
+											"key": "value",
+											"value": "50",
+											"type": "text"
+										},
+										{
+											"key": "batchName",
+											"value": "fifty lyd",
+											"type": "text"
+										},
+										{
+											"key": "expiryDate",
+											"value": "2026-06-20T14:30:00.000Z",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/wallet/balance",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"wallet",
+										"balance"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "my wallet transactions",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{driverToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/wallet/transactions",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"wallet",
+										"transactions"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "admin",
+					"item": [
+						{
+							"name": "manual top up",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{adminToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "driverId",
+											"value": "6a23abe72458e7b99027a591",
+											"type": "text"
+										},
+										{
+											"key": "amount",
+											"value": "60",
+											"type": "text"
+										},
+										{
+											"key": "description",
+											"value": "admin bonus",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/wallet/admin/top-up",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"wallet",
+										"admin",
+										"top-up"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "manual deduction",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{adminToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "driverId",
+											"value": "6a23abe72458e7b99027a591",
+											"type": "text"
+										},
+										{
+											"key": "amount",
+											"value": "10",
+											"type": "text"
+										},
+										{
+											"key": "description",
+											"value": "admin punishment",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/wallet/admin/deduct",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"wallet",
+										"admin",
+										"deduct"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "all wallets",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{adminToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "code",
+											"value": "VC50LYD-1D9E768E",
+											"type": "text"
+										},
+										{
+											"key": "promoCode",
+											"value": "",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/wallet/admin/dashboard?page=1&limit=2&search=&role&status",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"wallet",
+										"admin",
+										"dashboard"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "2"
+										},
+										{
+											"key": "search",
+											"value": "",
+											"description": "firstName, lastName, phoneNumber, email"
+										},
+										{
+											"key": "role",
+											"value": null
+										},
+										{
+											"key": "status",
+											"value": null
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "transaction",
+			"item": [
+				{
+					"name": "transaction",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "code",
+									"value": "VC50LYD-1D9E768E",
+									"type": "text"
+								},
+								{
+									"key": "promoCode",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/wallet/admin/transactions",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"wallet",
+								"admin",
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "iadmin@mockmail.xyz",
+									"description": "firstName, lastName, phoneNumber, email",
+									"disabled": true
+								},
+								{
+									"key": "type",
+									"value": "DEBIT",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "source",
+									"value": "ADMIN_ADJUSTMENT",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "promo",
+			"item": [
+				{
+					"name": "admin",
+					"item": [
+						{
+							"name": "all promos",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{adminToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "code",
+											"value": "VC50LYD-1D9E768E",
+											"type": "text"
+										},
+										{
+											"key": "promoCode",
+											"value": "",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/promos/admin/list",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"promos",
+										"admin",
+										"list"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "search",
+											"value": "iadmin@mockmail.xyz",
+											"description": "firstName, lastName, phoneNumber, email",
+											"disabled": true
+										},
+										{
+											"key": "type",
+											"value": "DEBIT",
+											"disabled": true
+										},
+										{
+											"key": "status",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "source",
+											"value": "ADMIN_ADJUSTMENT",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "promo stats",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{adminToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "code",
+											"value": "VC50LYD-1D9E768E",
+											"type": "text"
+										},
+										{
+											"key": "promoCode",
+											"value": "",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/promos/admin/stats",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"promos",
+										"admin",
+										"stats"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "promo with details by id",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{adminToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "code",
+											"value": "VC50LYD-1D9E768E",
+											"type": "text"
+										},
+										{
+											"key": "promoCode",
+											"value": "",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/promos/admin/6a3375790f12d82239dc950d",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"promos",
+										"admin",
+										"6a3375790f12d82239dc950d"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "search",
+											"value": "iadmin@mockmail.xyz",
+											"description": "firstName, lastName, phoneNumber, email",
+											"disabled": true
+										},
+										{
+											"key": "type",
+											"value": "DEBIT",
+											"disabled": true
+										},
+										{
+											"key": "status",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "source",
+											"value": "ADMIN_ADJUSTMENT",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create promo",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{adminToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "code",
+											"value": " FIRST50",
+											"type": "text"
+										},
+										{
+											"key": "discountType",
+											"value": "percentage",
+											"description": "percentage | fixed_amount",
+											"type": "text"
+										},
+										{
+											"key": "discountValue",
+											"value": "50",
+											"type": "text"
+										},
+										{
+											"key": "totalUsageLimit",
+											"value": "1000",
+											"type": "text"
+										},
+										{
+											"key": "perUserLimit",
+											"value": "1",
+											"type": "text"
+										},
+										{
+											"key": "startDate",
+											"value": "2026-05-25",
+											"type": "text"
+										},
+										{
+											"key": "expiryDate",
+											"value": "2026-06-26",
+											"type": "text"
+										},
+										{
+											"key": "isActive",
+											"value": "true",
+											"type": "text"
+										},
+										{
+											"key": "rules[0][ruleKey]",
+											"value": "user_type",
+											"description": "user_type | total_rides | days_since_last_ride",
+											"type": "text"
+										},
+										{
+											"key": "rules[0][ruleOperator]",
+											"value": "equals",
+											"description": "equals | greater_than | less_than",
+											"type": "text"
+										},
+										{
+											"key": "rules[0][ruleValue]",
+											"value": "rider",
+											"description": "Can store \"rider\" (string) or 30 (number)",
+											"type": "text"
+										},
+										{
+											"key": "rules[1][ruleKey]",
+											"value": "total_rides",
+											"type": "text"
+										},
+										{
+											"key": "rules[1][ruleOperator]",
+											"value": "equals",
+											"type": "text"
+										},
+										{
+											"key": "rules[1][ruleValue]",
+											"value": "0",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/promos/admin/create",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"promos",
+										"admin",
+										"create"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update promo status by id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{adminToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "code",
+											"value": " FIRST50",
+											"type": "text"
+										},
+										{
+											"key": "discountType",
+											"value": "percentage",
+											"description": "percentage | fixed_amount",
+											"type": "text"
+										},
+										{
+											"key": "discountValue",
+											"value": "50",
+											"type": "text"
+										},
+										{
+											"key": "totalUsageLimit",
+											"value": "1000",
+											"type": "text"
+										},
+										{
+											"key": "perUserLimit",
+											"value": "1",
+											"type": "text"
+										},
+										{
+											"key": "startDate",
+											"value": "2026-05-25",
+											"type": "text"
+										},
+										{
+											"key": "expiryDate",
+											"value": "2026-06-26",
+											"type": "text"
+										},
+										{
+											"key": "isActive",
+											"value": "true",
+											"type": "text"
+										},
+										{
+											"key": "rules[0][ruleKey]",
+											"value": "user_type",
+											"type": "text"
+										},
+										{
+											"key": "rules[0][ruleOperator]",
+											"value": "equals",
+											"type": "text"
+										},
+										{
+											"key": "rules[0][ruleValue]",
+											"value": "rider",
+											"type": "text"
+										},
+										{
+											"key": "rules[1][ruleKey]",
+											"value": "total_rides",
+											"description": "user_type | total_rides | days_since_last_ride",
+											"type": "text"
+										},
+										{
+											"key": "rules[1][ruleOperator]",
+											"value": "equals",
+											"description": "equals | greater_than | less_than",
+											"type": "text"
+										},
+										{
+											"key": "rules[1][ruleValue]",
+											"value": "0",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/promos/:id/status",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"promos",
+										":id",
+										"status"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "search",
+											"value": "iadmin@mockmail.xyz",
+											"description": "firstName, lastName, phoneNumber, email",
+											"disabled": true
+										},
+										{
+											"key": "type",
+											"value": "DEBIT",
+											"disabled": true
+										},
+										{
+											"key": "status",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "source",
+											"value": "ADMIN_ADJUSTMENT",
+											"disabled": true
+										}
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update promo code by id",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{adminToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "code",
+											"value": " FIRST40",
+											"type": "text"
+										},
+										{
+											"key": "discountType",
+											"value": "percentage",
+											"description": "percentage | fixed_amount",
+											"type": "text"
+										},
+										{
+											"key": "discountValue",
+											"value": "40",
+											"type": "text"
+										},
+										{
+											"key": "totalUsageLimit",
+											"value": "500",
+											"type": "text"
+										},
+										{
+											"key": "perUserLimit",
+											"value": "1",
+											"type": "text"
+										},
+										{
+											"key": "startDate",
+											"value": "2026-05-25",
+											"type": "text"
+										},
+										{
+											"key": "expiryDate",
+											"value": "2026-06-26",
+											"type": "text"
+										},
+										{
+											"key": "isActive",
+											"value": "true",
+											"type": "text"
+										},
+										{
+											"key": "rules[0][ruleKey]",
+											"value": "user_type",
+											"type": "text"
+										},
+										{
+											"key": "rules[0][ruleOperator]",
+											"value": "equals",
+											"type": "text"
+										},
+										{
+											"key": "rules[0][ruleValue]",
+											"value": "rider",
+											"type": "text"
+										},
+										{
+											"key": "rules[1][ruleKey]",
+											"value": "total_rides",
+											"description": "user_type | total_rides | days_since_last_ride",
+											"type": "text"
+										},
+										{
+											"key": "rules[1][ruleOperator]",
+											"value": "equals",
+											"description": "equals | greater_than | less_than",
+											"type": "text"
+										},
+										{
+											"key": "rules[1][ruleValue]",
+											"value": "0",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/promos/admin/update/:id",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"promos",
+										"admin",
+										"update",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "toggle promo status",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{adminToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "code",
+											"value": " FIRST40",
+											"type": "text"
+										},
+										{
+											"key": "discountType",
+											"value": "percentage",
+											"description": "percentage | fixed_amount",
+											"type": "text"
+										},
+										{
+											"key": "discountValue",
+											"value": "40",
+											"type": "text"
+										},
+										{
+											"key": "totalUsageLimit",
+											"value": "500",
+											"type": "text"
+										},
+										{
+											"key": "perUserLimit",
+											"value": "1",
+											"type": "text"
+										},
+										{
+											"key": "startDate",
+											"value": "2026-05-25",
+											"type": "text"
+										},
+										{
+											"key": "expiryDate",
+											"value": "2026-06-26",
+											"type": "text"
+										},
+										{
+											"key": "isActive",
+											"value": "true",
+											"type": "text"
+										},
+										{
+											"key": "rules[0][ruleKey]",
+											"value": "user_type",
+											"type": "text"
+										},
+										{
+											"key": "rules[0][ruleOperator]",
+											"value": "equals",
+											"type": "text"
+										},
+										{
+											"key": "rules[0][ruleValue]",
+											"value": "rider",
+											"type": "text"
+										},
+										{
+											"key": "rules[1][ruleKey]",
+											"value": "total_rides",
+											"description": "user_type | total_rides | days_since_last_ride",
+											"type": "text"
+										},
+										{
+											"key": "rules[1][ruleOperator]",
+											"value": "equals",
+											"description": "equals | greater_than | less_than",
+											"type": "text"
+										},
+										{
+											"key": "rules[1][ruleValue]",
+											"value": "0",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/promos/admin/toggle-status/:id",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"promos",
+										"admin",
+										"toggle-status",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "rider / driver",
+					"item": [
+						{
+							"name": "all available promos",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{riderToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "code",
+											"value": "VC50LYD-1D9E768E",
+											"type": "text"
+										},
+										{
+											"key": "promoCode",
+											"value": "",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/promos/available",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"promos",
+										"available"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "search",
+											"value": "iadmin@mockmail.xyz",
+											"description": "firstName, lastName, phoneNumber, email",
+											"disabled": true
+										},
+										{
+											"key": "type",
+											"value": "DEBIT",
+											"disabled": true
+										},
+										{
+											"key": "status",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "source",
+											"value": "ADMIN_ADJUSTMENT",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "apply promo",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{adminToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "code",
+											"value": " FIRST50",
+											"type": "text"
+										},
+										{
+											"key": "discountType",
+											"value": "percentage",
+											"description": "percentage | fixed_amount",
+											"type": "text"
+										},
+										{
+											"key": "discountValue",
+											"value": "50",
+											"type": "text"
+										},
+										{
+											"key": "totalUsageLimit",
+											"value": "1000",
+											"type": "text"
+										},
+										{
+											"key": "perUserLimit",
+											"value": "1",
+											"type": "text"
+										},
+										{
+											"key": "startDate",
+											"value": "2026-05-25",
+											"type": "text"
+										},
+										{
+											"key": "expiryDate",
+											"value": "2026-06-26",
+											"type": "text"
+										},
+										{
+											"key": "isActive",
+											"value": "true",
+											"type": "text"
+										},
+										{
+											"key": "rules[0][ruleKey]",
+											"value": "user_type",
+											"type": "text"
+										},
+										{
+											"key": "rules[0][ruleOperator]",
+											"value": "equals",
+											"type": "text"
+										},
+										{
+											"key": "rules[0][ruleValue]",
+											"value": "rider",
+											"type": "text"
+										},
+										{
+											"key": "rules[1][ruleKey]",
+											"value": "total_rides",
+											"description": "user_type | total_rides | days_since_last_ride",
+											"type": "text"
+										},
+										{
+											"key": "rules[1][ruleOperator]",
+											"value": "equals",
+											"description": "equals | greater_than | less_than",
+											"type": "text"
+										},
+										{
+											"key": "rules[1][ruleValue]",
+											"value": "0",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/promos/apply",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"promos",
+										"apply"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "search",
+											"value": "iadmin@mockmail.xyz",
+											"description": "firstName, lastName, phoneNumber, email",
+											"disabled": true
+										},
+										{
+											"key": "type",
+											"value": "DEBIT",
+											"disabled": true
+										},
+										{
+											"key": "status",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "source",
+											"value": "ADMIN_ADJUSTMENT",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "book ride",
+			"item": [
+				{
+					"name": "rider",
+					"item": [
+						{
+							"name": "estimate",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{adminToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "pickup",
+											"value": "[13.1985, 32.8941]",
+											"description": "[lon, lat]",
+											"type": "text"
+										},
+										{
+											"key": "destination",
+											"value": "[13.1985, 32.9941]",
+											"description": "[lon, lat]",
+											"type": "text"
+										},
+										{
+											"key": "preferredGender",
+											"value": "male",
+											"type": "text"
+										},
+										{
+											"key": "vehicleType",
+											"value": "taxi",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/rides/estimate",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"rides",
+										"estimate"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "request",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{riderToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "pickup",
+											"value": "{\"address\": \"~1.0 km NE\", \"coordinates\": [13.158347, 32.872581]}",
+											"description": "[lon, lat]",
+											"type": "text"
+										},
+										{
+											"key": "destination",
+											"value": "{\"address\": \"~11.1 km North\", \"coordinates\": [13.1985, 32.9941]}",
+											"description": "[lon, lat]",
+											"type": "text"
+										},
+										{
+											"key": "vehicleType",
+											"value": "taxi",
+											"type": "text"
+										},
+										{
+											"key": "preferredGender",
+											"value": "male",
+											"type": "text"
+										},
+										{
+											"key": "distanceKm",
+											"value": "14.46",
+											"type": "text"
+										},
+										{
+											"key": "estimatedTimeMins",
+											"value": "29",
+											"type": "text"
+										},
+										{
+											"key": "fareDetails",
+											"value": "{\"baseFare\": 49, \"distanceFare\": 332.58000000000004, \"timeFare\": 55.099999999999994, \"totalFare\": 436.68}",
+											"type": "text"
+										},
+										{
+											"key": "stopovers",
+											"value": "[{\"address\": \"Stop 1\", \"coordinates\": [13.1985, 32.9108]}, {\"address\": \"Stop 2\", \"coordinates\": [13.1985, 32.9274]}]",
+											"type": "text"
+										},
+										{
+											"key": "promoCode",
+											"value": "FIRST50",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/rides/request",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"rides",
+										"request"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "cancel",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{riderToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "reason",
+											"value": "rider is too late",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/rides/:rideId/cancel",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"rides",
+										":rideId",
+										"cancel"
+									],
+									"variable": [
+										{
+											"key": "rideId",
+											"value": "6a3a462ce302e945900569cb"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "pay for ride",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{riderToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "pickup",
+											"value": "{\"address\": \"~1.0 km NE\", \"coordinates\": [13.1985, 32.8941]}",
+											"description": "[lon, lat]",
+											"type": "text"
+										},
+										{
+											"key": "destination",
+											"value": "{\"address\": \"~11.1 km North\", \"coordinates\": [13.1985, 32.9941]}",
+											"description": "[lon, lat]",
+											"type": "text"
+										},
+										{
+											"key": "vehicleType",
+											"value": "taxi",
+											"type": "text"
+										},
+										{
+											"key": "preferredGender",
+											"value": "male",
+											"type": "text"
+										},
+										{
+											"key": "distanceKm",
+											"value": "14.46",
+											"type": "text"
+										},
+										{
+											"key": "estimatedTimeMins",
+											"value": "29",
+											"type": "text"
+										},
+										{
+											"key": "fareDetails",
+											"value": "{\"baseFare\": 49, \"distanceFare\": 332.58000000000004, \"timeFare\": 55.099999999999994, \"totalFare\": 436.68}",
+											"type": "text"
+										},
+										{
+											"key": "promoCode",
+											"value": "FIRST50",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/rides/:rideId/pay",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"rides",
+										":rideId",
+										"pay"
+									],
+									"variable": [
+										{
+											"key": "rideId",
+											"value": "6a49fd10a61a7953e2d81992"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "driver",
+					"item": [
+						{
+							"name": "available rides near me",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{driverToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "pickup",
+											"value": "[13.1985, 32.8941]",
+											"description": "[lon, lat]",
+											"type": "text"
+										},
+										{
+											"key": "destination",
+											"value": "[13.1985, 32.9941]",
+											"description": "[lon, lat]",
+											"type": "text"
+										},
+										{
+											"key": "preferredGender",
+											"value": "male",
+											"type": "text"
+										},
+										{
+											"key": "vehicleType",
+											"value": "taxi",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/rides/nearby?lng=13.1913&lat=32.8872",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"rides",
+										"nearby"
+									],
+									"query": [
+										{
+											"key": "lng",
+											"value": "13.1913"
+										},
+										{
+											"key": "lat",
+											"value": "32.8872"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "accept",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{driverToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/rides/:rideId/accept",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"rides",
+										":rideId",
+										"accept"
+									],
+									"variable": [
+										{
+											"key": "rideId",
+											"value": "6a376a5847a56b3b3ab3485d"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "decline",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{driverToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/rides/:rideId/decline",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"rides",
+										":rideId",
+										"decline"
+									],
+									"variable": [
+										{
+											"key": "rideId",
+											"value": "6a3782f65096e1d885466ee0"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "ride status update",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{driverToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "action",
+											"value": "complete",
+											"description": "arrived_at_pickup | start | arrived_at_destination | confirm_payment | complete",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/rides/:rideId/status",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"rides",
+										":rideId",
+										"status"
+									],
+									"variable": [
+										{
+											"key": "rideId",
+											"value": "6a4a328d8a59651b8945ac38"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "my rides",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{riderToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/rides/self?driverRatingAvg=true&rideRatingAvg=true",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"rides",
+								"self"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "COMPLETED,REQUESTED",
+									"description": "CANCELLED | COMPLETED",
+									"disabled": true
+								},
+								{
+									"key": "driver",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "rider",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "driverRatingAvg",
+									"value": "true"
+								},
+								{
+									"key": "rideRatingAvg",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "all rides",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{riderToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/rides?page=1&limit=20&rider=true&driver=true&driver-profile=true",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"rides"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "COMPLETED,REQUESTED",
+									"description": "CANCELLED | COMPLETED",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								},
+								{
+									"key": "rider",
+									"value": "true"
+								},
+								{
+									"key": "driver",
+									"value": "true"
+								},
+								{
+									"key": "driver-profile",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ride by id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{riderToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/rides/:id",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"rides",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "6a3cfccf5bf6db8af43143ca"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "rating review",
+			"item": [
+				{
+					"name": "rider",
+					"item": [
+						{
+							"name": "add rating",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{riderToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "rideId",
+											"value": "6a0d6c066b5bcd75c2e13560",
+											"type": "text"
+										},
+										{
+											"key": "driverId",
+											"value": "6a23abe72458e7b99027a591",
+											"type": "text"
+										},
+										{
+											"key": "score",
+											"value": "3.5",
+											"type": "text"
+										},
+										{
+											"key": "comment",
+											"value": "",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/ratings",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"ratings"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "driver",
+					"item": [
+						{
+							"name": "my rating",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{driverToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/ratings/me",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"ratings",
+										"me"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "admin",
+					"item": [
+						{
+							"name": "rating by id",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{driverToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/ratings/driver/:driverId",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"ratings",
+										"driver",
+										":driverId"
+									],
+									"variable": [
+										{
+											"key": "driverId",
+											"value": "6a23abe72458e7b99027a591"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "help & support",
+			"item": [
+				{
+					"name": "create ticket for support",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{riderToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "subject",
+									"value": "subject",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "description",
+									"type": "text"
+								},
+								{
+									"key": "userType",
+									"value": "rider",
+									"description": "rider | driver",
+									"type": "text"
+								},
+								{
+									"key": "rideId",
+									"value": "6a3a462ce302e945900569cb",
+									"type": "text"
+								},
+								{
+									"key": "complaintAgainstId",
+									"value": "6a23abe72458e7b99027a591",
+									"type": "text"
+								},
+								{
+									"key": "complaintAgainstType",
+									"value": "driver",
+									"description": "rider | driver",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/support",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"support"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "reply to support by admin",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "adminReply",
+									"value": "adminReply",
+									"type": "text"
+								},
+								{
+									"key": "adminNotes",
+									"value": "adminNotes",
+									"type": "text"
+								},
+								{
+									"key": "status",
+									"value": "solved",
+									"description": "\"pending\", \"solved\", \"rejected\"",
+									"type": "text"
+								},
+								{
+									"key": "sendNotification",
+									"value": "true",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/support/:id/reply",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"support",
+								":id",
+								"reply"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "6a3fa881aaab614095ab96c9"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ticket by id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{riderToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "subject",
+									"value": "subject",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "description",
+									"type": "text"
+								},
+								{
+									"key": "userType",
+									"value": "rider",
+									"description": "rider | driver",
+									"type": "text"
+								},
+								{
+									"key": "rideId",
+									"value": "6a3a462ce302e945900569cb",
+									"type": "text"
+								},
+								{
+									"key": "complaintAgainstId",
+									"value": "6a23abe72458e7b99027a591",
+									"type": "text"
+								},
+								{
+									"key": "complaintAgainstType",
+									"value": "driver",
+									"description": "rider | driver",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/support/:id",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"support",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "6a3fa881aaab614095ab96c9"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "all tickets",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{riderToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "subject",
+									"value": "subject",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "description",
+									"type": "text"
+								},
+								{
+									"key": "userType",
+									"value": "rider",
+									"description": "rider | driver",
+									"type": "text"
+								},
+								{
+									"key": "rideId",
+									"value": "6a3a462ce302e945900569cb",
+									"type": "text"
+								},
+								{
+									"key": "complaintAgainstId",
+									"value": "6a23abe72458e7b99027a591",
+									"type": "text"
+								},
+								{
+									"key": "complaintAgainstType",
+									"value": "driver",
+									"description": "rider | driver",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/support?page=1&limit=100&userId=true&complaintAgainstId=true",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"support"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "100"
+								},
+								{
+									"key": "status",
+									"value": "solved",
+									"description": "\"pending\" | \"solved\" | \"rejected\"",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "SUP-2026-1582",
+									"disabled": true
+								},
+								{
+									"key": "userId",
+									"value": "true"
+								},
+								{
+									"key": "complaintAgainstId",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "metrics",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{driverToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/support/metrics",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"support",
+								"metrics"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "support tickets/messages by id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{driverToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/support/:id",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"support",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "tickets by a user",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{driverToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/support/users/:userId",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"support",
+								"users",
+								":userId"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "6a0d6c066b5bcd75c2e13560"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "notifications",
+			"item": [
+				{
+					"name": "admin",
+					"item": [
+						{
+							"name": "create notification",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{adminToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "type",
+											"value": "PROMO",
+											"description": "PROMO | SERVICE_UPDATE | ANNOUNCEMENT",
+											"type": "text"
+										},
+										{
+											"key": "title",
+											"value": "title",
+											"type": "text"
+										},
+										{
+											"key": "data",
+											"value": "data",
+											"type": "text"
+										},
+										{
+											"key": "targetType",
+											"value": "rider",
+											"description": "all | rider | driver",
+											"type": "text"
+										},
+										{
+											"key": "city",
+											"value": "city",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/notifications/send",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"notifications",
+										"send"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "all notification",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{adminToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/notifications/admin/all?page=1&limit=50",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"notifications",
+										"admin",
+										"all"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "50"
+										},
+										{
+											"key": "search",
+											"value": "title",
+											"description": "title | body",
+											"disabled": true
+										},
+										{
+											"key": "type",
+											"value": "PROMO",
+											"description": "  | \"SUPPORT_TICKET\"\n  | \"PROMO\"\n  | \"SYSTEM\"\n  | \"RIDE_UPDATE\"\n  | \"SERVICE_UPDATE\"\n  | \"ANNOUNCEMENT\";",
+											"disabled": true
+										},
+										{
+											"key": "sort",
+											"value": "-createdAt",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "my notifications",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/notifications",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"notifications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "read notification by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/notifications/:id/read",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"notifications",
+								":id",
+								"read"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "6a40deb3dafb6ad2aa09c761"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "message",
+			"item": [
+				{
+					"name": "send message",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{riderToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "receiverId",
+									"value": "6a23abe72458e7b99027a591",
+									"type": "text"
+								},
+								{
+									"key": "rideId",
+									"value": "6a38ad99c5ecd7aa82a5917b",
+									"type": "text"
+								},
+								{
+									"key": "content",
+									"value": "hey there mr driver",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/messages",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"messages"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "mark text as read",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{driverToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "receiverId",
+									"value": "6a23abe72458e7b99027a591",
+									"type": "text"
+								},
+								{
+									"key": "rideId",
+									"value": "6a38ad99c5ecd7aa82a5917b",
+									"type": "text"
+								},
+								{
+									"key": "content",
+									"value": "hey there mr driver",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/messages/read/:senderId",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"messages",
+								"read",
+								":senderId"
+							],
+							"variable": [
+								{
+									"key": "senderId",
+									"value": "6a0d6c066b5bcd75c2e13560"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "conversation",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{driverToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/messages/conversation/:targetUserId",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"messages",
+								"conversation",
+								":targetUserId"
+							],
+							"variable": [
+								{
+									"key": "targetUserId",
+									"value": "6a23abe72458e7b99027a591"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "resala",
+			"item": [
+				{
+					"name": "send otp",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{loggedUserToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"920000000\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://dev.resala.ly/api/v1/pins?service_name=MyApp&len=4&test=test",
+							"protocol": "https",
+							"host": [
+								"dev",
+								"resala",
+								"ly"
+							],
+							"path": [
+								"api",
+								"v1",
+								"pins"
+							],
+							"query": [
+								{
+									"key": "service_name",
+									"value": "MyApp"
+								},
+								{
+									"key": "len",
+									"value": "4"
+								},
+								{
+									"key": "test",
+									"value": "test"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "dashboard",
+			"item": [
+				{
+					"name": "earnings",
+					"item": [
+						{
+							"name": "Revenue Statistics",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURLLocal}}/dashboard/revenue-stats",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"dashboard",
+										"revenue-stats"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Earning Table",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURLLocal}}/dashboard/earnings-table?page=1&limit=10&search=driver",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"dashboard",
+										"earnings-table"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "search",
+											"value": "driver"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "reports & analytics",
+					"item": [
+						{
+							"name": "overview of platform performance and metrics",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURLLocal}}/dashboard/reports-analytics-stats",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"dashboard",
+										"reports-analytics-stats"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Rides Overview Monthly rides breakdown",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURLLocal}}/dashboard/rides-overview-chart",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"dashboard",
+										"rides-overview-chart"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Active Users Growth",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURLLocal}}/dashboard/active-users-growth-chart",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"dashboard",
+										"active-users-growth-chart"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Driver Top-up Report",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURLLocal}}/dashboard/driver-topup-report",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"dashboard",
+										"driver-topup-report"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "search",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Voucher Usage Report",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURLLocal}}/dashboard/voucher-usage-report?search=VC50LYD-1D9E768E",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"dashboard",
+										"voucher-usage-report"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "search",
+											"value": "VC50LYD-1D9E768E"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "settings",
+					"item": [
+						{
+							"name": "Manage Admin Access",
+							"item": [
+								{
+									"name": "create a staff",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{adminToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "name",
+													"value": "iadmin@mockmail.xyz",
+													"type": "text"
+												},
+												{
+													"key": "email",
+													"value": "iadmin@mockmail.xyz",
+													"type": "text"
+												},
+												{
+													"key": "phone",
+													"value": "01727272728",
+													"type": "text"
+												},
+												{
+													"key": "role",
+													"value": "admin",
+													"type": "text"
+												},
+												{
+													"key": "sections",
+													"value": "[\"All\"]",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{baseURLLocal}}/admins",
+											"host": [
+												"{{baseURLLocal}}"
+											],
+											"path": [
+												"admins"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "all admins",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{adminToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": []
+										},
+										"url": {
+											"raw": "{{baseURLLocal}}/admins?page=1&limit=1&search&role&section",
+											"host": [
+												"{{baseURLLocal}}"
+											],
+											"path": [
+												"admins"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "1"
+												},
+												{
+													"key": "limit",
+													"value": "1"
+												},
+												{
+													"key": "search",
+													"value": null
+												},
+												{
+													"key": "role",
+													"value": null
+												},
+												{
+													"key": "section",
+													"value": null
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Admin Staff Activity",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{adminToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": []
+										},
+										"url": {
+											"raw": "{{baseURLLocal}}/admins/:adminId/activities",
+											"host": [
+												"{{baseURLLocal}}"
+											],
+											"path": [
+												"admins",
+												":adminId",
+												"activities"
+											],
+											"variable": [
+												{
+													"key": "adminId",
+													"value": "6a4633af3b75a462adecbec2"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "admin user by id",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{adminToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": []
+										},
+										"url": {
+											"raw": "{{baseURLLocal}}/admins/:adminId",
+											"host": [
+												"{{baseURLLocal}}"
+											],
+											"path": [
+												"admins",
+												":adminId"
+											],
+											"variable": [
+												{
+													"key": "adminId",
+													"value": "6a4633af3b75a462adecbec2"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Terms & Condition",
+							"item": [
+								{
+									"name": "add/update terms and condtions",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{adminToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "content",
+													"value": "<h2>Lorem ipsum dolor sit amet consectetur. </h2><p><br/></p><h2>Education also nurtures empathy and cultural awareness, fostering a more inclusive and understanding society. This cultural competence not only enhances personal relationships but also strengthens international collaboration and peace.....</h2>",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{baseURLLocal}}/pages/:type",
+											"host": [
+												"{{baseURLLocal}}"
+											],
+											"path": [
+												"pages",
+												":type"
+											],
+											"variable": [
+												{
+													"key": "type",
+													"value": "terms_conditions"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "terms and condtions",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{adminToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "content",
+													"value": "<h2>Lorem ipsum dolor sit amet consectetur. </h2><p><br/></p><h2>Education also nurtures empathy and cultural awareness, fostering a more inclusive and understanding society. This cultural competence not only enhances personal relationships but also strengthens international collaboration and peace.....</h2>",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{baseURLLocal}}/pages/:type",
+											"host": [
+												"{{baseURLLocal}}"
+											],
+											"path": [
+												"pages",
+												":type"
+											],
+											"variable": [
+												{
+													"key": "type",
+													"value": "terms_conditions"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Privacy Policy",
+							"item": [
+								{
+									"name": "add/update Privacy Policy",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{adminToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "content",
+													"value": "<h2>Lorem ipsum dolor sit amet consectetur. </h2><p><br/></p><h2>Education also nurtures empathy and cultural awareness, fostering a more inclusive and understanding society. This cultural competence not only enhances personal relationships but also strengthens international collaboration and peace.....</h2>",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{baseURLLocal}}/pages/:type",
+											"host": [
+												"{{baseURLLocal}}"
+											],
+											"path": [
+												"pages",
+												":type"
+											],
+											"variable": [
+												{
+													"key": "type",
+													"value": "terms_conditions"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Privacy Policy",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{adminToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "content",
+													"value": "<h2>Lorem ipsum dolor sit amet consectetur. </h2><p><br/></p><h2>Education also nurtures empathy and cultural awareness, fostering a more inclusive and understanding society. This cultural competence not only enhances personal relationships but also strengthens international collaboration and peace.....</h2>",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{baseURLLocal}}/pages/:type",
+											"host": [
+												"{{baseURLLocal}}"
+											],
+											"path": [
+												"pages",
+												":type"
+											],
+											"variable": [
+												{
+													"key": "type",
+													"value": "privacy_policy"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "About Us",
+							"item": [
+								{
+									"name": "add/update About Us",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{adminToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "content",
+													"value": "<h2>Lorem ipsum dolor sit amet consectetur. </h2><p><br/></p><h2>Education also nurtures empathy and cultural awareness, fostering a more inclusive and understanding society. This cultural competence not only enhances personal relationships but also strengthens international collaboration and peace.....</h2>",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{baseURLLocal}}/pages/:type",
+											"host": [
+												"{{baseURLLocal}}"
+											],
+											"path": [
+												"pages",
+												":type"
+											],
+											"variable": [
+												{
+													"key": "type",
+													"value": "about_us"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "About Us",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{adminToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "content",
+													"value": "<h2>Lorem ipsum dolor sit amet consectetur. </h2><p><br/></p><h2>Education also nurtures empathy and cultural awareness, fostering a more inclusive and understanding society. This cultural competence not only enhances personal relationships but also strengthens international collaboration and peace.....</h2>",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{baseURLLocal}}/pages/:type",
+											"host": [
+												"{{baseURLLocal}}"
+											],
+											"path": [
+												"pages",
+												":type"
+											],
+											"variable": [
+												{
+													"key": "type",
+													"value": "about_us"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Rider & Driver Overview",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURLLocal}}/users/overview?role=&year=2026",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"users",
+								"overview"
+							],
+							"query": [
+								{
+									"key": "role",
+									"value": "",
+									"description": "rider, driver"
+								},
+								{
+									"key": "year",
+									"value": "2026"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Dashboard Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURLLocal}}/dashboard/stats",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"dashboard",
+								"stats"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "server",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURLLocal}}",
+					"host": [
+						"{{baseURLLocal}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURLLocal",
+			"value": ""
+		},
+		{
+			"key": "driverToken",
+			"value": ""
+		},
+		{
+			"key": "userToken",
+			"value": ""
+		},
+		{
+			"key": "accessToken",
+			"value": ""
+		},
+		{
+			"key": "adminToken",
+			"value": ""
+		}
+	]
+}
