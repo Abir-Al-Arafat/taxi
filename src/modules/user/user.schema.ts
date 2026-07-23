@@ -81,7 +81,7 @@ const authUserSchema = new Schema<UserDocument>(
     },
     gender: {
       type: String,
-      required: true,
+      // required: true,
       enum: ["male", "female", "other"],
     },
     role: {
