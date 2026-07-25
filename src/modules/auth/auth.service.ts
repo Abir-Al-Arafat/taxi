@@ -175,20 +175,20 @@ export class AuthService {
     }
 
     // 2. NEW: Block drivers who haven't been greenlit by an administrator yet
-    if (user.role === "driver") {
-      if (user.adminApproved === "pending") {
-        throw new AppError(
-          "Your account registration is currently under review by an administrator.",
-          HTTP_STATUS.FORBIDDEN,
-        );
-      }
-      if (user.adminApproved === "declined") {
-        throw new AppError(
-          "Your driver application request has been declined.",
-          HTTP_STATUS.FORBIDDEN,
-        );
-      }
-    }
+    // if (user.role === "driver") {
+    //   if (user.adminApproved === "pending") {
+    //     throw new AppError(
+    //       "Your account registration is currently under review by an administrator.",
+    //       HTTP_STATUS.FORBIDDEN,
+    //     );
+    //   }
+    //   if (user.adminApproved === "declined") {
+    //     throw new AppError(
+    //       "Your driver application request has been declined.",
+    //       HTTP_STATUS.FORBIDDEN,
+    //     );
+    //   }
+    // }
 
     return this.mapUserToResponse(user);
   }
