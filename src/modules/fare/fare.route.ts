@@ -3,6 +3,7 @@ import { Router } from "express";
 import multer from "multer";
 import { authenticate } from "../../middlewares/auth.middleware";
 import { requireAdminRole } from "../../middlewares/admin.middleware";
+import { authorizeRoles } from "../../middlewares/authorize.middleware";
 import { FareController } from "./fare.controller";
 import {
   createFareValidation,
@@ -17,7 +18,8 @@ const controller = new FareController();
 router.post(
   "/",
   authenticate,
-  requireAdminRole,
+  // requireAdminRole,
+  authorizeRoles("admin"),
   upload.none(),
   createFareValidation,
   handleValidationErrors,
@@ -31,7 +33,8 @@ router.get("/", authenticate, controller.getPricingRules);
 router.patch(
   "/:gender",
   authenticate,
-  requireAdminRole,
+  // requireAdminRole,
+  authorizeRoles("admin"),
   upload.none(),
   updateFareValidation,
   handleValidationErrors,

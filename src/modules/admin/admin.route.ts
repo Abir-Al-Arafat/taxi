@@ -10,6 +10,7 @@ import { JwtService } from "../../shared/services/jwt.service";
 import { createAdminValidation } from "./admin.validators";
 import { authenticate } from "../../middlewares/auth.middleware";
 import { requireAdminRole } from "../../middlewares/admin.middleware"; // Assuming you have this middleware
+import { authorizeRoles } from "../../middlewares/authorize.middleware";
 // import { adminMiddleware } from "../../middlewares/admin.middleware";
 import { handleValidationErrors } from "../../middlewares/validation.middleware";
 
@@ -38,7 +39,8 @@ router.post(
   "/",
   upload.none(),
   authenticate,
-  requireAdminRole,
+  // requireAdminRole,
+  authorizeRoles("admin"),
   createAdminValidation,
   handleValidationErrors,
   adminController.createAdmin,
@@ -61,11 +63,18 @@ router.post(
  * GET /api/v1/admins
  * Protected: Requires authentication and Admin roles
  */
-router.get("/", authenticate, requireAdminRole, adminController.getAdmins);
+router.get(
+  "/",
+  authenticate,
+  // requireAdminRole,
+  authorizeRoles("admin"),
+  adminController.getAdmins,
+);
 router.get(
   "/:adminId",
   authenticate,
-  requireAdminRole,
+  // requireAdminRole,
+  authorizeRoles("admin"),
   adminController.getAdminById,
 );
 /**
@@ -91,7 +100,8 @@ router.post("/reset-password", upload.none(), adminController.resetPassword);
 router.get(
   "/:adminId/activities",
   authenticate,
-  requireAdminRole,
+  // requireAdminRole,
+  authorizeRoles("admin"),
   adminController.getAdminActivities,
 );
 export { router as adminRouter };

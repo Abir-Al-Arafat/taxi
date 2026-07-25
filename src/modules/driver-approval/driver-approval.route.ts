@@ -2,6 +2,7 @@ import { Router } from "express";
 import multer from "multer";
 import { authenticate } from "../../middlewares/auth.middleware";
 import { requireAdminRole } from "../../middlewares/admin.middleware";
+import { authorizeRoles } from "../../middlewares/authorize.middleware";
 import { DriverApprovalController } from "./driver-approval.controller";
 
 const router = Router();
@@ -9,7 +10,11 @@ const upload = multer();
 const controller = new DriverApprovalController();
 
 // Both endpoints are protected globally under high security gates
-router.use(authenticate, requireAdminRole);
+router.use(
+  authenticate,
+  // requireAdminRole,
+  authorizeRoles("admin"),
+);
 
 /**
  * GET /api/v1/driver-approval/list

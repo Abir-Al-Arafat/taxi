@@ -6,6 +6,7 @@ import { NotificationService } from "./notification.service";
 import { NotificationRepository } from "./notification.repository";
 import { EmailService } from "../../shared/services/email.service";
 import { requireAdminRole } from "../../middlewares/admin.middleware";
+import { authorizeRoles } from "../../middlewares/authorize.middleware";
 import { UserRepository } from "../user/user.repository";
 import { adminNotificationValidation } from "./notification.validators";
 import { handleValidationErrors } from "../../middlewares/validation.middleware";
@@ -35,16 +36,14 @@ router.use(authenticate);
 // Get all platform notifications (paginated, sortable, filterable)
 router.get(
   "/admin/all",
-  // authenticate,
-  requireAdminRole,
+  authorizeRoles("admin"),
   notificationController.getAllNotifications,
 );
 
 router.post(
   "/send",
-  // authenticate,
   upload.none(),
-  requireAdminRole,
+  authorizeRoles("admin"),
   adminNotificationValidation,
   handleValidationErrors,
   notificationController.sendAdminNotification,

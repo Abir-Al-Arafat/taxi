@@ -5,6 +5,7 @@ import { UserController } from "./user.controller";
 import { uploadUserData } from "./user.middleware";
 import { normalizeUserProfilePayload } from "./user.validators";
 import { requireAdminRole } from "../../middlewares/admin.middleware";
+import { authorizeRoles } from "../../middlewares/authorize.middleware";
 
 const router = Router();
 const upload = multer();
@@ -44,7 +45,8 @@ router.patch(
 router.patch(
   "/:id/toggle-block",
   authenticate,
-  requireAdminRole,
+  // requireAdminRole,
+  authorizeRoles("admin"),
   userController.toggleBlockStatus,
 );
 

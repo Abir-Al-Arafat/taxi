@@ -3,6 +3,7 @@ import { Router } from "express";
 import multer from "multer";
 import { authenticate } from "../../middlewares/auth.middleware";
 import { requireAdminRole } from "../../middlewares/admin.middleware";
+import { authorizeRoles } from "../../middlewares/authorize.middleware";
 import { PromoController } from "./promo.controller";
 import {
   createPromoValidation,
@@ -18,7 +19,7 @@ const controller = new PromoController();
 // 1. ADMIN ENDPOINTS
 // -----------------------------------------------------
 const adminRouter = Router();
-adminRouter.use(authenticate, requireAdminRole);
+adminRouter.use(authenticate, authorizeRoles("admin"));
 
 adminRouter.post(
   "/create",

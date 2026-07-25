@@ -3,6 +3,7 @@ import { Router } from "express";
 import multer from "multer";
 import { authenticate } from "../../middlewares/auth.middleware";
 import { requireAdminRole } from "../../middlewares/admin.middleware";
+import { authorizeRoles } from "../../middlewares/authorize.middleware";
 import { WalletController } from "./wallet.controller";
 import {
   redeemValidation,
@@ -21,7 +22,7 @@ const controller = new WalletController();
 // 1. ADMIN ENDPOINTS
 // -----------------------------------------------------
 const adminRouter = Router();
-adminRouter.use(authenticate, requireAdminRole);
+adminRouter.use(authenticate, authorizeRoles("admin"));
 
 adminRouter.get("/dashboard", controller.getWalletDashboard);
 
