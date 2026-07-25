@@ -458,6 +458,68 @@ export class RideService {
     return updatedRide;
   }
 
+  async markStopoverArrived(rideId: string, stopoverId: string) {
+    const ride: any = await this.rideRepo.findOne({ _id: rideId });
+
+    if (!ride) {
+      throw new AppError("Ride not found", 404);
+    }
+
+    const stopover = ride.stopovers.id(stopoverId);
+
+    if (!stopover) {
+      throw new AppError("Stopover not found", 404);
+    }
+
+    if (stopover.status !== "pending") {
+      throw new AppError(
+        "Invalid stopover state. Stopover must be pending to mark as arrived.",
+        400,
+      );
+    }
+
+    stopover.arrivedAt = new Date();
+    stopover.status = "arrived";
+
+    await ride.save();
+
+    // Note: You can emit a socket event here to notify the rider that the driver has arrived at the stopover
+
+    return ride;
+  }
+
+  async markStopoverDeparted(rideId: string, stopoverId: string) {
+    const ride: any = await this.rideRepo.findOne({ _id: rideId });
+    const stopover = ride?.stopovers.id(stopoverId);
+
+    if (stopover.status !== "arrived" || !stopover.arrivedAt) {
+      throw new AppError("Invalid stopover state", 400);
+    }
+
+    stopover.departedAt = new Date();
+    stopover.status = "departed";
+
+    // Calculate wait time in minutes
+    const waitTimeMs =
+      stopover.departedAt.getTime() - stopover.arrivedAt.getTime();
+    const waitTimeMinutes = Math.floor(waitTimeMs / 60000);
+
+    const GRACE_PERIOD = 5;
+    const PENALTY_RATE_PER_MINUTE = 2.5; // Example amount
+
+    if (waitTimeMinutes > GRACE_PERIOD) {
+      const chargeableMinutes = waitTimeMinutes - GRACE_PERIOD;
+      stopover.waitPenaltyFee = chargeableMinutes * PENALTY_RATE_PER_MINUTE;
+
+      // Add to the total ride fare
+      ride.totalFare += stopover.waitPenaltyFee;
+    }
+
+    await ride.save();
+
+    return ride;
+  }
+
   // 7. Reached Destination
   async completeRide(driverId: string, rideId: string) {
     const ride = await this.rideRepo.updateOne(

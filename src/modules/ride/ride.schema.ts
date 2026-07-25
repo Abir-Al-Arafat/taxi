@@ -8,6 +8,19 @@ const LocationSchema = new Schema({
   address: { type: String, required: true },
 });
 
+const stopoverSchema = new Schema({
+  address: { type: String, required: true },
+  coordinates: { type: [Number], required: true },
+  status: {
+    type: String,
+    enum: ["pending", "arrived", "departed"],
+    default: "pending",
+  },
+  arrivedAt: { type: Date, default: null },
+  departedAt: { type: Date, default: null },
+  waitPenaltyFee: { type: Number, default: 0 },
+});
+
 const RideSchema = new Schema<IRide>(
   {
     riderId: {
@@ -19,7 +32,7 @@ const RideSchema = new Schema<IRide>(
     driverId: { type: Schema.Types.ObjectId, ref: "User", index: true },
     pickup: { type: LocationSchema, required: true },
     destination: { type: LocationSchema, required: true },
-    stopovers: { type: [LocationSchema], default: [] },
+    stopovers: [stopoverSchema],
     status: {
       type: String,
       enum: [

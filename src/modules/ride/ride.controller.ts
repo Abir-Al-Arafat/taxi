@@ -181,6 +181,44 @@ export class RideController {
     },
   );
 
+  arriveAtStopover = asyncHandler(async (req, res) => {
+    const { rideId, stopoverId } = req.params;
+
+    const updatedRide = await this.rideService.markStopoverArrived(
+      rideId as string,
+      stopoverId as string,
+    );
+
+    res
+      .status(HTTP_STATUS.OK)
+      .json(
+        ResponseBuilder.success(
+          "Arrived at stopover successfully",
+          updatedRide,
+          HTTP_STATUS.OK,
+        ),
+      );
+  });
+
+  departFromStopover = asyncHandler(async (req, res) => {
+    const { rideId, stopoverId } = req.params;
+
+    const updatedRide = await this.rideService.markStopoverDeparted(
+      rideId as string,
+      stopoverId as string,
+    );
+
+    res
+      .status(HTTP_STATUS.OK)
+      .json(
+        ResponseBuilder.success(
+          "Departed from stopover successfully",
+          updatedRide,
+          HTTP_STATUS.OK,
+        ),
+      );
+  });
+
   rideById = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     const rideId = req.params.rideId as string;
     const data = await this.rideService.getRideDetailsById(rideId);

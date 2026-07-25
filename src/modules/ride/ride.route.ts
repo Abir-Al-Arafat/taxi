@@ -32,4 +32,15 @@ router.post("/:rideId/accept", upload.none(), controller.accept);
 router.post("/:rideId/decline", upload.none(), controller.decline);
 router.patch("/:rideId/status", upload.none(), controller.updateStatus); // Body: { action: 'arrived' }
 
+router.patch(
+  "/:rideId/stopovers/:stopoverId/arrive",
+  upload.none(),
+  controller.arriveAtStopover,
+);
+router.patch(
+  "/:rideId/stopovers/:stopoverId/depart",
+  upload.none(),
+  controller.departFromStopover,
+);
+
 export { router as rideRouter };
