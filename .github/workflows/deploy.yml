@@ -1,0 +1,51 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main # Triggers the workflow on pushes to the main branch
+
+jobs:
+  build:
+    name: Build and Verify
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18" # Matches the Node 18 version in Dockerfile
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build TypeScript
+        run: npm run build # Verifies the TS compiles successfully without errors
+
+  deploy:
+    name: Deploy to AWS EC2
+    needs: build # Ensures this job only runs if the build job passes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Execute Remote SSH Commands
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # Navigate to the project directory on EC2 instance
+            #  actual folder name
+            cd ~/taxily 
+
+            # Pull the latest changes from GitHub
+            git pull origin main
+
+            # Rebuild and restart the Docker containers in detached mode
+            docker compose down
+            docker compose up -d --build
+
+            # Clean up dangling images to free up EC2 storage space
+            docker image prune -f
