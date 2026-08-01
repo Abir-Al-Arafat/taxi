@@ -485,6 +485,12 @@ export class RideService {
 
     // Note: You can emit a socket event here to notify the rider that the driver has arrived at the stopover
 
+    SocketService.sendToUser(
+      ride.riderId.toString(),
+      "stopoverArrived", // The frontend rider app should listen to this event
+      { ride, stopover },
+    );
+
     return ride;
   }
 
@@ -516,6 +522,13 @@ export class RideService {
     }
 
     await ride.save();
+
+    // Notify the rider via socket
+    SocketService.sendToUser(
+      ride.riderId.toString(),
+      "stopoverDeparted", // The frontend rider app should listen to this event
+      { ride, stopover },
+    );
 
     return ride;
   }
