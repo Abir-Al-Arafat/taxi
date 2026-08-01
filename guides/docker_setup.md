@@ -103,21 +103,21 @@ Use the following commands in your terminal to manage your application locally u
 **Start the application in the background (detached mode):**
 
 ```bash
-docker-compose up -d
+docker compose up -d
 
 ```
 
 **View live logs for the container:**
 
 ```bash
-docker-compose logs -f
+docker compose logs -f
 
 ```
 
 **Stop and completely remove the container:**
 
 ```bash
-docker-compose down
+docker compose down
 
 ```
 
