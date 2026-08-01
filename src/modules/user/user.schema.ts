@@ -170,7 +170,6 @@ const authUserSchema = new Schema<UserDocument>(
 authUserSchema.index({ verificationTokenHash: 1 });
 authUserSchema.index({ passwordResetTokenHash: 1 });
 authUserSchema.index({ refreshTokenHash: 1 });
-authUserSchema.index({ profileCompleted: 1 });
 authUserSchema.index({ location: "2dsphere" });
 
 const UserModel = model<UserDocument>("User", authUserSchema);

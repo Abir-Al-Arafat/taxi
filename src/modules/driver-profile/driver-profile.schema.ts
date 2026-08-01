@@ -104,10 +104,6 @@ const driverProfileSchema = new Schema<DriverProfileDocument>(
   },
 );
 
-driverProfileSchema.index({ userId: 1 }, { unique: true });
-
-driverProfileSchema.index({ profileCompleted: 1 });
-
 const DriverProfileModel = model<DriverProfileDocument>(
   "DriverProfile",
   driverProfileSchema,
