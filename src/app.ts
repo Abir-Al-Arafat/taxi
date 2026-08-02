@@ -19,7 +19,11 @@ app.get("/", (_req: Request, res: Response) => {
   res
     .status(HTTP_STATUS.OK)
     .json(
-      ResponseBuilder.success("CICD test check", undefined, HTTP_STATUS.OK),
+      ResponseBuilder.success(
+        "taxi-ly server is running",
+        undefined,
+        HTTP_STATUS.OK,
+      ),
     );
 });
 
