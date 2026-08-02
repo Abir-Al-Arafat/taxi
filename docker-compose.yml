@@ -1,6 +1,7 @@
 services:
   api:
     image: abirwerks/taxi-backend:latest
+    build: . # tells Docker Compose to build the local Dockerfile
     container_name: taxi-backend
     ports:
       - "5000:5000"
