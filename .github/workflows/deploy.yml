@@ -38,7 +38,7 @@ jobs:
           script: |
             # Navigate to the project directory on EC2 instance
             #  actual folder name
-            cd ~/taxily 
+            cd ~/taxily/taxi 
 
             # Pull the latest changes from GitHub
             git pull origin main
