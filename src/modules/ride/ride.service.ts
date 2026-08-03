@@ -16,6 +16,7 @@ import { parsePayload } from "../../shared/utilities/parsePayload.util";
 import { DriverProfileRepository } from "../driver-profile/driver-profile.repository";
 import { SocketService } from "../../shared/services/socket.service";
 import { Rating } from "../rating/rating.schema";
+import { env } from "../../config/env";
 export class RideService {
   private rideRepo = new RideRepository();
   private fareService = new FareService();
@@ -175,6 +176,15 @@ export class RideService {
 
   // 3 & 4. Driver Accepts Ride
   async acceptRide(driverId: string, rideId: string) {
+    const wallet = await this.walletService.getMyBalance(driverId);
+    if (!wallet) throw new AppError("Wallet not found", HTTP_STATUS.NOT_FOUND);
+
+    if (wallet.balance < env.minimumWalletBalance)
+      throw new AppError(
+        `Cannot accept ride. Wallet balance is insufficient. You should have at least ${env.minimumWalletBalance} LYD.`,
+        HTTP_STATUS.BAD_REQUEST,
+      );
+
     // Atomic update to ensure no two drivers accept the same ride
     const ride = await this.rideRepo.updateOne(
       { _id: rideId, status: "REQUESTED" },

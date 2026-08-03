@@ -15,7 +15,6 @@ router.use(authenticate);
 
 // User (Rider/Driver) Endpoints
 router.get("/self", controller.getMyRides);
-router.get("/:rideId", controller.rideById);
 
 // Admin Endpoints
 router.get("/", controller.getAllRides); // Admin only
@@ -43,4 +42,6 @@ router.patch(
   controller.departFromStopover,
 );
 
+// User (Rider/Driver) Endpoints
+router.get("/:rideId", controller.rideById);
 export { router as rideRouter };

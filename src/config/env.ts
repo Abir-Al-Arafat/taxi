@@ -17,6 +17,8 @@ class Env {
   public readonly otpDeliveryMethod: "email" | "sms";
   public readonly resalaToken: string;
   public readonly resalaTestMode: boolean;
+
+  public readonly minimumWalletBalance: number;
   constructor() {
     this.nodeEnv = process.env.NODE_ENV || "development";
     this.port = Number(process.env.PORT) || 5000;
@@ -25,7 +27,8 @@ class Env {
       (process.env.OTP_DELIVERY_METHOD as "email" | "sms") || "email";
     this.resalaToken = process.env.RESALA_TOKEN || "";
     this.resalaTestMode = process.env.RESALA_TEST_MODE === "true";
-
+    this.minimumWalletBalance =
+      Number(process.env.MINIMUM_WALLET_BALANCE) || 50;
     if (this.otpDeliveryMethod === "sms" && !this.resalaToken) {
       throw new AppError(
         "RESALA_TOKEN is required when OTP_DELIVERY_METHOD is 'sms'",
