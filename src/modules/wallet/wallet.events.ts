@@ -28,13 +28,13 @@ AppEventBus.on(
     referenceId: string;
   }) => {
     try {
-      await walletService.addCredit(
-        payload.driverId,
-        payload.amount,
-        payload.source,
-        payload.referenceId,
-        "Voucher Redemption Top-Up",
-      );
+      // await walletService.addCredit(
+      //   payload.driverId,
+      //   payload.amount,
+      //   payload.source,
+      //   payload.referenceId,
+      //   "Voucher Redemption Top-Up",
+      // );
       console.log(
         `Successfully processed wallet top-up for driver ${payload.driverId} from source ${payload.source}`,
       );

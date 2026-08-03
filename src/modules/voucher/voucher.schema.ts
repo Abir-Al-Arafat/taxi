@@ -33,6 +33,7 @@ const VoucherSchema = new Schema<IVoucher>(
     usedById: { type: String }, // Soft reference
     usedByName: { type: String }, // Soft reference for denormalization
     usedAt: { type: Date },
+    walletAmountAfterRedemption: { type: Number },
   },
   { timestamps: true },
 );

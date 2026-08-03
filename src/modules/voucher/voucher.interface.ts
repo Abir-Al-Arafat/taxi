@@ -30,6 +30,8 @@ export interface IVoucher extends Document {
   usedByName?: string;
   usedAt?: Date;
 
+  walletAmountAfterRedemption?: number;
+
   createdAt: Date;
   updatedAt: Date;
 }

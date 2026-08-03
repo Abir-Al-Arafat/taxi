@@ -11,6 +11,8 @@ import { StandardPromoStrategy } from "./strategies/base-promo.strategy";
 import type { IPaginationParams } from "../../shared/types/pagination.types";
 import type { IPromoStrategy, VoucherStatus } from "./voucher.interface";
 import { SYSTEM_EVENTS } from "../activity/activity.events";
+import { WalletService } from "../wallet/wallet.service";
+const walletService = new WalletService();
 export class VoucherService {
   private voucherRepo = new VoucherRepository();
   private batchRepo = new VoucherBatchRepository();
@@ -163,6 +165,22 @@ export class VoucherService {
         "Failed to redeem. Voucher may have just been used.",
         HTTP_STATUS.CONFLICT,
       );
+
+    const updatedWallet = await walletService.addCredit(
+      driverId,
+      finalCreditAmount,
+      "VOUCHER",
+      voucher._id as any,
+      "Voucher Redemption Top-Up",
+    );
+
+    if (!updatedWallet)
+      throw new AppError("Failed to update wallet.", HTTP_STATUS.CONFLICT);
+
+    await this.voucherRepo.updateOne(
+      { _id: voucher._id },
+      { walletAmountAfterRedemption: updatedWallet.balance },
+    );
 
     // 🔌 Wallet Integration: Fire-and-forget Event
     AppEventBus.emit("WALLET_TOP_UP_REQUESTED", {
