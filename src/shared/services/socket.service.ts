@@ -64,6 +64,8 @@ export class SocketService {
           lat: number;
           lng: number;
           role: "driver" | "rider";
+          encodedRoute: string;
+          address: string;
         }) => {
           const roomName = `ride_${data.rideId}`;
 
@@ -73,6 +75,8 @@ export class SocketService {
             lng: data.lng,
             role: data.role,
             timestamp: new Date(),
+            encodedRoute: data.encodedRoute,
+            address: data.address,
           });
         },
       );
