@@ -517,22 +517,76 @@ export class UserRepository extends BaseRepository<UserDocument> {
     };
   }
 
+  // async findNearbyOnlineDrivers(
+  //   longitude: number,
+  //   latitude: number,
+  //   maxDistanceMeters: number = 5000,
+  //   vehicleType?: string,
+  // ) {
+  //   return this.model
+  //     .find({
+  //       role: "driver",
+  //       onlineStatus: "online", // Only notify online drivers
+  //       location: {
+  //         $near: {
+  //           $geometry: { type: "Point", coordinates: [longitude, latitude] },
+  //           $maxDistance: maxDistanceMeters,
+  //         },
+  //       },
+  //     })
+  //     .exec();
+  // }
   async findNearbyOnlineDrivers(
     longitude: number,
     latitude: number,
     maxDistanceMeters: number = 5000,
+    vehicleType?: string,
   ) {
+    // 1. If no vehicleType is specified, run the standard, faster query
+    if (!vehicleType) {
+      return this.model
+        .find({
+          role: "driver",
+          onlineStatus: "online",
+          location: {
+            $near: {
+              $geometry: { type: "Point", coordinates: [longitude, latitude] },
+              $maxDistance: maxDistanceMeters,
+            },
+          },
+        })
+        .exec();
+    }
+
+    // 2. If a vehicleType IS specified, use aggregation to join the DriverProfile
     return this.model
-      .find({
-        role: "driver",
-        onlineStatus: "online", // Only notify online drivers
-        location: {
-          $near: {
-            $geometry: { type: "Point", coordinates: [longitude, latitude] },
-            $maxDistance: maxDistanceMeters,
+      .aggregate([
+        {
+          $geoNear: {
+            near: { type: "Point", coordinates: [longitude, latitude] },
+            distanceField: "distance",
+            maxDistance: maxDistanceMeters,
+            query: { role: "driver", onlineStatus: "online" },
+            spherical: true,
           },
         },
-      })
+        {
+          $lookup: {
+            from: "driverprofiles", // Note: Mongoose lowercases and pluralizes model names. Verify this matches your DB collection name exactly.
+            localField: "_id",
+            foreignField: "userId",
+            as: "driverProfile",
+          },
+        },
+        {
+          $unwind: "$driverProfile",
+        },
+        {
+          $match: {
+            "driverProfile.vehicleType": vehicleType,
+          },
+        },
+      ])
       .exec();
   }
 }

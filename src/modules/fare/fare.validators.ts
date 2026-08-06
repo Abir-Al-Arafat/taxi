@@ -8,6 +8,11 @@ export const createFareValidation = [
   body("gender")
     .isIn(["male", "female", "other"])
     .withMessage("Gender parameter must map to valid system enums"),
+  body("vehicleType")
+    .isIn(["taxi", "normal car"])
+    .withMessage(
+      "Vehicle type parameter must be either 'taxi' or 'normal car'",
+    ),
   body("baseFare")
     .notEmpty()
     .isFloat({ min: 0 })
@@ -48,6 +53,12 @@ export const updateFareValidation = [
   param("gender")
     .isIn(["male", "female", "other"])
     .withMessage("Gender parameter must be male, female, or other"),
+
+  param("vehicleType")
+    .isIn(["taxi", "normal car"])
+    .withMessage(
+      "Vehicle type parameter must be either 'taxi' or 'normal car'",
+    ),
 
   body("baseFare")
     .optional()

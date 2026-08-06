@@ -11,10 +11,67 @@ export class FareService {
    * Generates base fallback fares on app boot to ensure the app never crashes
    * due to missing pricing structures.
    */
+  // async initializeDefaults(): Promise<void> {
+  //   const defaultFares = [
+  //     {
+  //       gender: "male",
+  //       baseFare: 50,
+  //       minimumFare: 80,
+  //       pricePerMinute: 2,
+  //       pricePerKilometer: 10,
+  //       waitingTimeCharge: 1,
+  //       cancellationFee: 15,
+  //       commissionPercentage: 10,
+  //     },
+  //     {
+  //       gender: "female",
+  //       baseFare: 50,
+  //       minimumFare: 80,
+  //       pricePerMinute: 2,
+  //       pricePerKilometer: 10,
+  //       waitingTimeCharge: 1,
+  //       cancellationFee: 15,
+  //       commissionPercentage: 10,
+  //     },
+  //   ];
+
+  //   for (const defaults of defaultFares) {
+  //     const existing = await this.fareRepository.findOne({
+  //       gender: defaults.gender,
+  //     });
+  //     if (!existing) {
+  //       await this.fareRepository.create(defaults as IFareRule);
+  //     }
+  //   }
+  // }
+
   async initializeDefaults(): Promise<void> {
     const defaultFares = [
       {
         gender: "male",
+        vehicleType: "taxi", // <-- ADDED
+        baseFare: 50,
+        minimumFare: 80,
+        pricePerMinute: 2,
+        pricePerKilometer: 10,
+        waitingTimeCharge: 1,
+        cancellationFee: 15,
+        commissionPercentage: 10,
+      },
+      {
+        gender: "male",
+        vehicleType: "normal car", // <-- ADDED
+        baseFare: 40, // Example: slightly cheaper base fare
+        minimumFare: 70,
+        pricePerMinute: 1.5,
+        pricePerKilometer: 8,
+        waitingTimeCharge: 1,
+        cancellationFee: 10,
+        commissionPercentage: 10,
+      },
+      {
+        gender: "female",
+        vehicleType: "taxi", // <-- ADDED
         baseFare: 50,
         minimumFare: 80,
         pricePerMinute: 2,
@@ -25,20 +82,24 @@ export class FareService {
       },
       {
         gender: "female",
-        baseFare: 50,
-        minimumFare: 80,
-        pricePerMinute: 2,
-        pricePerKilometer: 10,
+        vehicleType: "normal car", // <-- ADDED
+        baseFare: 40,
+        minimumFare: 70,
+        pricePerMinute: 1.5,
+        pricePerKilometer: 8,
         waitingTimeCharge: 1,
-        cancellationFee: 15,
+        cancellationFee: 10,
         commissionPercentage: 10,
       },
     ];
 
     for (const defaults of defaultFares) {
+      // <-- UPDATE THE CHECK TO INCLUDE BOTH FIELDS
       const existing = await this.fareRepository.findOne({
         gender: defaults.gender,
+        vehicleType: defaults.vehicleType,
       });
+
       if (!existing) {
         await this.fareRepository.create(defaults as IFareRule);
       }
@@ -49,6 +110,7 @@ export class FareService {
     // 1. Prevent duplicate schemas for the same demographic
     const existingRule = await this.fareRepository.findOne({
       gender: payload.gender,
+      vehicleType: payload.vehicleType,
     });
 
     if (existingRule) {
@@ -71,18 +133,25 @@ export class FareService {
     return this.fareRepository.findMany(filters);
   }
 
-  async updateFareConfig(gender: string, payload: Partial<IFareRule>) {
-    const currentRule = await this.fareRepository.findOne({ gender });
+  async updateFareConfig(
+    gender: string,
+    vehicleType: string,
+    payload: Partial<IFareRule>,
+  ) {
+    const currentRule = await this.fareRepository.findOne({
+      gender,
+      vehicleType,
+    });
 
     if (!currentRule) {
       throw new AppError(
-        `Fare configuration for gender '${gender}' does not exist`,
+        `Fare configuration for gender '${gender}' and vehicle '${vehicleType}' does not exist`,
         HTTP_STATUS.NOT_FOUND,
       );
     }
 
     const updatedFare = await this.fareRepository.updateOne(
-      { gender },
+      { gender, vehicleType },
       payload,
     );
     return updatedFare;

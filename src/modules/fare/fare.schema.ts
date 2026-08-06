@@ -8,7 +8,12 @@ const FareRuleSchema = new Schema<IFareRule>(
       type: String,
       enum: ["male", "female", "other"],
       required: true,
-      unique: true, // Ensures only one active rule per gender exists natively
+      // unique: true, // Ensures only one active rule per gender exists natively
+    },
+    vehicleType: {
+      type: String,
+      required: true,
+      enum: ["taxi", "normal car"],
     },
     baseFare: { type: Number, required: true, min: 0 },
     minimumFare: { type: Number, required: true, min: 0 },
@@ -20,5 +25,7 @@ const FareRuleSchema = new Schema<IFareRule>(
   },
   { timestamps: true },
 );
+
+FareRuleSchema.index({ gender: 1, vehicleType: 1 }, { unique: true });
 
 export const FareRule = model<IFareRule>("FareRule", FareRuleSchema);

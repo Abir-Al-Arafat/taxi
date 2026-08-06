@@ -42,9 +42,10 @@ export class FareController {
 
   updatePricingRule = asyncHandler(
     async (req: Request, res: Response): Promise<void> => {
-      const { gender } = req.params;
+      const { gender, vehicleType } = req.params;
       const updatedFare = await this.fareService.updateFareConfig(
         gender as string,
+        vehicleType as string,
         req.body,
       );
 
@@ -52,7 +53,7 @@ export class FareController {
         .status(HTTP_STATUS.OK)
         .json(
           ResponseBuilder.success(
-            `Fare configuration mapped to '${gender}' successfully updated`,
+            `Fare configuration for '${gender}' using '${vehicleType}' successfully updated`,
             { fare: updatedFare },
             HTTP_STATUS.OK,
           ),

@@ -3,6 +3,7 @@ import type { Document } from "mongoose";
 
 export interface IFareRule extends Document {
   gender: "male" | "female" | "other"; // Extensible to match your user schema enum
+  vehicleType: "taxi" | "normal car";
   baseFare: number; // Stored in LYD
   minimumFare: number; // Stored in LYD
   pricePerMinute: number; // Stored in LYD

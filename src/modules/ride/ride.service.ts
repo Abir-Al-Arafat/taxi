@@ -37,7 +37,7 @@ export class RideService {
     pickupCoords: [number, number],
     destCoords: [number, number],
     preferredGender: string,
-    vehicleType?: string,
+    vehicleType: string,
     providedDistanceKm?: number,
     providedTimeMins?: number,
   ) {
@@ -107,6 +107,7 @@ export class RideService {
         longitude,
         latitude,
         5000,
+        parsedPayload.vehicleType, // <-- PASS THE REQUESTED VEHICLE TYPE
       );
 
       console.log(
@@ -610,7 +611,7 @@ export class RideService {
     // 3. Fetch Fare Rule to get dynamic adminCommissionPercentage
     const fareRule = await this.fareRepo.findOne({
       gender: driver.gender || "male",
-      // vehicleType: ride.vehicleType,
+      vehicleType: ride.vehicleType,
     });
 
     if (!fareRule) {

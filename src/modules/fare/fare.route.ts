@@ -31,7 +31,7 @@ router.get("/", authenticate, controller.getPricingRules);
 
 // Highly restricted PATCH endpoint limited entirely to admins
 router.patch(
-  "/:gender",
+  "/:gender/:vehicleType",
   authenticate,
   // requireAdminRole,
   authorizeRoles("admin"),
