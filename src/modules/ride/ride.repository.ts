@@ -87,8 +87,17 @@ export class RideRepository extends BaseRepository<IRide> {
           {
             $lookup: {
               from: "farerules",
-              localField: "driverDetails.gender",
-              foreignField: "gender",
+              let: { driverGender: "$driverDetails.gender" },
+              pipeline: [
+                {
+                  $match: {
+                    $expr: { $eq: ["$gender", "$$driverGender"] },
+                  },
+                },
+                // Optional but recommended: If you have an active status, uncomment the line below
+                // { $match: { isActive: true } },
+                { $limit: 1 }, // <-- This stops the duplication
+              ],
               as: "fareRuleDetails",
             },
           },
