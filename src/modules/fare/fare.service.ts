@@ -49,7 +49,7 @@ export class FareService {
     const defaultFares = [
       {
         gender: "male",
-        vehicleType: "taxi", // <-- ADDED
+        vehicleType: "taxi",
         baseFare: 50,
         minimumFare: 80,
         pricePerMinute: 2,
@@ -60,7 +60,7 @@ export class FareService {
       },
       {
         gender: "male",
-        vehicleType: "normal car", // <-- ADDED
+        vehicleType: "normal car",
         baseFare: 40, // Example: slightly cheaper base fare
         minimumFare: 70,
         pricePerMinute: 1.5,
@@ -71,7 +71,7 @@ export class FareService {
       },
       {
         gender: "female",
-        vehicleType: "taxi", // <-- ADDED
+        vehicleType: "taxi",
         baseFare: 50,
         minimumFare: 80,
         pricePerMinute: 2,
@@ -82,7 +82,7 @@ export class FareService {
       },
       {
         gender: "female",
-        vehicleType: "normal car", // <-- ADDED
+        vehicleType: "normal car",
         baseFare: 40,
         minimumFare: 70,
         pricePerMinute: 1.5,
