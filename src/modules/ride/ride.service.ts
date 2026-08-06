@@ -17,6 +17,7 @@ import { DriverProfileRepository } from "../driver-profile/driver-profile.reposi
 import { SocketService } from "../../shared/services/socket.service";
 import { Rating } from "../rating/rating.schema";
 import { env } from "../../config/env";
+import { RecentPlaceRepository } from "../recent-place/recent-place.repository";
 export class RideService {
   private rideRepo = new RideRepository();
   private fareService = new FareService();
@@ -25,7 +26,7 @@ export class RideService {
   private walletService = new WalletService();
   private fareRepo = new FareRepository();
   private userRepo = new UserRepository();
-
+  private recentPlaceRepo = new RecentPlaceRepository();
   private driverProfileRepo = new DriverProfileRepository();
 
   // ==============================================
@@ -34,12 +35,15 @@ export class RideService {
 
   // 1. Get Fare Estimate & ETA (Before confirming)
   async estimateRide(
+    userId: string,
     pickupCoords: [number, number],
     destCoords: [number, number],
     preferredGender: string,
     vehicleType: string,
     providedDistanceKm?: number,
     providedTimeMins?: number,
+    pickupAddress?: string, // <-- OPTIONAL NEW PARAMETER
+    destAddress?: string,
   ) {
     let distanceKm = providedDistanceKm;
     let estimatedTimeMins = providedTimeMins;
@@ -60,7 +64,17 @@ export class RideService {
       vehicleType,
     );
 
+    // Fire-and-forget: Save recent places without blocking the estimate response
+    Promise.all([
+      this.recentPlaceRepo.upsertPlace(userId, pickupCoords, pickupAddress),
+      this.recentPlaceRepo.upsertPlace(userId, destCoords, destAddress),
+    ]).catch((err) => console.error("Failed to save recent places:", err));
+
     return { distanceKm, estimatedTimeMins, fareDetails };
+  }
+
+  async getRecentPlaces(userId: string) {
+    return this.recentPlaceRepo.getRecentPlacesByUser(userId, 10); // Fetch top 10
   }
 
   // 2. Confirm & Request Ride

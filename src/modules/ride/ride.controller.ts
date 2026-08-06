@@ -9,7 +9,7 @@ export class RideController {
   private rideService = new RideService();
 
   // Rider Endpoints
-  estimate = asyncHandler(async (req: Request, res: Response) => {
+  estimate = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     // Extract preferredGender from the frontend payload
     const {
       pickup,
@@ -18,18 +18,24 @@ export class RideController {
       vehicleType,
       distanceKm,
       estimatedTimeMins,
+      pickupAddress,
+      destAddress,
     } = req.body;
 
     const parsedPickup = JSON.parse(pickup).map(Number);
     const parsedDestination = JSON.parse(destination).map(Number);
+    const userId = req.user!.userId;
 
     const data = await this.rideService.estimateRide(
+      userId,
       parsedPickup,
       parsedDestination,
       preferredGender,
       vehicleType,
       distanceKm, // Optional from frontend
       estimatedTimeMins, // Optional from frontend
+      pickupAddress,
+      destAddress,
     );
 
     res
@@ -38,6 +44,22 @@ export class RideController {
         ResponseBuilder.success("Estimate calculated", data, HTTP_STATUS.OK),
       );
   });
+
+  getRecentPlaces = asyncHandler(
+    async (req: AuthenticatedRequest, res: Response) => {
+      const data = await this.rideService.getRecentPlaces(req.user!.userId);
+
+      res
+        .status(HTTP_STATUS.OK)
+        .json(
+          ResponseBuilder.success(
+            "Recent places retrieved",
+            data,
+            HTTP_STATUS.OK,
+          ),
+        );
+    },
+  );
 
   request = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     const data = await this.rideService.requestRide(req.user!.userId, req.body);

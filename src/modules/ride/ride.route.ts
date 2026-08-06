@@ -16,6 +16,8 @@ router.use(authenticate);
 // User (Rider/Driver) Endpoints
 router.get("/self", controller.getMyRides);
 
+router.get("/recent-places", controller.getRecentPlaces);
+
 // Admin Endpoints
 router.get("/", controller.getAllRides); // Admin only
 
