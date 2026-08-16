@@ -23,6 +23,16 @@ export class PromoService {
   // ADMIN FLOWS
   // ==============================================
   async createPromoCode(data: any, rules: Partial<IPromoRule>[]) {
+    // 1. Pre-check if the code already exists
+    const existingPromo = await this.promoRepo.findOne({
+      code: data.code.toUpperCase(),
+    });
+    if (existingPromo) {
+      throw new AppError(
+        `Promo code '${data.code}' already exists. Please choose a different code.`,
+        HTTP_STATUS.CONFLICT, // 409
+      );
+    }
     // 1. Create the Promo Code
     const promo = await this.promoRepo.create({
       ...data,
