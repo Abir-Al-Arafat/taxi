@@ -96,6 +96,8 @@ export class RideService {
       parsedPayload.fareDetails.totalFare -= discount;
     }
 
+    const rider = await this.userRepo.findOne({ _id: riderId });
+
     // 3. FIX: Use parsedPayload here, NOT the original payload
     const ride = await this.rideRepo.create({
       riderId: new Types.ObjectId(riderId),
@@ -134,12 +136,33 @@ export class RideService {
 
       console.log(`Found ${nearbyDrivers.length} nearby drivers to notify.`);
 
+      const rideDetails = {
+        _id: ride._id.toString(),
+        pickup: ride.pickup,
+        destination: ride.destination,
+        fareDetails: ride.fareDetails,
+        stopovers: ride.stopovers,
+        status: ride.status,
+        declinedBy: ride.declinedBy,
+        vehicleType: ride.vehicleType,
+        preferredGender: ride.preferredGender,
+        distanceKm: ride.distanceKm,
+        estimatedTimeMins: ride.estimatedTimeMins,
+        requestedAt: ride.requestedAt,
+        createdAt: ride.createdAt,
+        updatedAt: (ride as any).updatedAt,
+        riderId: {
+          firstName: rider?.firstName,
+          lastName: rider?.lastName,
+          profilePicture: rider?.profilePicture,
+        },
+      };
       // Emit to each driver's specific socket room using SocketService
       nearbyDrivers.forEach((driver) => {
         SocketService.sendToUser(
           driver._id.toString(),
           "newRideRequest", // Your frontend driver app should listen to this event
-          { ride },
+          { rideDetails },
         );
       });
     }
@@ -675,9 +698,36 @@ export class RideService {
     return completedRide;
   }
 
-  async getRideDetailsById(rideId: string) {
-    const ride = await this.rideRepo.findOne({ _id: rideId });
-    if (!ride) throw new AppError("Ride not found", HTTP_STATUS.NOT_FOUND);
+  async getRideDetailsById(rideId: string, queryParams: any = {}) {
+    const populateOptions: any[] = [];
+
+    // Populate Rider Info if ?rider=true
+    if (String(queryParams.rider) === "true") {
+      populateOptions.push({
+        path: "riderId",
+        select:
+          "firstName lastName email phoneNumber profilePicture rating rideTakenCount",
+      });
+    }
+
+    // Populate Driver Info if ?driver=true
+    if (String(queryParams.driver) === "true") {
+      populateOptions.push({
+        path: "driverId",
+        select:
+          "firstName lastName email phoneNumber profilePicture rating rideGivenCount",
+      });
+    }
+
+    const ride = await this.rideRepo.findByIdWithPopulate(
+      rideId,
+      populateOptions,
+    );
+
+    if (!ride) {
+      throw new AppError("Ride not found", HTTP_STATUS.NOT_FOUND);
+    }
+
     return ride;
   }
 
@@ -758,4 +808,6 @@ export class RideService {
 
     return paginatedResult;
   }
+
+  // src/modules/ride/ride.service.ts
 }
