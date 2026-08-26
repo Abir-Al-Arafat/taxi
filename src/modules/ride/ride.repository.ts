@@ -26,7 +26,7 @@ export class RideRepository extends BaseRepository<IRide> {
           },
         },
       })
-      .populate("riderId", "firstName lastName profileImage rating")
+      .populate("riderId", "firstName lastName profilePicture rating")
       .exec();
   }
 
