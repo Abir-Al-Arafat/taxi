@@ -243,7 +243,8 @@ export class RideController {
 
   rideById = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     const rideId = req.params.rideId as string;
-    const data = await this.rideService.getRideDetailsById(rideId);
+    const data = await this.rideService.getRideDetailsById(rideId, req.query);
+
     res
       .status(HTTP_STATUS.OK)
       .json(
