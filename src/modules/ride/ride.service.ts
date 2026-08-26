@@ -698,9 +698,36 @@ export class RideService {
     return completedRide;
   }
 
-  async getRideDetailsById(rideId: string) {
-    const ride = await this.rideRepo.findOne({ _id: rideId });
-    if (!ride) throw new AppError("Ride not found", HTTP_STATUS.NOT_FOUND);
+  async getRideDetailsById(rideId: string, queryParams: any = {}) {
+    const populateOptions: any[] = [];
+
+    // Populate Rider Info if ?rider=true
+    if (String(queryParams.rider) === "true") {
+      populateOptions.push({
+        path: "riderId",
+        select:
+          "firstName lastName email phoneNumber profilePicture rating rideTakenCount",
+      });
+    }
+
+    // Populate Driver Info if ?driver=true
+    if (String(queryParams.driver) === "true") {
+      populateOptions.push({
+        path: "driverId",
+        select:
+          "firstName lastName email phoneNumber profilePicture rating rideGivenCount",
+      });
+    }
+
+    const ride = await this.rideRepo.findByIdWithPopulate(
+      rideId,
+      populateOptions,
+    );
+
+    if (!ride) {
+      throw new AppError("Ride not found", HTTP_STATUS.NOT_FOUND);
+    }
+
     return ride;
   }
 
@@ -781,4 +808,6 @@ export class RideService {
 
     return paginatedResult;
   }
+
+  // src/modules/ride/ride.service.ts
 }
