@@ -325,4 +325,16 @@ export class RideRepository extends BaseRepository<IRide> {
 
     return this.model.findOne(query).sort({ createdAt: -1 }).lean();
   }
+
+  async findByIdWithPopulate(rideId: string, populateOptions: any[] = []) {
+    let query = this.model.findById(rideId);
+
+    if (populateOptions.length > 0) {
+      populateOptions.forEach((option) => {
+        query = query.populate(option) as any;
+      });
+    }
+
+    return query.exec();
+  }
 }
