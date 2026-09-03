@@ -108,4 +108,10 @@ export class SocketService {
       this.io.to(socketId).emit(event, data);
     }
   }
+
+  static broadcast(event: string, data: any): void {
+    if (this.io) {
+      this.io.emit(event, data);
+    }
+  }
 }

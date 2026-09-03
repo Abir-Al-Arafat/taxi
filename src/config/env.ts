@@ -19,6 +19,11 @@ class Env {
   public readonly resalaTestMode: boolean;
 
   public readonly minimumWalletBalance: number;
+  // Redis & Ride Expiration Configurations
+  public readonly REDIS_HOST: string;
+  public readonly REDIS_PORT: number;
+  public readonly REDIS_PASSWORD?: string;
+  public readonly RIDE_EXPIRATION_MINUTES: number;
   constructor() {
     this.nodeEnv = process.env.NODE_ENV || "development";
     this.port = Number(process.env.PORT) || 5000;
@@ -29,6 +34,12 @@ class Env {
     this.resalaTestMode = process.env.RESALA_TEST_MODE === "true";
     this.minimumWalletBalance =
       Number(process.env.MINIMUM_WALLET_BALANCE) || 50;
+    // Initialize Redis settings with defaults
+    this.REDIS_HOST = process.env.REDIS_HOST || "127.0.0.1";
+    this.REDIS_PORT = Number(process.env.REDIS_PORT) || 6379;
+    this.REDIS_PASSWORD = process.env.REDIS_PASSWORD || "REDIS_PASSWORD";
+    this.RIDE_EXPIRATION_MINUTES =
+      Number(process.env.RIDE_EXPIRATION_MINUTES) || 5;
     if (this.otpDeliveryMethod === "sms" && !this.resalaToken) {
       throw new AppError(
         "RESALA_TOKEN is required when OTP_DELIVERY_METHOD is 'sms'",
