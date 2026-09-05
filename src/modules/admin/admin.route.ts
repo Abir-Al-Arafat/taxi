@@ -47,6 +47,19 @@ router.post(
 );
 
 /**
+ * Delete an admin staff
+ * DELETE /api/v1/admins/:adminId
+ * Protected: Requires authentication and Admin roles
+ */
+router.delete(
+  "/:adminId",
+  authenticate,
+  // requireAdminRole,
+  authorizeRoles("admin"),
+  adminController.deleteAdmin,
+);
+
+/**
  * Admin Login
  * POST /api/v1/admins/login
  * Public: Used by the Next.js Dashboard to authenticate staff

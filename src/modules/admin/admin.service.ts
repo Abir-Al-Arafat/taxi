@@ -78,6 +78,19 @@ export class AdminService {
     return adminData;
   }
 
+  async deleteAdmin(adminId: string): Promise<void> {
+    const admin = await this.adminRepository.findById(adminId);
+    if (!admin) {
+      throw new AppError("Admin not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    await this.adminRepository.deleteOne({ _id: adminId });
+  }
+
+  /**
+   * Admin Login
+   */
+
   async login(email: string, password: string) {
     // 1. Use the new repository method (Fixes the protected model error)
     const admin = await this.adminRepository.findByEmailWithPassword(email);

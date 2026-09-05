@@ -30,6 +30,26 @@ export class AdminController {
       );
   });
 
+  deleteAdmin = asyncHandler(async (req: Request, res: Response) => {
+    const { adminId } = req.params;
+
+    if (!adminId) {
+      throw new AppError("Admin ID is required", HTTP_STATUS.BAD_REQUEST);
+    }
+
+    await this.adminService.deleteAdmin(adminId as string);
+
+    res
+      .status(HTTP_STATUS.OK)
+      .json(
+        ResponseBuilder.success(
+          "Admin staff deleted successfully",
+          null,
+          HTTP_STATUS.OK,
+        ),
+      );
+  });
+
   /**
    * Admin Login
    * POST /api/v1/admins/login
