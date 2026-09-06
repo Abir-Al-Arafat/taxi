@@ -70,7 +70,34 @@ export class WalletRepository extends BaseRepository<IWallet> {
       },
     });
 
-    // 3. Fetch Last Transaction Detail
+    // 3. Fetch Total Earnings (Sum of totalFare for COMPLETED rides)
+    pipeline.push({
+      $lookup: {
+        from: "rides",
+        let: { driverUserId: "$userId" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$driverId", "$$driverUserId"] },
+                  { $eq: ["$status", "COMPLETED"] },
+                ],
+              },
+            },
+          },
+          {
+            $group: {
+              _id: null,
+              total: { $sum: "$fareDetails.totalFare" },
+            },
+          },
+        ],
+        as: "earningsData",
+      },
+    });
+
+    // 4. Fetch Last Transaction Detail
     pipeline.push({
       $lookup: {
         from: "wallettransactions",
@@ -84,7 +111,7 @@ export class WalletRepository extends BaseRepository<IWallet> {
       },
     });
 
-    // 4. Facet for Pagination and Formatting
+    // 5. Facet for Pagination and Formatting
     pipeline.push({
       $facet: {
         metadata: [{ $count: "total" }],
@@ -101,10 +128,13 @@ export class WalletRepository extends BaseRepository<IWallet> {
               },
               phone: "$userDoc.phoneNumber",
               wallet_balance: "$balance",
-              status: 1,
+              total_earnings: {
+                $ifNull: [{ $arrayElemAt: ["$earningsData.total", 0] }, 0],
+              },
               total_deductions: {
                 $ifNull: [{ $arrayElemAt: ["$deductionsData.total", 0] }, 0],
               },
+              status: 1,
               last_transaction: { $arrayElemAt: ["$lastTxData", 0] },
             },
           },
@@ -114,9 +144,9 @@ export class WalletRepository extends BaseRepository<IWallet> {
 
     const result = await this.model.aggregate(pipeline);
     const totalItems = result[0]?.metadata[0]?.total || 0;
-    console.log("getAdminDashboardList() result:", result);
-    console.log("getAdminDashboardList() result:", result[0]);
-    console.log("getAdminDashboardList() result:", result[0]?.data);
+    // console.log("getAdminDashboardList() result:", result);
+    // console.log("getAdminDashboardList() result:", result[0]);
+    // console.log("getAdminDashboardList() result:", result[0]?.data);
     return {
       items: result[0]?.data || [],
       pagination: {
