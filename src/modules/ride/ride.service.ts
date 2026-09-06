@@ -18,6 +18,7 @@ import { SocketService } from "../../shared/services/socket.service";
 import { Rating } from "../rating/rating.schema";
 import { env } from "../../config/env";
 import { RecentPlaceRepository } from "../recent-place/recent-place.repository";
+import { scheduleRideExpiration } from "./ride.queue";
 export class RideService {
   private rideRepo = new RideRepository();
   private fareService = new FareService();
@@ -105,6 +106,10 @@ export class RideService {
       status: "REQUESTED",
       requestedAt: new Date(),
     });
+    await scheduleRideExpiration(
+      ride._id.toString(),
+      (env.RIDE_EXPIRATION_MINUTES || 5) * 60 * 1000,
+    );
     console.log("Created ride with ID:", ride._id);
 
     // ==========================================
