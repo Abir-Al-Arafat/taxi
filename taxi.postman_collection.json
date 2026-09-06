@@ -26,12 +26,12 @@
 									"formdata": [
 										{
 											"key": "password",
-											"value": "2khzfioq35",
+											"value": "iadmin@mockmail.xyz",
 											"type": "text"
 										},
 										{
 											"key": "email",
-											"value": "employer@mockmail.xyz",
+											"value": "iadmin@mockmail.xyz",
 											"type": "text"
 										}
 									]
@@ -169,33 +169,33 @@
 							"formdata": [
 								{
 									"key": "firstName",
-									"value": "chauffeur@mockmail.xyz",
+									"value": "yedif69797@luhupo.com",
 									"type": "text"
 								},
 								{
 									"key": "lastName",
-									"value": "chauffeur@mockmail.xyz",
+									"value": "yedif69797@luhupo.com",
 									"type": "text"
 								},
 								{
 									"key": "phoneNumber",
-									"value": "0910937399",
+									"value": "01999999998",
 									"description": "0910937399 | 0916660002",
 									"type": "text"
 								},
 								{
 									"key": "email",
-									"value": "chauffeur@mockmail.xyz",
+									"value": "yedif69797@luhupo.com",
 									"type": "text"
 								},
 								{
 									"key": "password",
-									"value": "chauffeur@mockmail.xyz",
+									"value": "yedif69797@luhupo.com",
 									"type": "text"
 								},
 								{
 									"key": "confirmPassword",
-									"value": "chauffeur@mockmail.xyz",
+									"value": "yedif69797@luhupo.com",
 									"type": "text"
 								},
 								{
@@ -280,13 +280,20 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"phoneNumber\": \"019999999\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "phoneNumber",
+									"value": "019999999",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "abir@mockmail.xyz",
+									"type": "text",
+									"disabled": true
 								}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{baseURLLocal}}/auth/forgot-password",
@@ -311,12 +318,13 @@
 							"formdata": [
 								{
 									"key": "phoneNumber",
-									"value": "0910937399",
+									"value": "01999999998",
+									"description": "01999999998 | 0910937399",
 									"type": "text"
 								},
 								{
 									"key": "otp",
-									"value": "9948",
+									"value": "2113",
 									"type": "text"
 								},
 								{
@@ -391,17 +399,26 @@
 							"formdata": [
 								{
 									"key": "phoneNumber",
-									"value": "019999998",
+									"value": "+8801478529632",
+									"description": "920000000 | 019999998 | 0910937399",
 									"type": "text"
 								},
 								{
 									"key": "password",
-									"value": "driver@mockmail.xyz",
+									"value": "cicayil131@kingcq.com",
+									"description": "2khzfioq35",
 									"type": "text"
 								},
 								{
 									"key": "email",
 									"value": "abir@mockmail.xyz",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "",
+									"value": "",
+									"description": "   \"location\": {\n                \"lat\": 32.8872,\n                \"lng\": 13.1913,\n                \"address\": \"Tripoli area\"\n            },",
 									"type": "text",
 									"disabled": true
 								}
@@ -495,7 +512,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseURLLocal}}/users?includeVehicleType=true",
+							"raw": "{{baseURLLocal}}/users?role=driver&sort=createdAt",
 							"host": [
 								"{{baseURLLocal}}"
 							],
@@ -522,8 +539,7 @@
 								{
 									"key": "role",
 									"value": "driver",
-									"description": "rider, driver",
-									"disabled": true
+									"description": "rider, driver"
 								},
 								{
 									"key": "isVerified",
@@ -539,13 +555,13 @@
 								},
 								{
 									"key": "sort",
-									"value": "firstName",
-									"description": "createdAt | firstName",
-									"disabled": true
+									"value": "createdAt",
+									"description": "createdAt | firstName"
 								},
 								{
 									"key": "includeVehicleType",
-									"value": "true"
+									"value": "true",
+									"disabled": true
 								}
 							]
 						}
@@ -575,7 +591,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "6a23abe72458e7b99027a591"
+									"value": "6a7c626d38087b1862a85ba2"
 								}
 							]
 						}
@@ -585,6 +601,16 @@
 				{
 					"name": "my profile",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{driverToken}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -608,7 +634,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{accessToken}}",
+									"value": "{{driverToken}}",
 									"type": "string"
 								}
 							]
@@ -621,12 +647,14 @@
 								{
 									"key": "firstName",
 									"value": "updated",
-									"type": "text"
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "lastName",
 									"value": "updated",
-									"type": "text"
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "gender",
@@ -636,25 +664,26 @@
 								},
 								{
 									"key": "location[lat]",
-									"value": "",
-									"type": "text",
-									"disabled": true
+									"value": "32.8872",
+									"type": "text"
 								},
 								{
 									"key": "location[lng]",
-									"value": "",
+									"value": "13.1913",
 									"type": "text",
 									"disabled": true
 								},
 								{
 									"key": "locationAddress",
 									"value": "Tripoli area",
-									"type": "text"
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "profilePicture",
 									"type": "file",
-									"src": "/home/abir/Pictures/Screenshots/Screenshot From 2026-06-10 09-01-04.png"
+									"src": "/home/abir/Pictures/Screenshots/Screenshot From 2026-06-10 09-01-04.png",
+									"disabled": true
 								}
 							]
 						},
@@ -679,7 +708,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{riderToken}}",
+									"value": "{{driverToken}}",
 									"type": "string"
 								}
 							]
@@ -808,7 +837,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{driverToken}}",
+									"value": "{{adminToken}}",
 									"type": "string"
 								}
 							]
@@ -1106,14 +1135,13 @@
 								{
 									"key": "nidOrPassport",
 									"type": "file",
-									"src": "/home/abir/Pictures/Screenshots/20760.jpg",
+									"src": "/home/abir/Pictures/Screenshots/androgynous-avatar-non-binary-queer-person.jpg",
 									"disabled": true
 								},
 								{
 									"key": "profilePicture",
 									"type": "file",
-									"src": "/home/abir/Pictures/Screenshots/10025122.jpg",
-									"disabled": true
+									"src": "/home/abir/Pictures/Screenshots/androgynous-avatar-non-binary-queer-person.jpg"
 								},
 								{
 									"key": "drivingLicenseImages",
@@ -1167,7 +1195,8 @@
 									"key": "vehicleType",
 									"value": "taxi",
 									"description": "taxi | normal car",
-									"type": "text"
+									"type": "text",
+									"disabled": true
 								}
 							]
 						},
@@ -1270,7 +1299,7 @@
 							]
 						},
 						"url": {
-							"raw": "{{baseURLLocal}}/saved-places?page=1&limit=5&search=Homeless",
+							"raw": "{{baseURLLocal}}/saved-places",
 							"host": [
 								"{{baseURLLocal}}"
 							],
@@ -1280,15 +1309,18 @@
 							"query": [
 								{
 									"key": "page",
-									"value": "1"
+									"value": "1",
+									"disabled": true
 								},
 								{
 									"key": "limit",
-									"value": "5"
+									"value": "5",
+									"disabled": true
 								},
 								{
 									"key": "search",
-									"value": "Homeless"
+									"value": "Homeless",
+									"disabled": true
 								}
 							]
 						}
@@ -1606,7 +1638,7 @@
 							"variable": [
 								{
 									"key": "driverId",
-									"value": "6a23abe72458e7b99027a591"
+									"value": "6a8a5d4e52556e097d8bf5ef"
 								}
 							]
 						}
@@ -1641,7 +1673,7 @@
 							"formdata": []
 						},
 						"url": {
-							"raw": "{{baseURLLocal}}/fares?gender=male",
+							"raw": "{{baseURLLocal}}/fares",
 							"host": [
 								"{{baseURLLocal}}"
 							],
@@ -1651,7 +1683,8 @@
 							"query": [
 								{
 									"key": "gender",
-									"value": "male"
+									"value": "male",
+									"disabled": true
 								}
 							]
 						}
@@ -1714,18 +1747,25 @@
 							]
 						},
 						"url": {
-							"raw": "{{baseURLLocal}}/fares/:gender",
+							"raw": "{{baseURLLocal}}/fares/:gender/:vehicleType",
 							"host": [
 								"{{baseURLLocal}}"
 							],
 							"path": [
 								"fares",
-								":gender"
+								":gender",
+								":vehicleType"
 							],
 							"variable": [
 								{
 									"key": "gender",
-									"value": "female"
+									"value": "female",
+									"description": "female | male"
+								},
+								{
+									"key": "vehicleType",
+									"value": "",
+									"description": "taxi | normal car"
 								}
 							]
 						}
@@ -1752,7 +1792,8 @@
 							"formdata": [
 								{
 									"key": "gender",
-									"value": "female",
+									"value": "male",
+									"description": "female | male",
 									"type": "text"
 								},
 								{
@@ -1789,6 +1830,12 @@
 									"key": "commissionPercentage",
 									"value": "20",
 									"type": "text"
+								},
+								{
+									"key": "vehicleType",
+									"value": "normal car",
+									"description": "taxi | normal car",
+									"type": "text"
 								}
 							]
 						},
@@ -1817,7 +1864,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{staffToken}}",
+									"value": "{{adminToken}}",
 									"type": "string"
 								}
 							]
@@ -1829,22 +1876,22 @@
 							"formdata": [
 								{
 									"key": "quantity",
-									"value": "5",
+									"value": "2",
 									"type": "text"
 								},
 								{
 									"key": "value",
-									"value": "10",
+									"value": "400",
 									"type": "text"
 								},
 								{
 									"key": "batchName",
-									"value": "ten lyd",
+									"value": "four hundred lyd",
 									"type": "text"
 								},
 								{
 									"key": "expiryDate",
-									"value": "2026-06-20T14:30:00.000Z",
+									"value": "2026-09-26T14:30:00.000Z",
 									"type": "text"
 								}
 							]
@@ -2052,28 +2099,7 @@
 						"header": [],
 						"body": {
 							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "quantity",
-									"value": "5",
-									"type": "text"
-								},
-								{
-									"key": "value",
-									"value": "50",
-									"type": "text"
-								},
-								{
-									"key": "batchName",
-									"value": "fifty lyd",
-									"type": "text"
-								},
-								{
-									"key": "expiryDate",
-									"value": "2026-06-20T14:30:00.000Z",
-									"type": "text"
-								}
-							]
+							"formdata": []
 						},
 						"url": {
 							"raw": "{{baseURLLocal}}/vouchers/code/:code",
@@ -2168,7 +2194,7 @@
 									"formdata": [
 										{
 											"key": "code",
-											"value": "VC50LYD-2C0F3AA8",
+											"value": "VC400LYD-FE487A51",
 											"type": "text"
 										},
 										{
@@ -2308,7 +2334,7 @@
 									"formdata": [
 										{
 											"key": "driverId",
-											"value": "6a23abe72458e7b99027a591",
+											"value": "6a25430c1f8e7bc78a834796",
 											"type": "text"
 										},
 										{
@@ -2319,7 +2345,8 @@
 										{
 											"key": "description",
 											"value": "admin bonus",
-											"type": "text"
+											"type": "text",
+											"disabled": true
 										}
 									]
 								},
@@ -2421,7 +2448,7 @@
 									]
 								},
 								"url": {
-									"raw": "{{baseURLLocal}}/wallet/admin/dashboard?page=1&limit=2&search=&role&status",
+									"raw": "{{baseURLLocal}}/wallet/admin/dashboard",
 									"host": [
 										"{{baseURLLocal}}"
 									],
@@ -2433,24 +2460,19 @@
 									"query": [
 										{
 											"key": "page",
-											"value": "1"
+											"value": "1",
+											"disabled": true
 										},
 										{
 											"key": "limit",
-											"value": "2"
+											"value": "2",
+											"disabled": true
 										},
 										{
 											"key": "search",
 											"value": "",
-											"description": "firstName, lastName, phoneNumber, email"
-										},
-										{
-											"key": "role",
-											"value": null
-										},
-										{
-											"key": "status",
-											"value": null
+											"description": "firstName, lastName, phoneNumber, email",
+											"disabled": true
 										}
 									]
 								}
@@ -2528,11 +2550,6 @@
 								{
 									"key": "type",
 									"value": "DEBIT",
-									"disabled": true
-								},
-								{
-									"key": "status",
-									"value": null,
 									"disabled": true
 								},
 								{
@@ -2717,47 +2734,14 @@
 									]
 								},
 								"url": {
-									"raw": "{{baseURLLocal}}/promos/admin/6a3375790f12d82239dc950d",
+									"raw": "{{baseURLLocal}}/promos/admin/6a7c5c2d38087b1862a85b8e",
 									"host": [
 										"{{baseURLLocal}}"
 									],
 									"path": [
 										"promos",
 										"admin",
-										"6a3375790f12d82239dc950d"
-									],
-									"query": [
-										{
-											"key": "page",
-											"value": "1",
-											"disabled": true
-										},
-										{
-											"key": "limit",
-											"value": "1",
-											"disabled": true
-										},
-										{
-											"key": "search",
-											"value": "iadmin@mockmail.xyz",
-											"description": "firstName, lastName, phoneNumber, email",
-											"disabled": true
-										},
-										{
-											"key": "type",
-											"value": "DEBIT",
-											"disabled": true
-										},
-										{
-											"key": "status",
-											"value": null,
-											"disabled": true
-										},
-										{
-											"key": "source",
-											"value": "ADMIN_ADJUSTMENT",
-											"disabled": true
-										}
+										"6a7c5c2d38087b1862a85b8e"
 									]
 								}
 							},
@@ -2783,7 +2767,7 @@
 									"formdata": [
 										{
 											"key": "code",
-											"value": " FIRST50",
+											"value": "FIRST20",
 											"type": "text"
 										},
 										{
@@ -2794,7 +2778,7 @@
 										},
 										{
 											"key": "discountValue",
-											"value": "50",
+											"value": "20",
 											"type": "text"
 										},
 										{
@@ -2804,7 +2788,7 @@
 										},
 										{
 											"key": "perUserLimit",
-											"value": "1",
+											"value": "10",
 											"type": "text"
 										},
 										{
@@ -2814,7 +2798,7 @@
 										},
 										{
 											"key": "expiryDate",
-											"value": "2026-06-26",
+											"value": "2026-09-26",
 											"type": "text"
 										},
 										{
@@ -2974,39 +2958,6 @@
 										":id",
 										"status"
 									],
-									"query": [
-										{
-											"key": "page",
-											"value": "1",
-											"disabled": true
-										},
-										{
-											"key": "limit",
-											"value": "1",
-											"disabled": true
-										},
-										{
-											"key": "search",
-											"value": "iadmin@mockmail.xyz",
-											"description": "firstName, lastName, phoneNumber, email",
-											"disabled": true
-										},
-										{
-											"key": "type",
-											"value": "DEBIT",
-											"disabled": true
-										},
-										{
-											"key": "status",
-											"value": null,
-											"disabled": true
-										},
-										{
-											"key": "source",
-											"value": "ADMIN_ADJUSTMENT",
-											"disabled": true
-										}
-									],
 									"variable": [
 										{
 											"key": "id",
@@ -3037,7 +2988,7 @@
 									"formdata": [
 										{
 											"key": "code",
-											"value": " FIRST40",
+											"value": "FIRST50",
 											"type": "text"
 										},
 										{
@@ -3048,12 +2999,12 @@
 										},
 										{
 											"key": "discountValue",
-											"value": "40",
+											"value": "50",
 											"type": "text"
 										},
 										{
 											"key": "totalUsageLimit",
-											"value": "500",
+											"value": "1000",
 											"type": "text"
 										},
 										{
@@ -3068,7 +3019,7 @@
 										},
 										{
 											"key": "expiryDate",
-											"value": "2026-06-26",
+											"value": "2026-09-26",
 											"type": "text"
 										},
 										{
@@ -3124,7 +3075,7 @@
 									"variable": [
 										{
 											"key": "id",
-											"value": ""
+											"value": "6a7c5c2d38087b1862a85b8e"
 										}
 									]
 								}
@@ -3238,7 +3189,7 @@
 									"variable": [
 										{
 											"key": "id",
-											"value": ""
+											"value": "6a3375790f12d82239dc950d"
 										}
 									]
 								}
@@ -3338,7 +3289,7 @@
 									"bearer": [
 										{
 											"key": "token",
-											"value": "{{adminToken}}",
+											"value": "{{riderToken}}",
 											"type": "string"
 										}
 									]
@@ -3350,75 +3301,12 @@
 									"formdata": [
 										{
 											"key": "code",
-											"value": " FIRST50",
+											"value": " FIRST20",
 											"type": "text"
 										},
 										{
-											"key": "discountType",
-											"value": "percentage",
-											"description": "percentage | fixed_amount",
-											"type": "text"
-										},
-										{
-											"key": "discountValue",
-											"value": "50",
-											"type": "text"
-										},
-										{
-											"key": "totalUsageLimit",
-											"value": "1000",
-											"type": "text"
-										},
-										{
-											"key": "perUserLimit",
-											"value": "1",
-											"type": "text"
-										},
-										{
-											"key": "startDate",
-											"value": "2026-05-25",
-											"type": "text"
-										},
-										{
-											"key": "expiryDate",
-											"value": "2026-06-26",
-											"type": "text"
-										},
-										{
-											"key": "isActive",
-											"value": "true",
-											"type": "text"
-										},
-										{
-											"key": "rules[0][ruleKey]",
-											"value": "user_type",
-											"type": "text"
-										},
-										{
-											"key": "rules[0][ruleOperator]",
-											"value": "equals",
-											"type": "text"
-										},
-										{
-											"key": "rules[0][ruleValue]",
-											"value": "rider",
-											"type": "text"
-										},
-										{
-											"key": "rules[1][ruleKey]",
-											"value": "total_rides",
-											"description": "user_type | total_rides | days_since_last_ride",
-											"type": "text"
-										},
-										{
-											"key": "rules[1][ruleOperator]",
-											"value": "equals",
-											"description": "equals | greater_than | less_than",
-											"type": "text"
-										},
-										{
-											"key": "rules[1][ruleValue]",
-											"value": "0",
+											"key": "estimatedFare",
+											"value": "100",
 											"type": "text"
 										}
 									]
@@ -3511,12 +3399,23 @@
 										},
 										{
 											"key": "preferredGender",
-											"value": "male",
+											"value": "female",
 											"type": "text"
 										},
 										{
 											"key": "vehicleType",
-											"value": "taxi",
+											"value": "normal car",
+											"description": "normal car | taxi",
+											"type": "text"
+										},
+										{
+											"key": "pickupAddress",
+											"value": "pickupAddress",
+											"type": "text"
+										},
+										{
+											"key": "destAddress",
+											"value": "destAddress",
 											"type": "text"
 										}
 									]
@@ -3529,6 +3428,41 @@
 									"path": [
 										"rides",
 										"estimate"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "recently estimated places",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{adminToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/rides/recent-places",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"rides",
+										"recent-places"
 									]
 								}
 							},
@@ -3554,13 +3488,13 @@
 									"formdata": [
 										{
 											"key": "pickup",
-											"value": "{\"address\": \"~1.0 km NE\", \"coordinates\": [13.158347, 32.872581]}",
+											"value": "{\"address\": \"~1.0 km NE\", \"coordinates\": [13.1913, 32.8920]}",
 											"description": "[lon, lat]",
 											"type": "text"
 										},
 										{
 											"key": "destination",
-											"value": "{\"address\": \"~11.1 km North\", \"coordinates\": [13.1985, 32.9941]}",
+											"value": "{\"address\": \"~11.1 km North\", \"coordinates\": [32.8780, 13.1750]}",
 											"description": "[lon, lat]",
 											"type": "text"
 										},
@@ -3572,7 +3506,8 @@
 										{
 											"key": "preferredGender",
 											"value": "male",
-											"type": "text"
+											"type": "text",
+											"disabled": true
 										},
 										{
 											"key": "distanceKm",
@@ -3677,51 +3612,7 @@
 								"header": [],
 								"body": {
 									"mode": "formdata",
-									"formdata": [
-										{
-											"key": "pickup",
-											"value": "{\"address\": \"~1.0 km NE\", \"coordinates\": [13.1985, 32.8941]}",
-											"description": "[lon, lat]",
-											"type": "text"
-										},
-										{
-											"key": "destination",
-											"value": "{\"address\": \"~11.1 km North\", \"coordinates\": [13.1985, 32.9941]}",
-											"description": "[lon, lat]",
-											"type": "text"
-										},
-										{
-											"key": "vehicleType",
-											"value": "taxi",
-											"type": "text"
-										},
-										{
-											"key": "preferredGender",
-											"value": "male",
-											"type": "text"
-										},
-										{
-											"key": "distanceKm",
-											"value": "14.46",
-											"type": "text"
-										},
-										{
-											"key": "estimatedTimeMins",
-											"value": "29",
-											"type": "text"
-										},
-										{
-											"key": "fareDetails",
-											"value": "{\"baseFare\": 49, \"distanceFare\": 332.58000000000004, \"timeFare\": 55.099999999999994, \"totalFare\": 436.68}",
-											"type": "text"
-										},
-										{
-											"key": "promoCode",
-											"value": "FIRST50",
-											"type": "text",
-											"disabled": true
-										}
-									]
+									"formdata": []
 								},
 								"url": {
 									"raw": "{{baseURLLocal}}/rides/:rideId/pay",
@@ -3736,7 +3627,7 @@
 									"variable": [
 										{
 											"key": "rideId",
-											"value": "6a49fd10a61a7953e2d81992"
+											"value": "6a4a328d8a59651b8945ac38"
 										}
 									]
 								}
@@ -3768,30 +3659,7 @@
 								"header": [],
 								"body": {
 									"mode": "formdata",
-									"formdata": [
-										{
-											"key": "pickup",
-											"value": "[13.1985, 32.8941]",
-											"description": "[lon, lat]",
-											"type": "text"
-										},
-										{
-											"key": "destination",
-											"value": "[13.1985, 32.9941]",
-											"description": "[lon, lat]",
-											"type": "text"
-										},
-										{
-											"key": "preferredGender",
-											"value": "male",
-											"type": "text"
-										},
-										{
-											"key": "vehicleType",
-											"value": "taxi",
-											"type": "text"
-										}
-									]
+									"formdata": []
 								},
 								"url": {
 									"raw": "{{baseURLLocal}}/rides/nearby?lng=13.1913&lat=32.8872",
@@ -3848,7 +3716,7 @@
 									"variable": [
 										{
 											"key": "rideId",
-											"value": "6a376a5847a56b3b3ab3485d"
+											"value": "6a25430c1f8e7bc78a834796"
 										}
 									]
 								}
@@ -3887,7 +3755,7 @@
 									"variable": [
 										{
 											"key": "rideId",
-											"value": "6a3782f65096e1d885466ee0"
+											"value": "6a25430c1f8e7bc78a834796"
 										}
 									]
 								}
@@ -3914,7 +3782,7 @@
 									"formdata": [
 										{
 											"key": "action",
-											"value": "complete",
+											"value": "start",
 											"description": "arrived_at_pickup | start | arrived_at_destination | confirm_payment | complete",
 											"type": "text"
 										}
@@ -3933,7 +3801,111 @@
 									"variable": [
 										{
 											"key": "rideId",
-											"value": "6a4a328d8a59651b8945ac38"
+											"value": "6a6d890147a342e561463e6c"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "arrived at stopover",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{driverToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "action",
+											"value": "start",
+											"description": "arrived_at_pickup | start | arrived_at_destination | confirm_payment | complete",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/rides/:rideId/stopovers/:stopoverId/arrive",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"rides",
+										":rideId",
+										"stopovers",
+										":stopoverId",
+										"arrive"
+									],
+									"variable": [
+										{
+											"key": "rideId",
+											"value": "6a6d890147a342e561463e6c"
+										},
+										{
+											"key": "stopoverId",
+											"value": "6a6d890147a342e561463e6f"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "depart from stopover",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{driverToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "action",
+											"value": "start",
+											"description": "arrived_at_pickup | start | arrived_at_destination | confirm_payment | complete",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseURLLocal}}/rides/:rideId/stopovers/:stopoverId/depart",
+									"host": [
+										"{{baseURLLocal}}"
+									],
+									"path": [
+										"rides",
+										":rideId",
+										"stopovers",
+										":stopoverId",
+										"depart"
+									],
+									"variable": [
+										{
+											"key": "rideId",
+											"value": "6a6d890147a342e561463e6c"
+										},
+										{
+											"key": "stopoverId",
+											"value": "6a6d890147a342e561463e6f"
 										}
 									]
 								}
@@ -3953,7 +3925,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{riderToken}}",
+									"value": "{{driverToken}}",
 									"type": "string"
 								}
 							]
@@ -3965,7 +3937,7 @@
 							"formdata": []
 						},
 						"url": {
-							"raw": "{{baseURLLocal}}/rides/self?driverRatingAvg=true&rideRatingAvg=true",
+							"raw": "{{baseURLLocal}}/rides/self?driver=true&rider=true",
 							"host": [
 								"{{baseURLLocal}}"
 							],
@@ -3982,21 +3954,21 @@
 								},
 								{
 									"key": "driver",
-									"value": "true",
-									"disabled": true
+									"value": "true"
 								},
 								{
 									"key": "rider",
+									"value": "true"
+								},
+								{
+									"key": "driverRatingAvg",
 									"value": "true",
 									"disabled": true
 								},
 								{
-									"key": "driverRatingAvg",
-									"value": "true"
-								},
-								{
 									"key": "rideRatingAvg",
-									"value": "true"
+									"value": "true",
+									"disabled": true
 								}
 							]
 						}
@@ -4014,7 +3986,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{riderToken}}",
+									"value": "{{driverToken}}",
 									"type": "string"
 								}
 							]
@@ -4026,7 +3998,7 @@
 							"formdata": []
 						},
 						"url": {
-							"raw": "{{baseURLLocal}}/rides?page=1&limit=20&rider=true&driver=true&driver-profile=true",
+							"raw": "{{baseURLLocal}}/rides",
 							"host": [
 								"{{baseURLLocal}}"
 							],
@@ -4042,23 +4014,28 @@
 								},
 								{
 									"key": "page",
-									"value": "1"
+									"value": "1",
+									"disabled": true
 								},
 								{
 									"key": "limit",
-									"value": "20"
+									"value": "20",
+									"disabled": true
 								},
 								{
 									"key": "rider",
-									"value": "true"
+									"value": "true",
+									"disabled": true
 								},
 								{
 									"key": "driver",
-									"value": "true"
+									"value": "true",
+									"disabled": true
 								},
 								{
 									"key": "driver-profile",
-									"value": "true"
+									"value": "true",
+									"disabled": true
 								}
 							]
 						}
@@ -4088,13 +4065,23 @@
 							"formdata": []
 						},
 						"url": {
-							"raw": "{{baseURLLocal}}/rides/:id",
+							"raw": "{{baseURLLocal}}/rides/:id?driver=true&rider=true",
 							"host": [
 								"{{baseURLLocal}}"
 							],
 							"path": [
 								"rides",
 								":id"
+							],
+							"query": [
+								{
+									"key": "driver",
+									"value": "true"
+								},
+								{
+									"key": "rider",
+									"value": "true"
+								}
 							],
 							"variable": [
 								{
@@ -4764,7 +4751,7 @@
 									"formdata": []
 								},
 								"url": {
-									"raw": "{{baseURLLocal}}/notifications/admin/all?page=1&limit=50",
+									"raw": "{{baseURLLocal}}/notifications/admin/all?page=1&limit=50&search=title",
 									"host": [
 										"{{baseURLLocal}}"
 									],
@@ -4785,8 +4772,7 @@
 										{
 											"key": "search",
 											"value": "title",
-											"description": "title | body",
-											"disabled": true
+											"description": "title | body"
 										},
 										{
 											"key": "type",
@@ -4910,12 +4896,26 @@
 								{
 									"key": "rideId",
 									"value": "6a38ad99c5ecd7aa82a5917b",
-									"type": "text"
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "content",
 									"value": "hey there mr driver",
 									"type": "text"
+								},
+								{
+									"key": "images",
+									"type": "file",
+									"src": [
+										"/home/abir/Pictures/Screenshots/10025122.jpg",
+										"/home/abir/Pictures/Screenshots/20760.jpg"
+									]
+								},
+								{
+									"key": "audio",
+									"type": "file",
+									"src": "/home/abir/Downloads/Piano Sonata no. 14 in C#m 'Moonlight', Op. 27 no. 2 - II. Allegretto.mp3"
 								}
 							]
 						},
@@ -4948,23 +4948,7 @@
 						"header": [],
 						"body": {
 							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "receiverId",
-									"value": "6a23abe72458e7b99027a591",
-									"type": "text"
-								},
-								{
-									"key": "rideId",
-									"value": "6a38ad99c5ecd7aa82a5917b",
-									"type": "text"
-								},
-								{
-									"key": "content",
-									"value": "hey there mr driver",
-									"type": "text"
-								}
-							]
+							"formdata": []
 						},
 						"url": {
 							"raw": "{{baseURLLocal}}/messages/read/:senderId",
@@ -4979,7 +4963,7 @@
 							"variable": [
 								{
 									"key": "senderId",
-									"value": "6a0d6c066b5bcd75c2e13560"
+									"value": "6a8a5c2d52556e097d8bf5ed"
 								}
 							]
 						}
@@ -5021,8 +5005,43 @@
 							"variable": [
 								{
 									"key": "targetUserId",
-									"value": "6a23abe72458e7b99027a591"
+									"value": "6a8a5c2d52556e097d8bf5ed"
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "all messages/chats",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{driverToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{baseURLLocal}}/messages/chats",
+							"host": [
+								"{{baseURLLocal}}"
+							],
+							"path": [
+								"messages",
+								"chats"
 							]
 						}
 					},
@@ -5120,7 +5139,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{baseURLLocal}}/dashboard/earnings-table?page=1&limit=10&search=driver",
+									"raw": "{{baseURLLocal}}/dashboard/earnings-table",
 									"host": [
 										"{{baseURLLocal}}"
 									],
@@ -5131,15 +5150,18 @@
 									"query": [
 										{
 											"key": "page",
-											"value": "1"
+											"value": "1",
+											"disabled": true
 										},
 										{
 											"key": "limit",
-											"value": "10"
+											"value": "10",
+											"disabled": true
 										},
 										{
 											"key": "search",
-											"value": "driver"
+											"value": "driver",
+											"disabled": true
 										}
 									]
 								}
@@ -5246,7 +5268,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{baseURLLocal}}/dashboard/voucher-usage-report?search=VC50LYD-1D9E768E",
+									"raw": "{{baseURLLocal}}/dashboard/voucher-usage-report",
 									"host": [
 										"{{baseURLLocal}}"
 									],
@@ -5267,7 +5289,8 @@
 										},
 										{
 											"key": "search",
-											"value": "VC50LYD-1D9E768E"
+											"value": "VC50LYD-1D9E768E",
+											"disabled": true
 										}
 									]
 								}
@@ -5302,22 +5325,23 @@
 											"formdata": [
 												{
 													"key": "name",
-													"value": "iadmin@mockmail.xyz",
+													"value": "voboc98253@daugr.com",
 													"type": "text"
 												},
 												{
 													"key": "email",
-													"value": "iadmin@mockmail.xyz",
+													"value": "voboc98253@daugr.com",
 													"type": "text"
 												},
 												{
 													"key": "phone",
-													"value": "01727272728",
+													"value": "0177272728",
 													"type": "text"
 												},
 												{
 													"key": "role",
-													"value": "admin",
+													"value": "operation staff",
+													"description": "admin | operation staff (default)",
 													"type": "text"
 												},
 												{
@@ -5334,6 +5358,71 @@
 											],
 											"path": [
 												"admins"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "delete a staff",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{adminToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "DELETE",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "name",
+													"value": "iadmin@mockmail.xyz",
+													"type": "text"
+												},
+												{
+													"key": "email",
+													"value": "iadmin@mockmail.xyz",
+													"type": "text"
+												},
+												{
+													"key": "phone",
+													"value": "01727272728",
+													"type": "text"
+												},
+												{
+													"key": "role",
+													"value": "admin",
+													"description": "admin | operation staff (default)",
+													"type": "text"
+												},
+												{
+													"key": "sections",
+													"value": "[\"All\"]",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{baseURLLocal}}/admins/:adminId",
+											"host": [
+												"{{baseURLLocal}}"
+											],
+											"path": [
+												"admins",
+												":adminId"
+											],
+											"variable": [
+												{
+													"key": "adminId",
+													"value": "6a4633af3b75a462adecbec2"
+												}
 											]
 										}
 									},
@@ -5362,7 +5451,7 @@
 											"formdata": []
 										},
 										"url": {
-											"raw": "{{baseURLLocal}}/admins?page=1&limit=1&search&role&section",
+											"raw": "{{baseURLLocal}}/admins?page=1&limit=5&search&role&section",
 											"host": [
 												"{{baseURLLocal}}"
 											],
@@ -5376,7 +5465,7 @@
 												},
 												{
 													"key": "limit",
-													"value": "1"
+													"value": "5"
 												},
 												{
 													"key": "search",
@@ -5616,7 +5705,7 @@
 											"variable": [
 												{
 													"key": "type",
-													"value": "terms_conditions"
+													"value": "privacy_policy"
 												}
 											]
 										}
@@ -5776,7 +5865,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseURLLocal}}/users/overview?role=&year=2026",
+							"raw": "{{baseURLLocal}}/users/overview",
 							"host": [
 								"{{baseURLLocal}}"
 							],
@@ -5787,12 +5876,14 @@
 							"query": [
 								{
 									"key": "role",
-									"value": "",
-									"description": "rider, driver"
+									"value": "driver",
+									"description": "rider, driver",
+									"disabled": true
 								},
 								{
 									"key": "year",
-									"value": "2026"
+									"value": "2026",
+									"disabled": true
 								}
 							]
 						}
@@ -5825,10 +5916,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseURLLocal}}",
+					"raw": "http://localhost:5000",
+					"protocol": "http",
 					"host": [
-						"{{baseURLLocal}}"
-					]
+						"localhost"
+					],
+					"port": "5000"
 				}
 			},
 			"response": []
