@@ -47,6 +47,7 @@ const RideSchema = new Schema<IRide>(
         "PAYMENT_CONFIRMED",
         "COMPLETED",
         "CANCELLED",
+        "EXPIRED",
       ],
       default: "REQUESTED",
       index: true,
@@ -77,6 +78,7 @@ const RideSchema = new Schema<IRide>(
     arrivedAt: { type: Date },
     startedAt: { type: Date },
     completedAt: { type: Date },
+    expiredAt: { type: Date },
   },
   { timestamps: true },
 );

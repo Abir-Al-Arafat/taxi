@@ -37,3 +37,10 @@ AppEventBus.on("RIDE_COMPLETED", (payload) => {
     `[Push Notification] -> Driver ${ride.driverId}: Ride completed. Thank you!`,
   );
 });
+
+AppEventBus.on("RIDE_EXPIRED", (payload) => {
+  const { ride } = payload;
+  console.log(
+    `[Push Notification] -> Rider ${ride.riderId}: Ride ${ride._id} expired.`,
+  );
+});
