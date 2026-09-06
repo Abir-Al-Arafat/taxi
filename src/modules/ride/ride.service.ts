@@ -255,6 +255,12 @@ export class RideService {
       { ride },
     );
 
+    // Broadcast to connected driver apps to remove the accepted card in real time
+    SocketService.broadcast("rideRequestAccepted", {
+      rideId: ride._id.toString(),
+      acceptedBy: driverId,
+    });
+
     AppEventBus.emit("RIDE_ACCEPTED", {
       rideId,
       riderId: ride.riderId,
@@ -265,6 +271,13 @@ export class RideService {
 
   //rider cancels ride
   async cancelRide(riderId: string, rideId: string, reason?: string) {
+    const existingRide = await this.rideRepo.findOne({ _id: rideId, riderId });
+
+    if (!existingRide)
+      throw new AppError("Ride no longer available", HTTP_STATUS.CONFLICT);
+
+    const isPending = existingRide.status === "REQUESTED";
+
     const ride = await this.rideRepo.updateOne(
       { _id: rideId, riderId },
       {
@@ -278,6 +291,13 @@ export class RideService {
 
     if (!ride)
       throw new AppError("Ride no longer available", HTTP_STATUS.CONFLICT);
+
+    if (isPending) {
+      // Broadcast to connected driver apps to remove cancelled card in real time
+      SocketService.broadcast("rideRequestCancelled", {
+        rideId: ride._id.toString(),
+      });
+    }
 
     AppEventBus.emit("RIDE_CANCELLED", {
       rideId,
