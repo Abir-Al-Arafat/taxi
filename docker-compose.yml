@@ -3,8 +3,35 @@ services:
     image: abirwerks/taxi-backend:latest
     build: . # tells Docker Compose to build the local Dockerfile
     container_name: taxi-backend
+    restart: unless-stopped
     ports:
       - "5000:5000"
     env_file:
       - .env
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    volumes:
+      - ./public:/usr/src/app/public
+    depends_on:
+      - redis
+    networks:
+      - app_network
+
+  redis:
+    image: redis:alpine
+    container_name: taxi-redis
     restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - app_network
+
+volumes:
+  redis_data:
+
+networks:
+  app_network:
+    driver: bridge
+

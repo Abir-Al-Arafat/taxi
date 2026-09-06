@@ -34,8 +34,11 @@ RUN npm ci --omit=dev
 # Copy the compiled output from the builder stage
 COPY --from=builder /usr/src/app/dist ./dist
 
-# Expose the port your app runs on (change 3000 if your server.ts uses a different default)
-EXPOSE 3000
+# Ensure the public directory exists for uploaded static assets
+RUN mkdir -p /usr/src/app/public
+
+# Expose the port your app runs on
+EXPOSE 5000
 
 # Start the application
 CMD ["node", "dist/server.js"]
