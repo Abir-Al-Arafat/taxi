@@ -84,7 +84,7 @@ export class WalletController {
 
   getWalletDashboard = asyncHandler(async (req: Request, res: Response) => {
     const { page, limit, search, sort, role, status }: any = req.query;
-
+    console.log("getWalletDashboard() query params:", req.query);
     const paginationParams: IPaginationParams = {
       page: page,
       limit: limit,
